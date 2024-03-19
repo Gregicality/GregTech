@@ -27,7 +27,8 @@ public final class DualHandler implements IItemHandlerModifiable, IFluidHandler,
 
     private final List<MetaTileEntity> notifiables = new ArrayList<>();
 
-    public DualHandler(IItemHandlerModifiable itemDelegate, IFluidHandler fluidDelegate, IDirtyNotifiable notifiable, boolean isExport) {
+    public DualHandler(IItemHandlerModifiable itemDelegate, IFluidHandler fluidDelegate, IDirtyNotifiable notifiable,
+                       boolean isExport) {
         this.itemDelegate = itemDelegate;
         this.fluidDelegate = fluidDelegate;
         this.dirtyNotifiable = notifiable;
@@ -115,6 +116,7 @@ public final class DualHandler implements IItemHandlerModifiable, IFluidHandler,
     public void removeNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
         this.notifiables.remove(metaTileEntity);
     }
+
     public static Builder builder() {
         return new Builder();
     }
