@@ -43,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntityMEOutputHatch extends MetaTileEntityAEHostablePart<IAEFluidStack>
@@ -198,8 +199,8 @@ public class MetaTileEntityMEOutputHatch extends MetaTileEntityAEHostablePart<IA
     }
 
     @Override
-    public void registerAbilities(List<IFluidTank> list) {
-        list.add(new InaccessibleInfiniteTank(this, this.internalBuffer, this.getController()));
+    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+        return Collections.singletonList(new InaccessibleInfiniteTank(this, this.internalBuffer, this.getController()));
     }
 
     @Override

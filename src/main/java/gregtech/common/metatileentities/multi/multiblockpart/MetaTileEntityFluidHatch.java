@@ -1,8 +1,14 @@
 package gregtech.common.metatileentities.multi.multiblockpart;
 
-import gregtech.api.capability.*;
+import gregtech.api.capability.GregtechDataCodes;
+import gregtech.api.capability.GregtechTileCapabilities;
+import gregtech.api.capability.IControllable;
+import gregtech.api.capability.IFilter;
+import gregtech.api.capability.IFilteredFluidContainer;
+import gregtech.api.capability.IGhostSlotConfigurable;
 import gregtech.api.capability.impl.FilteredItemHandler;
 import gregtech.api.capability.impl.FluidTankList;
+import gregtech.api.capability.impl.GhostCircuitItemStackHandler;
 import gregtech.api.capability.impl.NotifiableFluidTank;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.metatileentity.MetaTileEntity;
@@ -51,16 +57,20 @@ import com.cleanroommc.modularui.widgets.slot.ModularSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiablePart
-                                      implements IMultiblockAbilityPart<IFluidTank>, IControllable {
+                                      implements IMultiblockAbilityPart<IFluidTank>, IControllable,
+                                                 IGhostSlotConfigurable {
 
     public static final int INITIAL_INVENTORY_SIZE = 8000;
 
     // only holding this for convenience
     protected final HatchFluidTank fluidTank;
     protected boolean workingEnabled;
+    private GhostCircuitItemStackHandler circuitInventory;
 
     // export hatch-only fields
     protected boolean locked;
@@ -72,6 +82,31 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         this.fluidTank = new HatchFluidTank(getInventorySize(), this, isExportHatch);
         this.workingEnabled = true;
         initializeInventory();
+    }
+
+    @Override
+    protected void initializeInventory() {
+        super.initializeInventory();
+        if (!this.hasGhostCircuitInventory()) return;
+
+        this.circuitInventory = new GhostCircuitItemStackHandler(this);
+        this.circuitInventory.addNotifiableMetaTileEntity(this);
+    }
+
+    @Override
+    public boolean hasGhostCircuitInventory() {
+        return !isExportHatch;
+    }
+
+    @Override
+    public void setGhostCircuitConfig(int config) {
+        if (this.circuitInventory == null || this.circuitInventory.getCircuitValue() == config) {
+            return;
+        }
+        this.circuitInventory.setCircuitValue(config);
+        if (!getWorld().isRemote) {
+            markDirty();
+        }
     }
 
     @Override
@@ -218,8 +253,20 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     }
 
     @Override
-    public void registerAbilities(List<IFluidTank> abilityList) {
-        abilityList.add(fluidTank);
+    public @NotNull List<MultiblockAbility<?>> getAbilities() {
+        return isExportHatch ?
+                Collections.singletonList(MultiblockAbility.EXPORT_FLUIDS):
+                Arrays.asList(MultiblockAbility.IMPORT_FLUIDS, MultiblockAbility.IMPORT_ITEMS);
+    }
+
+    @Override
+    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> key) {
+        if (key.equals(MultiblockAbility.EXPORT_FLUIDS) || key.equals(MultiblockAbility.IMPORT_FLUIDS)) {
+            return Collections.singletonList(fluidTank);
+        } else if (key.equals(MultiblockAbility.IMPORT_ITEMS)) {
+            return Collections.singletonList(circuitInventory);
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -256,6 +303,20 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
                         .addTooltip(true, IKey.lang("gregtech.gui.fluid_lock.tooltip.enabled"))
                         .addTooltip(false, IKey.lang("gregtech.gui.fluid_lock.tooltip.disabled")))
 
+//        if (this.circuitInventory != null) {
+//            SlotWidget circuitSlot = new GhostCircuitSlotWidget(circuitInventory, 0, 124, 62)
+//                    .setBackgroundTexture(GuiTextures.SLOT, GuiTextures.INT_CIRCUIT_OVERLAY);
+//            builder.widget(circuitSlot.setConsumer(slotWidget -> {
+//                String configString;
+//                if (circuitInventory == null || circuitInventory.getCircuitValue() == GhostCircuitItemStackHandler.NO_CONFIG) {
+//                    configString = new TextComponentTranslation("gregtech.gui.configurator_slot.no_value").getFormattedText();
+//                } else {
+//                    configString = String.valueOf(circuitInventory.getCircuitValue());
+//                }
+//
+//                slotWidget.setTooltipText("gregtech.gui.configurator_slot.tooltip", configString);
+//            }));
+//        }
                 // import specific
                 .childIf(!isExportHatch, GTGuiTextures.TANK_ICON.asWidget()
                         .pos(91, 36)

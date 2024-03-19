@@ -51,6 +51,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntityMEInputBus extends MetaTileEntityAEHostablePart<IAEItemStack>
@@ -330,8 +331,8 @@ public class MetaTileEntityMEInputBus extends MetaTileEntityAEHostablePart<IAEIt
     }
 
     @Override
-    public void registerAbilities(List<IItemHandlerModifiable> list) {
-        list.add(this.actualImportItems);
+    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+        return Collections.singletonList(this.actualImportItems);
     }
 
     @Override

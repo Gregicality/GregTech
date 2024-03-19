@@ -83,7 +83,21 @@ public class MultiblockAbility<T> {
         REGISTRY.get(ability).add(part);
     }
 
+    private final String name;
+
     public MultiblockAbility(String name) {
-        NAME_REGISTRY.put(name.toLowerCase(), this);
+        this.name = name.toLowerCase();
+        NAME_REGISTRY.put(this.name, this);
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof MultiblockAbility<?>other &&
+                this.name.equals(other.toString());
     }
 }

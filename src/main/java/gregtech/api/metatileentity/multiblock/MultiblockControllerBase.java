@@ -333,6 +333,7 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
         return BlockPos::hashCode;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void checkStructurePattern() {
         if (structurePattern == null) return;
         PatternMatchContext context = structurePattern.checkPatternFastAt(getWorld(), getPos(),
@@ -351,12 +352,13 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
             parts.sort(Comparator.comparing(it -> multiblockPartSorter().apply(((MetaTileEntity) it).getPos())));
             Map<MultiblockAbility<Object>, List<Object>> abilities = new HashMap<>();
             for (IMultiblockPart multiblockPart : parts) {
-                if (multiblockPart instanceof IMultiblockAbilityPart) {
-                    @SuppressWarnings("unchecked")
-                    IMultiblockAbilityPart<Object> abilityPart = (IMultiblockAbilityPart<Object>) multiblockPart;
-                    List<Object> abilityInstancesList = abilities.computeIfAbsent(abilityPart.getAbility(),
-                            k -> new ArrayList<>());
-                    abilityPart.registerAbilities(abilityInstancesList);
+                if (multiblockPart instanceof IMultiblockAbilityPart multiblockAbilityPart) {
+                    List<MultiblockAbility> m = multiblockAbilityPart.getAbilities();
+                    for (MultiblockAbility ability : m) {
+                        List abilityInstancesList = abilities.computeIfAbsent(ability,
+                                k -> new ArrayList<>());
+                        abilityInstancesList.addAll(multiblockAbilityPart.registerAbilities(ability));
+                    }
                 }
             }
             this.multiblockParts.addAll(parts);

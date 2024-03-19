@@ -47,6 +47,7 @@ import com.cleanroommc.modularui.widgets.SlotGroupWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntityRotorHolder extends MetaTileEntityMultiblockNotifiablePart
@@ -165,8 +166,8 @@ public class MetaTileEntityRotorHolder extends MetaTileEntityMultiblockNotifiabl
     }
 
     @Override
-    public void registerAbilities(@NotNull List<IRotorHolder> abilityList) {
-        abilityList.add(this);
+    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+        return Collections.singletonList(this);
     }
 
     @Override
