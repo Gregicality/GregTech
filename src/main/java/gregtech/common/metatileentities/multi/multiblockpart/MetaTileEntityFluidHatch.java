@@ -64,7 +64,7 @@ import java.util.List;
 
 public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiablePart
                                       implements IMultiblockAbilityPart<IFluidTank>, IControllable,
-                                                 IGhostSlotConfigurable {
+                                      IGhostSlotConfigurable {
 
     public static final int INITIAL_INVENTORY_SIZE = 8000;
 
@@ -260,7 +260,7 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     @Override
     public @NotNull List<MultiblockAbility<?>> getAbilities() {
         return isExportHatch ?
-                Collections.singletonList(MultiblockAbility.EXPORT_FLUIDS):
+                Collections.singletonList(MultiblockAbility.EXPORT_FLUIDS) :
                 Arrays.asList(MultiblockAbility.IMPORT_FLUIDS, MultiblockAbility.IMPORT_ITEMS);
     }
 
@@ -307,14 +307,15 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
                         .value(new BooleanSyncValue(this::isLocked, b -> fluidSyncHandler.lockFluid(b, false)))
                         .addTooltip(true, IKey.lang("gregtech.gui.fluid_lock.tooltip.enabled"))
                         .addTooltip(false, IKey.lang("gregtech.gui.fluid_lock.tooltip.disabled")))
-
 //        if (this.circuitInventory != null) {
 //            SlotWidget circuitSlot = new GhostCircuitSlotWidget(circuitInventory, 0, 124, 62)
 //                    .setBackgroundTexture(GuiTextures.SLOT, GuiTextures.INT_CIRCUIT_OVERLAY);
 //            builder.widget(circuitSlot.setConsumer(slotWidget -> {
 //                String configString;
-//                if (circuitInventory == null || circuitInventory.getCircuitValue() == GhostCircuitItemStackHandler.NO_CONFIG) {
-//                    configString = new TextComponentTranslation("gregtech.gui.configurator_slot.no_value").getFormattedText();
+//                if (circuitInventory == null ||
+//                        circuitInventory.getCircuitValue() == GhostCircuitItemStackHandler.NO_CONFIG) {
+//                    configString = new TextComponentTranslation("gregtech.gui.configurator_slot.no_value")
+//                            .getFormattedText();
 //                } else {
 //                    configString = String.valueOf(circuitInventory.getCircuitValue());
 //                }
