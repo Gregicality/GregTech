@@ -351,13 +351,13 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
             this.setFlipped(context.neededFlip());
             parts.sort(Comparator.comparing(it -> multiblockPartSorter().apply(((MetaTileEntity) it).getPos())));
             Map<MultiblockAbility<Object>, List<Object>> abilities = new HashMap<>();
-            for (IMultiblockPart multiblockPart : parts) {
-                if (multiblockPart instanceof IMultiblockAbilityPart multiblockAbilityPart) {
-                    List<MultiblockAbility> m = multiblockAbilityPart.getAbilities();
-                    for (MultiblockAbility ability : m) {
+            for (IMultiblockPart part : parts) {
+                if (part instanceof IMultiblockAbilityPart abilityPart) {
+                    List<MultiblockAbility> abilityList = abilityPart.getAbilities();
+                    for (MultiblockAbility ability : abilityList) {
                         List abilityInstancesList = abilities.computeIfAbsent(ability,
                                 k -> new ArrayList<>());
-                        abilityInstancesList.addAll(multiblockAbilityPart.registerAbilities(ability));
+                        abilityInstancesList.addAll(abilityPart.registerAbilities(ability));
                     }
                 }
             }
