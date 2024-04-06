@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -84,7 +85,10 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     // Used for distinct bus recipe checking
     protected List<IItemHandlerModifiable> getInputBuses() {
         RecipeMapMultiblockController controller = (RecipeMapMultiblockController) metaTileEntity;
-        return controller.getAbilities(MultiblockAbility.IMPORT_ITEMS);
+        List<IItemHandlerModifiable> l = new ArrayList<>();
+        l.addAll(controller.getAbilitiesModifiable(MultiblockAbility.IMPORT_ITEMS));
+        l.addAll(controller.getAbilitiesModifiable(MultiblockAbility.IMPORT_DUAL));
+        return Collections.unmodifiableList(l);
     }
 
     @Override

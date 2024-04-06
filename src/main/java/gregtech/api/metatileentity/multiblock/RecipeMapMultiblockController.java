@@ -1,5 +1,6 @@
 package gregtech.api.metatileentity.multiblock;
 
+import gregtech.api.DualHandler;
 import gregtech.api.GTValues;
 import gregtech.api.capability.IDistinctBusController;
 import gregtech.api.capability.IEnergyContainer;
@@ -256,6 +257,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         if (this.isDistinct) {
             // todo use dual handlers
             this.notifiedItemInputList.addAll(this.getAbilities(MultiblockAbility.IMPORT_ITEMS));
+            this.notifiedItemInputList.addAll(this.getAbilities(MultiblockAbility.IMPORT_DUAL));
         } else {
             this.notifiedItemInputList.add(this.inputInventory);
         }

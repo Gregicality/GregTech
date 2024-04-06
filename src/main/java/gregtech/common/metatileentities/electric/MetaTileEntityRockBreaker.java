@@ -75,7 +75,7 @@ public class MetaTileEntityRockBreaker extends SimpleMachineMetaTileEntity {
     }
 
     @Override
-    public <T> void addNotifiedInput(T input) {
+    public void addNotifiedInput(Object input) {
         super.addNotifiedInput(input);
         onNeighborChanged();
     }

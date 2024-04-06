@@ -1,33 +1,39 @@
 package gregtech.api;
 
+import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.INotifiableHandler;
+import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.IDirtyNotifiable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public final class DualHandler implements IItemHandlerModifiable, IFluidHandler, INotifiableHandler {
+public final class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler, INotifiableHandler {
 
     @Nullable
     IItemHandlerModifiable itemDelegate;
     @Nullable
-    IFluidHandler fluidDelegate;
+    IMultipleTankHandler fluidDelegate;
     @Nullable
     IDirtyNotifiable dirtyNotifiable;
     private final boolean isExport;
+    private static final MultiFluidTankEntry EMPTY = new MultiFluidTankEntry(new FluidTankList(false, new FluidTank[0]), new FluidTank(0));
 
     private final List<MetaTileEntity> notifiables = new ArrayList<>();
 
-    public DualHandler(IItemHandlerModifiable itemDelegate, IFluidHandler fluidDelegate, IDirtyNotifiable notifiable,
+    public DualHandler(IItemHandlerModifiable itemDelegate, IMultipleTankHandler fluidDelegate, IDirtyNotifiable notifiable,
                        boolean isExport) {
         this.itemDelegate = itemDelegate;
         this.fluidDelegate = fluidDelegate;
@@ -121,10 +127,31 @@ public final class DualHandler implements IItemHandlerModifiable, IFluidHandler,
         return new Builder();
     }
 
+    @Override
+    public @NotNull List<MultiFluidTankEntry> getFluidTanks() {
+        if (this.fluidDelegate == null) return Collections.emptyList();
+        return this.fluidDelegate.getFluidTanks();
+    }
+
+    @Override
+    public int getTanks() {
+        return this.fluidDelegate == null ? 0 : this.fluidDelegate.getTanks();
+    }
+
+    @Override
+    public @NotNull MultiFluidTankEntry getTankAt(int index) {
+        return this.fluidDelegate == null ? EMPTY : this.fluidDelegate.getTankAt(index);
+    }
+
+    @Override
+    public boolean allowSameFluidFill() {
+        return this.fluidDelegate != null && this.fluidDelegate.allowSameFluidFill();
+    }
+
     public static class Builder {
 
         IItemHandlerModifiable itemHandler;
-        IFluidHandler fluidHandler;
+        IMultipleTankHandler fluidHandler;
         IDirtyNotifiable notifiable;
 
         public Builder itemHandler(IItemHandlerModifiable itemHandler) {
@@ -132,7 +159,7 @@ public final class DualHandler implements IItemHandlerModifiable, IFluidHandler,
             return this;
         }
 
-        public Builder fluidTank(IFluidHandler fluidTank) {
+        public Builder fluidTank(IMultipleTankHandler fluidTank) {
             this.fluidHandler = fluidTank;
             return this;
         }
