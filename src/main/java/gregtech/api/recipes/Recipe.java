@@ -190,9 +190,6 @@ public class Recipe {
                                  IMultipleTankHandler fluidInputs) {
         Pair<Boolean, int[]> fluids = null;
         Pair<Boolean, int[]> items = null;
-        if (inputs instanceof IFluidTank tank) {
-            fluidInputs = new FluidTankList(false, tank);
-        }
 
         if (fluidInputs.getFluidTanks().size() > 0) {
             fluids = matchesFluid(GTUtility.fluidHandlerToList(fluidInputs));

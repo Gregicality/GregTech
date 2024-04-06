@@ -1,5 +1,6 @@
 package gregtech.common.metatileentities.multi.multiblockpart;
 
+import gregtech.api.DualHandler;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IControllable;
@@ -261,15 +262,15 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     public @NotNull List<MultiblockAbility<?>> getAbilities() {
         return isExportHatch ?
                 Collections.singletonList(MultiblockAbility.EXPORT_FLUIDS) :
-                Arrays.asList(MultiblockAbility.IMPORT_FLUIDS, MultiblockAbility.IMPORT_ITEMS);
+                Collections.singletonList(MultiblockAbility.IMPORT_DUAL);
     }
 
     @Override
     public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> key) {
-        if (key.equals(MultiblockAbility.EXPORT_FLUIDS) || key.equals(MultiblockAbility.IMPORT_FLUIDS)) {
+        if (key.equals(MultiblockAbility.EXPORT_FLUIDS)) {
             return Collections.singletonList(fluidTank);
-        } else if (key.equals(MultiblockAbility.IMPORT_ITEMS)) {
-            return Collections.singletonList(circuitInventory);
+        } else if (key.equals(MultiblockAbility.IMPORT_DUAL)) {
+            return Collections.singletonList(new DualHandler(this.circuitInventory, this.importFluids, null, false));
         }
         return Collections.emptyList();
     }
