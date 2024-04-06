@@ -1,6 +1,5 @@
 package gregtech.api.metatileentity.multiblock;
 
-import gregtech.api.DualHandler;
 import gregtech.api.GTValues;
 import gregtech.api.capability.IDistinctBusController;
 import gregtech.api.capability.IEnergyContainer;

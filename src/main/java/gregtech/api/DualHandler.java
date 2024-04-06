@@ -9,7 +9,6 @@ import gregtech.api.util.IDirtyNotifiable;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -29,11 +28,13 @@ public final class DualHandler implements IItemHandlerModifiable, IMultipleTankH
     @Nullable
     IDirtyNotifiable dirtyNotifiable;
     private final boolean isExport;
-    private static final MultiFluidTankEntry EMPTY = new MultiFluidTankEntry(new FluidTankList(false, new FluidTank[0]), new FluidTank(0));
+    private static final MultiFluidTankEntry EMPTY = new MultiFluidTankEntry(new FluidTankList(false, new FluidTank[0]),
+            new FluidTank(0));
 
     private final List<MetaTileEntity> notifiables = new ArrayList<>();
 
-    public DualHandler(IItemHandlerModifiable itemDelegate, IMultipleTankHandler fluidDelegate, IDirtyNotifiable notifiable,
+    public DualHandler(IItemHandlerModifiable itemDelegate, IMultipleTankHandler fluidDelegate,
+                       IDirtyNotifiable notifiable,
                        boolean isExport) {
         this.itemDelegate = itemDelegate;
         this.fluidDelegate = fluidDelegate;
