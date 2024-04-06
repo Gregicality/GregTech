@@ -123,10 +123,6 @@ public final class DualHandler implements IItemHandlerModifiable, IMultipleTankH
         this.notifiables.remove(metaTileEntity);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     @Override
     public @NotNull List<MultiFluidTankEntry> getFluidTanks() {
         if (this.fluidDelegate == null) return Collections.emptyList();
@@ -146,31 +142,5 @@ public final class DualHandler implements IItemHandlerModifiable, IMultipleTankH
     @Override
     public boolean allowSameFluidFill() {
         return this.fluidDelegate != null && this.fluidDelegate.allowSameFluidFill();
-    }
-
-    public static class Builder {
-
-        IItemHandlerModifiable itemHandler;
-        IMultipleTankHandler fluidHandler;
-        IDirtyNotifiable notifiable;
-
-        public Builder itemHandler(IItemHandlerModifiable itemHandler) {
-            this.itemHandler = itemHandler;
-            return this;
-        }
-
-        public Builder fluidTank(IMultipleTankHandler fluidTank) {
-            this.fluidHandler = fluidTank;
-            return this;
-        }
-
-        public Builder notifiable(IDirtyNotifiable notifiable) {
-            this.notifiable = notifiable;
-            return this;
-        }
-
-        public DualHandler build(boolean isExport) {
-            return new DualHandler(this.itemHandler, this.fluidHandler, this.notifiable, isExport);
-        }
     }
 }
