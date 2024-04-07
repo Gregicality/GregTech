@@ -25,8 +25,6 @@ public final class DualHandler implements IItemHandlerModifiable, IMultipleTankH
     IItemHandlerModifiable itemDelegate;
     @Nullable
     IMultipleTankHandler fluidDelegate;
-    @Nullable
-    IDirtyNotifiable dirtyNotifiable;
     private final boolean isExport;
     private static final MultiFluidTankEntry EMPTY = new MultiFluidTankEntry(new FluidTankList(false, new FluidTank[0]),
             new FluidTank(0));
@@ -34,11 +32,9 @@ public final class DualHandler implements IItemHandlerModifiable, IMultipleTankH
     private final List<MetaTileEntity> notifiables = new ArrayList<>();
 
     public DualHandler(IItemHandlerModifiable itemDelegate, IMultipleTankHandler fluidDelegate,
-                       IDirtyNotifiable notifiable,
                        boolean isExport) {
         this.itemDelegate = itemDelegate;
         this.fluidDelegate = fluidDelegate;
-        this.dirtyNotifiable = notifiable;
         this.isExport = isExport;
     }
 
@@ -71,9 +67,6 @@ public final class DualHandler implements IItemHandlerModifiable, IMultipleTankH
     }
 
     public void onContentsCahgned() {
-        if (this.dirtyNotifiable != null) {
-            this.dirtyNotifiable.markAsDirty();
-        }
         notifiables.forEach(mte -> {
             if (isExport) {
                 mte.addNotifiedOutput(this);
