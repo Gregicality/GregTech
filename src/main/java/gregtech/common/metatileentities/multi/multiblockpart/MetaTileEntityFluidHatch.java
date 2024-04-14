@@ -81,6 +81,7 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     public MetaTileEntityFluidHatch(ResourceLocation metaTileEntityId, int tier, boolean isExportHatch) {
         super(metaTileEntityId, tier, isExportHatch);
         this.fluidTank = new HatchFluidTank(getInventorySize(), this, isExportHatch);
+        initializeInventory(); // the fact that this has to be called three times is so dumb
         this.workingEnabled = true;
         if (this.hasGhostCircuitInventory()) {
             this.circuitInventory = new GhostCircuitItemStackHandler(this);
