@@ -37,8 +37,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
@@ -651,20 +649,18 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
         }
 
         if (inputs instanceof ItemHandlerList list) {
-            List<IItemHandler> items = new ArrayList<>();
-            List<IFluidTank> fluids = new ArrayList<>();
+            List<ItemStack> items = new ArrayList<>();
+            List<FluidStack> fluids = new ArrayList<>();
             for (var handler : list.getBackingHandlers()) {
                 if (handler instanceof DualHandler dualHandler) {
-                    items.add(dualHandler);
-                    fluids.addAll(dualHandler.getFluidTanks());
-                } else {
-                    items.add(handler);
+                    fluids.addAll(GTUtility.fluidHandlerToList(dualHandler));
                 }
+                items.addAll(GTUtility.itemHandlerToList((IItemHandlerModifiable) handler));
             }
-            return map.findRecipe(maxVoltage, new ItemHandlerList(items), new FluidTankList(false, fluids));
+            return map.findRecipe(maxVoltage, items, fluids);
         } else if (inputs instanceof DualHandler dualHandler) {
             return map.findRecipe(maxVoltage, dualHandler, dualHandler);
-        } else  {
+        } else {
             return map.findRecipe(maxVoltage, inputs, fluidInputs);
         }
     }
