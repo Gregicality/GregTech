@@ -258,9 +258,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         getMultiblockParts().forEach(part -> part.onDistinctChange(isDistinct));
         // mark buses as changed on distinct toggle
         if (this.isDistinct) {
-            // todo use dual handlers
-            this.notifiedItemInputList.addAll(this.getAbilities(MultiblockAbility.IMPORT_ITEMS));
-            this.notifiedItemInputList.addAll(this.getAbilities(MultiblockAbility.IMPORT_DUAL));
+            this.notifiedItemInputList.addAll(this.getAbilities(MultiblockAbility.IMPORT_ITEMS, MultiblockAbility.IMPORT_DUAL));
         } else {
             this.notifiedItemInputList.add(this.inputInventory);
         }
