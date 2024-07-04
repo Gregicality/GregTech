@@ -197,7 +197,8 @@ public class MetaTileEntityMEOutputBus extends MetaTileEntityAEHostablePart<IAEI
     }
 
     @Override
-    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+    public @NotNull List<? extends IItemHandlerModifiable> registerAbilities(
+            @NotNull MultiblockAbility<? extends IItemHandlerModifiable> multiblockAbility) {
         return Collections.singletonList(new InaccessibleInfiniteSlot(this, this.internalBuffer, this.getController()));
     }
 

@@ -14,5 +14,5 @@ public interface IMultiblockAbilityPart<T> extends IMultiblockPart {
     }
 
     @NotNull
-    List<?> registerAbilities(@NotNull MultiblockAbility<Object> key);
+    List<? extends T> registerAbilities(@NotNull MultiblockAbility<? extends T> key);
 }

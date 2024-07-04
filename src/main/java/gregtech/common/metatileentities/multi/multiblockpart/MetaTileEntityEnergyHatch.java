@@ -117,7 +117,8 @@ public class MetaTileEntityEnergyHatch extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+    public @NotNull List<? extends IEnergyContainer> registerAbilities(
+            @NotNull MultiblockAbility<? extends IEnergyContainer> multiblockAbility) {
         return Collections.singletonList(energyContainer);
     }
 

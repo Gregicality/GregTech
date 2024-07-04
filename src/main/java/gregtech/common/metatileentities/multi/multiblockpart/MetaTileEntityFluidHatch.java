@@ -260,7 +260,7 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     }
 
     @Override
-    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> key) {
+    public @NotNull List<? extends IFluidTank> registerAbilities(@NotNull MultiblockAbility<? extends IFluidTank> key) {
         if (key.equals(MultiblockAbility.EXPORT_FLUIDS)) {
             return Collections.singletonList(fluidTank);
         } else if (key.equals(MultiblockAbility.IMPORT_DUAL)) {

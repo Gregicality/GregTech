@@ -120,7 +120,8 @@ public class MetaTileEntityReservoirHatch extends MetaTileEntityMultiblockNotifi
     }
 
     @Override
-    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+    public @NotNull List<? extends IFluidTank> registerAbilities(
+            @NotNull MultiblockAbility<? extends IFluidTank> multiblockAbility) {
         return Collections.singletonList(fluidTank);
     }
 

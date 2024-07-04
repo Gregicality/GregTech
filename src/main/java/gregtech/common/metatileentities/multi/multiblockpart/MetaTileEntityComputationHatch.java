@@ -152,7 +152,8 @@ public class MetaTileEntityComputationHatch extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+    public @NotNull List<? extends IOpticalComputationHatch> registerAbilities(
+            @NotNull MultiblockAbility<? extends IOpticalComputationHatch> multiblockAbility) {
         return Collections.singletonList(this);
     }
 

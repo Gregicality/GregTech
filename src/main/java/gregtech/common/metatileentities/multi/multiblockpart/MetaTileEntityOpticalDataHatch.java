@@ -129,7 +129,8 @@ public class MetaTileEntityOpticalDataHatch extends MetaTileEntityMultiblockNoti
     }
 
     @Override
-    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+    public @NotNull List<? extends IOpticalDataAccessHatch> registerAbilities(
+            @NotNull MultiblockAbility<? extends IOpticalDataAccessHatch> multiblockAbility) {
         return Collections.singletonList(this);
     }
 

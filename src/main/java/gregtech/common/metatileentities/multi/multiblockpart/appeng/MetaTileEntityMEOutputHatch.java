@@ -199,7 +199,8 @@ public class MetaTileEntityMEOutputHatch extends MetaTileEntityAEHostablePart<IA
     }
 
     @Override
-    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+    public @NotNull List<? extends IFluidTank> registerAbilities(
+            @NotNull MultiblockAbility<? extends IFluidTank> multiblockAbility) {
         return Collections.singletonList(new InaccessibleInfiniteTank(this, this.internalBuffer, this.getController()));
     }
 

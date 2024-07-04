@@ -271,7 +271,8 @@ public class MetaTileEntityMEInputHatch extends MetaTileEntityAEHostablePart<IAE
     }
 
     @Override
-    public @NotNull List<?> registerAbilities(@NotNull MultiblockAbility<Object> multiblockAbility) {
+    public @NotNull List<? extends IFluidTank> registerAbilities(
+            @NotNull MultiblockAbility<? extends IFluidTank> multiblockAbility) {
         return Collections.unmodifiableList(Arrays.asList(this.getAEFluidHandler().getInventory()));
     }
 
