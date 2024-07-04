@@ -116,7 +116,9 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
 
     @Override
     public IFluidTankProperties[] getTankProperties() {
-        return new IFluidTankProperties[0];
+        return this.fluidDelegate == null ?
+                NULL_HANDLER.getTankProperties() :
+                this.fluidDelegate.getTankProperties();
     }
 
     @Override
