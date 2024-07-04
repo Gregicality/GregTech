@@ -653,9 +653,9 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
             List<FluidStack> fluids = new ArrayList<>();
             for (var handler : list.getBackingHandlers()) {
                 if (handler instanceof DualHandler dualHandler) {
-                    fluids.addAll(GTUtility.fluidHandlerToList(dualHandler));
+                    GTUtility.addHandlerToCollection(fluids, dualHandler);
                 }
-                items.addAll(GTUtility.itemHandlerToList((IItemHandlerModifiable) handler));
+                GTUtility.addHandlerToCollection(items, handler);
             }
             return map.findRecipe(maxVoltage, items, fluids);
         } else if (inputs instanceof DualHandler dualHandler) {
