@@ -124,7 +124,7 @@ public class MetaTileEntityTankValve extends MetaTileEntityMultiblockPart
 
     @Override
     public @NotNull List<? extends IFluidHandler> registerAbilities(
-            @NotNull MultiblockAbility<? extends IFluidHandler> multiblockAbility) {
+                                                                    @NotNull MultiblockAbility<? extends IFluidHandler> multiblockAbility) {
         return Collections.singletonList(this.getImportFluids());
     }
 

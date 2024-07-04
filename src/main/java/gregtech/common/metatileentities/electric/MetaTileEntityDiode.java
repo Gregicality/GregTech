@@ -184,7 +184,7 @@ public class MetaTileEntityDiode extends MetaTileEntityMultiblockPart
 
     @Override
     public @NotNull List<? extends IPassthroughHatch> registerAbilities(
-            @NotNull MultiblockAbility<? extends IPassthroughHatch> multiblockAbility) {
+                                                                        @NotNull MultiblockAbility<? extends IPassthroughHatch> multiblockAbility) {
         return Collections.singletonList(this);
     }
 

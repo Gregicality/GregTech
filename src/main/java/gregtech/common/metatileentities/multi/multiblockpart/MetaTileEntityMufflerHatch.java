@@ -162,7 +162,7 @@ public class MetaTileEntityMufflerHatch extends MetaTileEntityMultiblockPart imp
 
     @Override
     public @NotNull List<? extends IMufflerHatch> registerAbilities(
-            @NotNull MultiblockAbility<? extends IMufflerHatch> multiblockAbility) {
+                                                                    @NotNull MultiblockAbility<? extends IMufflerHatch> multiblockAbility) {
         return Collections.singletonList(this);
     }
 

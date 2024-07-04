@@ -117,7 +117,7 @@ public class MetaTileEntityObjectHolder extends MetaTileEntityMultiblockNotifiab
 
     @Override
     public @NotNull List<? extends IObjectHolder> registerAbilities(
-            @NotNull MultiblockAbility<? extends IObjectHolder> multiblockAbility) {
+                                                                    @NotNull MultiblockAbility<? extends IObjectHolder> multiblockAbility) {
         return Collections.singletonList(this);
     }
 

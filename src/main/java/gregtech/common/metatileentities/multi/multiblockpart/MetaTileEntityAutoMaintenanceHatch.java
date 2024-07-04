@@ -107,7 +107,7 @@ public class MetaTileEntityAutoMaintenanceHatch extends MetaTileEntityMultiblock
 
     @Override
     public @NotNull List<? extends IMaintenanceHatch> registerAbilities(
-            @NotNull MultiblockAbility<? extends IMaintenanceHatch> multiblockAbility) {
+                                                                        @NotNull MultiblockAbility<? extends IMaintenanceHatch> multiblockAbility) {
         return Collections.singletonList(this);
     }
 

@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipleTankHandler, INotifiableHandler {
@@ -68,7 +67,8 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
         return itemDelegate.getSlotLimit(slot);
     }
 
-    public void onContentsCahgned() {
+    // todo actually use this
+    public void onContentsChanged() {
         notifiables.forEach(mte -> {
             if (isExport) {
                 mte.addNotifiedOutput(this);
@@ -92,7 +92,6 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
         var tanks = this.fluidDelegate.getFluidTanks();
         tanks.sort(ENTRY_COMPARATOR);
         return tanks.get(0);
-
     }
 
     @Override

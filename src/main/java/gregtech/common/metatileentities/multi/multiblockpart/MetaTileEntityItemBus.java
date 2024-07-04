@@ -256,7 +256,7 @@ public class MetaTileEntityItemBus extends MetaTileEntityMultiblockNotifiablePar
 
     @Override
     public @NotNull List<? extends IItemHandlerModifiable> registerAbilities(
-            @NotNull MultiblockAbility<? extends IItemHandlerModifiable> key) {
+                                                                             @NotNull MultiblockAbility<? extends IItemHandlerModifiable> key) {
         List<IItemHandlerModifiable> abilityList = new ArrayList<>();
         if (this.hasGhostCircuitInventory() && this.actualImportItems != null) {
             abilityList.add(isExportHatch ? this.exportItems : this.actualImportItems);
