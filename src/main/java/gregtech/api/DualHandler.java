@@ -44,9 +44,7 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        var inserted = itemDelegate.insertItem(slot, stack, simulate);
-
-        return inserted;
+        return itemDelegate.insertItem(slot, stack, simulate);
     }
 
     @Override
