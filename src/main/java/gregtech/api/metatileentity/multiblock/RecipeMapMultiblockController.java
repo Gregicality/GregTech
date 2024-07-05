@@ -120,10 +120,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
     }
 
     protected void initializeAbilities() {
-        List<IItemHandlerModifiable> l = new ArrayList<>();
-        l.addAll(getAbilitiesModifiable(MultiblockAbility.IMPORT_ITEMS));
-        l.addAll(getAbilitiesModifiable(MultiblockAbility.IMPORT_DUAL));
-        this.inputInventory = new ItemHandlerList(Collections.unmodifiableList(l));
+        this.inputInventory = new ItemHandlerList(getAbilities(MultiblockAbility.IMPORT_ITEMS, MultiblockAbility.IMPORT_DUAL));
         this.inputFluidInventory = new FluidTankList(allowSameFluidFillForOutputs(),
                 getAbilities(MultiblockAbility.IMPORT_FLUIDS));
         this.outputInventory = new ItemHandlerList(getAbilities(MultiblockAbility.EXPORT_ITEMS));
