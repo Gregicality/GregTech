@@ -16,15 +16,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipleTankHandler, INotifiableHandler {
+public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipleTankHandler {
 
     @NotNull
     IItemHandlerModifiable itemDelegate;
     @NotNull
     IMultipleTankHandler fluidDelegate;
     private final boolean isExport;
-
-    private final List<MetaTileEntity> notifiables = new ArrayList<>();
 
     public DualHandler(@NotNull IItemHandlerModifiable itemDelegate,
                        @NotNull IMultipleTankHandler fluidDelegate,
@@ -48,35 +46,17 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         var inserted = itemDelegate.insertItem(slot, stack, simulate);
 
-        if (!simulate && inserted.getCount() != stack.getCount())
-            onContentsChanged();
-
         return inserted;
     }
 
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        var extracted = itemDelegate.extractItem(slot, amount, simulate);
-
-        if (!simulate && !extracted.isEmpty())
-            onContentsChanged();
-
-        return extracted;
+        return itemDelegate.extractItem(slot, amount, simulate);
     }
 
     @Override
     public int getSlotLimit(int slot) {
         return itemDelegate.getSlotLimit(slot);
-    }
-
-    public void onContentsChanged() {
-        for (var mte : this.notifiables) {
-            if (isExport) {
-                mte.addNotifiedOutput(this);
-            } else {
-                mte.addNotifiedInput(this);
-            }
-        }
     }
 
     @Override
@@ -118,42 +98,17 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
 
     @Override
     public int fill(FluidStack resource, boolean doFill) {
-        int filled = fluidDelegate.fill(resource, doFill);
-
-        if (doFill && filled > 0)
-            onContentsChanged();
-
-        return filled;
+        return fluidDelegate.fill(resource, doFill);
     }
 
     @Override
     public FluidStack drain(FluidStack resource, boolean doDrain) {
-        var drained = fluidDelegate.drain(resource, doDrain);
-
-        if (doDrain && drained != null && drained.amount > 0)
-            onContentsChanged();
-
-        return drained;
+        return fluidDelegate.drain(resource, doDrain);
     }
 
     @Override
     public FluidStack drain(int maxDrain, boolean doDrain) {
-        var drained = fluidDelegate.drain(maxDrain, doDrain);
-
-        if (doDrain && drained != null && drained.amount > 0)
-            onContentsChanged();
-
-        return drained;
-    }
-
-    @Override
-    public void addNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
-        this.notifiables.add(metaTileEntity);
-    }
-
-    @Override
-    public void removeNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
-        this.notifiables.remove(metaTileEntity);
+        return fluidDelegate.drain(maxDrain, doDrain);
     }
 
     @Override
