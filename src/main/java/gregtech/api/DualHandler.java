@@ -1,8 +1,6 @@
 package gregtech.api;
 
 import gregtech.api.capability.IMultipleTankHandler;
-import gregtech.api.capability.INotifiableHandler;
-import gregtech.api.metatileentity.MetaTileEntity;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -13,7 +11,6 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipleTankHandler {
