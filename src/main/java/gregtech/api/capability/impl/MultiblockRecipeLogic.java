@@ -1,6 +1,7 @@
 package gregtech.api.capability.impl;
 
 import gregtech.api.GTValues;
+import gregtech.api.capability.DualHandler;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.IMultiblockController;
 import gregtech.api.capability.IMultipleRecipeMaps;
@@ -16,7 +17,9 @@ import gregtech.api.recipes.properties.RecipePropertyStorage;
 import gregtech.api.util.GTUtility;
 import gregtech.common.ConfigHolder;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -238,6 +241,31 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
                 invalidatedInputList.add(bus);
             }
         }
+    }
+
+    @Override
+    protected @Nullable Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs,
+                                          IMultipleTankHandler fluidInputs) {
+        RecipeMap<?> map = getRecipeMap();
+        if (map == null || !isRecipeMapValid(map)) {
+            return null;
+        }
+
+        List<ItemStack> items = new ArrayList<>();
+        List<FluidStack> fluids = new ArrayList<>();
+
+        GTUtility.addHandlerToCollection(fluids, fluidInputs);
+        GTUtility.addHandlerToCollection(items, inputs);
+
+        if (fluidInputs instanceof DualHandler dualHandler) {
+            GTUtility.addHandlerToCollection(items, dualHandler);
+        }
+
+        if (inputs instanceof DualHandler dualHandler) {
+            GTUtility.addHandlerToCollection(fluids, dualHandler);
+        }
+
+        return map.findRecipe(maxVoltage, items, fluids);
     }
 
     @Override

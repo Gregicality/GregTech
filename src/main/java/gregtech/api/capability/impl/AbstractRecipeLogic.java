@@ -648,28 +648,7 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
             return null;
         }
 
-        List<ItemStack> items = new ArrayList<>();
-        List<FluidStack> fluids = new ArrayList<>();
-
-        GTUtility.addHandlerToCollection(fluids, fluidInputs);
-        GTUtility.addHandlerToCollection(items, inputs);
-
-        if (fluidInputs instanceof FluidTankList tankList) {
-            for (var tank : tankList.getFluidTanks()) {
-                if (tank.getDelegate() instanceof DualHandler dualHandler)
-                    GTUtility.addHandlerToCollection(items, dualHandler);
-            }
-        }
-
-        if (inputs instanceof ItemHandlerList list) {
-            for (var handler : list.getBackingHandlers()) {
-                if (handler instanceof DualHandler dualHandler) {
-                    GTUtility.addHandlerToCollection(fluids, dualHandler);
-                }
-            }
-        }
-
-        return map.findRecipe(maxVoltage, items, fluids);
+        return map.findRecipe(maxVoltage, inputs, fluidInputs);
     }
 
     /**
