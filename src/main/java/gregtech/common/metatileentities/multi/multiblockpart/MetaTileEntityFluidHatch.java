@@ -1,6 +1,6 @@
 package gregtech.common.metatileentities.multi.multiblockpart;
 
-import gregtech.api.DualHandler;
+import gregtech.api.capability.DualHandler;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IControllable;

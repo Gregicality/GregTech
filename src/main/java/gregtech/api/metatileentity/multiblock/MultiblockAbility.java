@@ -1,6 +1,6 @@
 package gregtech.api.metatileentity.multiblock;
 
-import gregtech.api.DualHandler;
+import gregtech.api.capability.DualHandler;
 import gregtech.api.capability.*;
 import gregtech.api.metatileentity.MetaTileEntity;
 

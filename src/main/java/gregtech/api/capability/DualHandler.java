@@ -1,6 +1,4 @@
-package gregtech.api;
-
-import gregtech.api.capability.IMultipleTankHandler;
+package gregtech.api.capability;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
