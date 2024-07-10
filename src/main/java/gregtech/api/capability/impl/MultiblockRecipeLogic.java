@@ -252,25 +252,8 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
             return null;
         }
 
-        List<ItemStack> items = new ArrayList<>();
-        List<FluidStack> fluids = new ArrayList<>();
-
-        GTUtility.addHandlerToCollection(fluids, fluidInputs);
-        GTUtility.addHandlerToCollection(items, inputs);
-
-        for (var tank : fluidInputs.getFluidTanks()) {
-            if (tank.getDelegate() instanceof DualHandler dualHandler)
-                GTUtility.addHandlerToCollection(items, dualHandler);
-        }
-
-        if (inputs instanceof DualHandler dualHandler) {
-            GTUtility.addHandlerToCollection(fluids, dualHandler);
-        } else if (inputs instanceof ItemHandlerList handlerList) {
-            for (IItemHandler handler : handlerList.getBackingHandlers()) {
-                if (handler instanceof DualHandler dualHandler)
-                    GTUtility.addHandlerToCollection(fluids, dualHandler);
-            }
-        }
+        List<ItemStack> items = gatherItems(inputs, fluidInputs);
+        List<FluidStack> fluids = gatherFluids(inputs, fluidInputs);
 
         return map.findRecipe(maxVoltage, items, fluids);
     }

@@ -37,6 +37,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
@@ -761,6 +762,36 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
             return false;
         }
         return true;
+    }
+
+    protected List<ItemStack> gatherItems(IItemHandlerModifiable inputInventory, IMultipleTankHandler inputFluids) {
+        List<ItemStack> items = new ArrayList<>();
+
+        GTUtility.addHandlerToCollection(items, inputInventory);
+
+        for (var tank : inputFluids.getFluidTanks()) {
+            if (tank.getDelegate() instanceof IItemHandlerModifiable modifiable)
+                GTUtility.addHandlerToCollection(items, modifiable);
+        }
+
+        return items;
+    }
+
+    protected List<FluidStack> gatherFluids(IItemHandlerModifiable inputInventory, IMultipleTankHandler inputFluids) {
+        List<FluidStack> fluids = new ArrayList<>();
+
+        GTUtility.addHandlerToCollection(fluids, inputFluids);
+
+        if (inputInventory instanceof IMultipleTankHandler tankHandler) {
+            GTUtility.addHandlerToCollection(fluids, tankHandler);
+        } else if (inputInventory instanceof ItemHandlerList handlerList) {
+            for (IItemHandler handler : handlerList.getBackingHandlers()) {
+                if (handler instanceof IMultipleTankHandler tankHandler)
+                    GTUtility.addHandlerToCollection(fluids, tankHandler);
+            }
+        }
+
+        return fluids;
     }
 
     /**
