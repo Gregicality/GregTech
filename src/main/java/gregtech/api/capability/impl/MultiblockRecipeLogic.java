@@ -84,7 +84,7 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     // Used for distinct bus recipe checking
     protected List<IItemHandlerModifiable> getInputBuses() {
         RecipeMapMultiblockController controller = (RecipeMapMultiblockController) metaTileEntity;
-        return new ArrayList<>(controller.getAbilities(MultiblockAbility.IMPORT_ITEMS, MultiblockAbility.IMPORT_DUAL));
+        return controller.getAbilities(MultiblockAbility.IMPORT_ITEMS);
     }
 
     @Override

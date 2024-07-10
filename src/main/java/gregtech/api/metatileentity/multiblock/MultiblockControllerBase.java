@@ -407,23 +407,6 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
         return Collections.unmodifiableList(getAbilitiesModifiable(ability));
     }
 
-    public <T> List<? extends T> getAbilities(MultiblockAbility<? extends T> ability1,
-                                              MultiblockAbility<? extends T> ability2) {
-        var combined = new ArrayList<T>();
-        combined.addAll(getAbilitiesModifiable(ability1));
-        combined.addAll(getAbilitiesModifiable(ability2));
-        return Collections.unmodifiableList(combined);
-    }
-
-    @SafeVarargs
-    public final <T> List<T> getAbilities(MultiblockAbility<T>... abilities) {
-        var combined = new ArrayList<T>();
-        for (var ability : abilities) {
-            combined.addAll(getAbilitiesModifiable(ability));
-        }
-        return Collections.unmodifiableList(combined);
-    }
-
     @SuppressWarnings("unchecked")
     public <T> List<T> getAbilitiesModifiable(MultiblockAbility<T> ability) {
         return (List<T>) multiblockAbilities.getOrDefault(ability, Collections.emptyList());

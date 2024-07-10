@@ -119,8 +119,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
     }
 
     protected void initializeAbilities() {
-        this.inputInventory = new ItemHandlerList(
-                getAbilities(MultiblockAbility.IMPORT_ITEMS, MultiblockAbility.IMPORT_DUAL));
+        this.inputInventory = new ItemHandlerList(getAbilities(MultiblockAbility.IMPORT_ITEMS));
         this.inputFluidInventory = new FluidTankList(allowSameFluidFillForOutputs(),
                 getAbilities(MultiblockAbility.IMPORT_FLUIDS));
         this.outputInventory = new ItemHandlerList(getAbilities(MultiblockAbility.EXPORT_ITEMS));
@@ -256,7 +255,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         // mark buses as changed on distinct toggle
         if (this.isDistinct) {
             this.notifiedItemInputList
-                    .addAll(this.getAbilities(MultiblockAbility.IMPORT_ITEMS, MultiblockAbility.IMPORT_DUAL));
+                    .addAll(this.getAbilities(MultiblockAbility.IMPORT_ITEMS));
         } else {
             this.notifiedItemInputList.add(this.inputInventory);
         }
