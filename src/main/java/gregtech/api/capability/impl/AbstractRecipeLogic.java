@@ -1,6 +1,5 @@
 package gregtech.api.capability.impl;
 
-import gregtech.api.capability.DualHandler;
 import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
