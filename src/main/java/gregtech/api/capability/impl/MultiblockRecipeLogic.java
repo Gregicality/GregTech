@@ -20,6 +20,7 @@ import gregtech.common.ConfigHolder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -257,12 +258,18 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
         GTUtility.addHandlerToCollection(fluids, fluidInputs);
         GTUtility.addHandlerToCollection(items, inputs);
 
-        if (fluidInputs instanceof DualHandler dualHandler) {
-            GTUtility.addHandlerToCollection(items, dualHandler);
+        for (IFluidTank tank : fluidInputs.getFluidTanks()) {
+            if (tank instanceof DualHandler dualHandler)
+                GTUtility.addHandlerToCollection(items, dualHandler);
         }
 
         if (inputs instanceof DualHandler dualHandler) {
             GTUtility.addHandlerToCollection(fluids, dualHandler);
+        } else if (inputs instanceof ItemHandlerList handlerList) {
+            for (IItemHandler handler : handlerList.getBackingHandlers()) {
+                if (handler instanceof DualHandler dualHandler)
+                    GTUtility.addHandlerToCollection(fluids, dualHandler);
+            }
         }
 
         return map.findRecipe(maxVoltage, items, fluids);

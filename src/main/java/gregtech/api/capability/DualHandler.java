@@ -59,9 +59,7 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
 
     @NotNull
     private IFluidTank getFirstTank() {
-        var tanks = this.fluidDelegate.getFluidTanks();
-        tanks.sort(ENTRY_COMPARATOR);
-        return tanks.get(0);
+        return this.fluidDelegate.getTankAt(0);
     }
 
     @Override
