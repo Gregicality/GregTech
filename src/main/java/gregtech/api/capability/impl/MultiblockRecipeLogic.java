@@ -258,8 +258,8 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
         GTUtility.addHandlerToCollection(fluids, fluidInputs);
         GTUtility.addHandlerToCollection(items, inputs);
 
-        for (IFluidTank tank : fluidInputs.getFluidTanks()) {
-            if (tank instanceof DualHandler dualHandler)
+        for (var tank : fluidInputs.getFluidTanks()) {
+            if (tank.getDelegate() instanceof DualHandler dualHandler)
                 GTUtility.addHandlerToCollection(items, dualHandler);
         }
 
