@@ -355,6 +355,9 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
                 if (part instanceof IMultiblockAbilityPart abilityPart) {
                     List<MultiblockAbility> abilityList = abilityPart.getAbilities();
                     for (MultiblockAbility ability : abilityList) {
+                        if (!checkAbilityPart(ability, ((MetaTileEntity) abilityPart).getPos()))
+                            continue;
+
                         List abilityInstancesList = abilities.computeIfAbsent(ability,
                                 k -> new ArrayList<>());
                         abilityInstancesList.addAll(abilityPart.registerAbilities(ability));
@@ -375,6 +378,10 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
                 setFlipped(context.neededFlip());
             }
         }
+    }
+
+    protected <T> boolean checkAbilityPart(MultiblockAbility<T> ability, BlockPos pos) {
+        return true;
     }
 
     protected void formStructure(PatternMatchContext context) {}
