@@ -59,6 +59,7 @@ import com.cleanroommc.modularui.widgets.slot.ModularSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -258,14 +259,14 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     public @NotNull List<MultiblockAbility<?>> getAbilities() {
         return isExportHatch ?
                 Collections.singletonList(MultiblockAbility.EXPORT_FLUIDS) :
-                Collections.singletonList(MultiblockAbility.IMPORT_DUAL);
+                Collections.singletonList(MultiblockAbility.IMPORT_FLUIDS);
     }
 
     @Override
     public @NotNull List<? extends IFluidTank> registerAbilities(@NotNull MultiblockAbility<? extends IFluidTank> key) {
         if (key.equals(MultiblockAbility.EXPORT_FLUIDS)) {
             return Collections.singletonList(this.fluidTank);
-        } else if (key.equals(MultiblockAbility.IMPORT_DUAL)) {
+        } else if (key.equals(MultiblockAbility.IMPORT_FLUIDS)) {
             return Collections.singletonList(this.dualHandler);
         }
         return Collections.emptyList();

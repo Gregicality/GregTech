@@ -29,9 +29,6 @@ public class MultiblockAbility<T> {
     public static final MultiblockAbility<IFluidTank> EXPORT_FLUIDS = new MultiblockAbility<>("export_fluids");
     public static final MultiblockAbility<IFluidTank> IMPORT_FLUIDS = new MultiblockAbility<>("import_fluids");
 
-    public static final MultiblockAbility<DualHandler> EXPORT_DUAL = new MultiblockAbility<>("export_dual");
-    public static final MultiblockAbility<DualHandler> IMPORT_DUAL = new MultiblockAbility<>("import_dual");
-
     public static final MultiblockAbility<IEnergyContainer> INPUT_ENERGY = new MultiblockAbility<>("input_energy");
     public static final MultiblockAbility<IEnergyContainer> OUTPUT_ENERGY = new MultiblockAbility<>("output_energy");
 
