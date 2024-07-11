@@ -18,6 +18,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,9 +93,9 @@ public class DistillationTowerLogicHandler {
             }
             MetaTileEntityMultiblockPart part = fluidExportParts.get(exportIndex);
             if (part.getPos().getY() == y) {
-                List<IFluidTank> hatchTanks = new ObjectArrayList<>();
                 // noinspection unchecked
-                ((IMultiblockAbilityPart<IFluidTank>) part).registerAbilities(hatchTanks);
+                List<? extends IFluidTank> hatchTanks = ((IMultiblockAbilityPart<IFluidTank>) part)
+                        .registerAbilities(MultiblockAbility.EXPORT_FLUIDS);
                 orderedHandlerList.add(new FluidTankList(false, hatchTanks));
                 tankList.addAll(hatchTanks);
                 exportIndex++;

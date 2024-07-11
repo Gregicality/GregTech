@@ -4,6 +4,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.FluidTankProperties;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -123,18 +125,22 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         return list;
     }
 
-    public static class DualEntry implements IItemHandlerModifiable, IFluidTank {
+    public static class DualEntry implements IItemHandlerModifiable, IFluidTank, IFluidHandler {
 
         private static final FluidTankInfo NULL = new FluidTankInfo(null, 0);
 
         private final DualHandler delegate;
         private final int itemIndex;
         private final int fluidIndex;
+        private final IFluidTankProperties[] props;
 
         public DualEntry(DualHandler delegate, int itemIndex, int fluidIndex) {
             this.delegate = delegate;
             this.itemIndex = itemIndex;
             this.fluidIndex = fluidIndex;
+            this.props = new IFluidTankProperties[] {
+                    new FluidTankProperties(getFluid(), getCapacity())
+            };
         }
 
         public DualHandler getDelegate() {
@@ -166,9 +172,20 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         }
 
         @Override
+        public IFluidTankProperties[] getTankProperties() {
+            return this.props;
+        }
+
+        @Override
         public int fill(FluidStack resource, boolean doFill) {
             if (fluidIndex == -1) return 0;
             return this.delegate.getTankAt(this.fluidIndex).fill(resource, doFill);
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, boolean doDrain) {
+            if (fluidIndex == -1) return null;
+            return this.delegate.getTankAt(this.fluidIndex).drain(resource, doDrain);
         }
 
         @Override
@@ -190,11 +207,13 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            if (itemIndex == -1) return stack;
             return this.delegate.insertItem(this.itemIndex, stack, simulate);
         }
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (itemIndex == -1) return ItemStack.EMPTY;
             return this.delegate.extractItem(this.itemIndex, amount, simulate);
         }
 
