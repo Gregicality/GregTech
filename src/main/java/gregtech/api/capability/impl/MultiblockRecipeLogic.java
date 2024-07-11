@@ -257,6 +257,14 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     @Override
+    protected boolean recipeMatch(Recipe recipe, IItemHandlerModifiable inputItems, IMultipleTankHandler inputFluids) {
+        List<ItemStack> items = gatherItems(inputItems, inputFluids);
+        List<FluidStack> fluids = gatherFluids(inputItems, inputFluids);
+
+        return recipe.matches(true, items, fluids);
+    }
+
+    @Override
     public void invalidateInputs() {
         MultiblockWithDisplayBase controller = (MultiblockWithDisplayBase) metaTileEntity;
         RecipeMapMultiblockController distinctController = (RecipeMapMultiblockController) controller;
