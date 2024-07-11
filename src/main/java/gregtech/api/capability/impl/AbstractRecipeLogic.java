@@ -769,8 +769,8 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
         GTUtility.addHandlerToCollection(items, inputInventory);
 
         for (var tank : inputFluids.getFluidTanks()) {
-            if (tank.getDelegate() instanceof IItemHandlerModifiable modifiable)
-                GTUtility.addHandlerToCollection(items, modifiable);
+            if (tank.getDelegate() instanceof IItemHandler handler)
+                GTUtility.addHandlerToCollection(items, handler);
         }
 
         return items;
