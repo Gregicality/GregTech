@@ -18,7 +18,6 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
