@@ -9,9 +9,10 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipleTankHandler {
+public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler {
 
     @NotNull
     IItemHandlerModifiable itemDelegate;
@@ -25,6 +26,10 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
         this.itemDelegate = itemDelegate;
         this.fluidDelegate = fluidDelegate;
         this.isExport = isExport;
+    }
+
+    public boolean isExport() {
+        return this.isExport;
     }
 
     @Override
@@ -55,31 +60,6 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
     @Override
     public void setStackInSlot(int slot, ItemStack stack) {
         itemDelegate.setStackInSlot(slot, stack);
-    }
-
-    @NotNull
-    private IFluidTank getFirstTank() {
-        return this.fluidDelegate.getTankAt(0);
-    }
-
-    @Override
-    public FluidStack getFluid() {
-        return getFirstTank().getFluid();
-    }
-
-    @Override
-    public int getFluidAmount() {
-        return getFirstTank().getFluidAmount();
-    }
-
-    @Override
-    public int getCapacity() {
-        return getFirstTank().getCapacity();
-    }
-
-    @Override
-    public FluidTankInfo getInfo() {
-        return getFirstTank().getInfo();
     }
 
     @Override
@@ -120,5 +100,114 @@ public class DualHandler implements IItemHandlerModifiable, IFluidTank, IMultipl
     @Override
     public boolean allowSameFluidFill() {
         return this.fluidDelegate.allowSameFluidFill();
+    }
+
+    public List<DualEntry> unwrap() {
+        int items = itemDelegate.getSlots();
+        int fluids = fluidDelegate.getTanks();
+        int max = Math.max(items, fluids);
+
+        List<DualEntry> list = new ArrayList<>(max);
+        for (int i = 0; i < max; i++) {
+            int itemIndex = -1;
+            if (i < items)
+                itemIndex = i;
+
+            int fluidIndex = -1;
+            if (i < fluids)
+                fluidIndex = i;
+
+            list.add(new DualEntry(this, itemIndex, fluidIndex));
+        }
+
+        return list;
+    }
+
+    public static class DualEntry implements IItemHandlerModifiable, IFluidTank {
+
+        private static final FluidTankInfo NULL = new FluidTankInfo(null, 0);
+
+        private final DualHandler delegate;
+        private final int itemIndex;
+        private final int fluidIndex;
+
+        public DualEntry(DualHandler delegate, int itemIndex, int fluidIndex) {
+            this.delegate = delegate;
+            this.itemIndex = itemIndex;
+            this.fluidIndex = fluidIndex;
+        }
+
+        public DualHandler getDelegate() {
+            return this.delegate;
+        }
+
+        @Override
+        public FluidStack getFluid() {
+            if (fluidIndex == -1) return null;
+            return this.delegate.getTankAt(this.fluidIndex).getFluid();
+        }
+
+        @Override
+        public int getFluidAmount() {
+            if (fluidIndex == -1) return 0;
+            return this.delegate.getTankAt(this.fluidIndex).getFluidAmount();
+        }
+
+        @Override
+        public int getCapacity() {
+            if (fluidIndex == -1) return 0;
+            return this.delegate.getTankAt(this.fluidIndex).getCapacity();
+        }
+
+        @Override
+        public FluidTankInfo getInfo() {
+            if (fluidIndex == -1) return NULL;
+            return this.delegate.getTankAt(this.fluidIndex).getInfo();
+        }
+
+        @Override
+        public int fill(FluidStack resource, boolean doFill) {
+            if (fluidIndex == -1) return 0;
+            return this.delegate.getTankAt(this.fluidIndex).fill(resource, doFill);
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, boolean doDrain) {
+            if (fluidIndex == -1) return null;
+            return this.delegate.getTankAt(this.fluidIndex).drain(maxDrain, doDrain);
+        }
+
+        @Override
+        public int getSlots() {
+            return itemIndex == -1 ? 0 : 1;
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            if (itemIndex == -1) return ItemStack.EMPTY;
+            return this.delegate.getStackInSlot(this.itemIndex);
+        }
+
+        @Override
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            return this.delegate.insertItem(this.itemIndex, stack, simulate);
+        }
+
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return this.delegate.extractItem(this.itemIndex, amount, simulate);
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            if (itemIndex == -1) return 0;
+            return this.delegate.getSlotLimit(this.itemIndex);
+        }
+
+        @Override
+        public void setStackInSlot(int slot, ItemStack stack) {
+            if (itemIndex == -1) return;
+            this.delegate.setStackInSlot(this.itemIndex, stack);
+        }
     }
 }

@@ -266,7 +266,7 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         if (key.equals(MultiblockAbility.EXPORT_FLUIDS)) {
             return Collections.singletonList(this.fluidTank);
         } else if (key.equals(MultiblockAbility.IMPORT_FLUIDS)) {
-            return Collections.singletonList(this.dualHandler);
+            return this.dualHandler.unwrap();
         }
         return Collections.emptyList();
     }
