@@ -4,7 +4,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -138,9 +137,9 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
             this.delegate = delegate;
             this.itemIndex = itemIndex;
             this.fluidIndex = fluidIndex;
-            this.props = new IFluidTankProperties[] {
-                    new FluidTankProperties(getFluid(), getCapacity())
-            };
+            this.props = this.fluidIndex == -1 ?
+                    new IFluidTankProperties[0] :
+                    this.delegate.getTankAt(this.fluidIndex).getTankProperties();
         }
 
         public DualHandler getDelegate() {
