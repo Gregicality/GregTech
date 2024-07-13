@@ -1,5 +1,7 @@
 package gregtech.api.capability;
 
+import gregtech.api.capability.impl.FluidTankList;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -27,6 +29,22 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         this.itemDelegate = itemDelegate;
         this.fluidDelegate = fluidDelegate;
         this.isExport = isExport;
+    }
+
+    public DualHandler(@NotNull IItemHandlerModifiable itemDelegate,
+                       @NotNull IFluidTank fluidTank,
+                       boolean isExport) {
+        this.itemDelegate = itemDelegate;
+        this.fluidDelegate = new FluidTankList(false, fluidTank);
+        this.isExport = isExport;
+    }
+
+    public IItemHandlerModifiable getItemDelegate() {
+        return this.itemDelegate;
+    }
+
+    public IMultipleTankHandler getFluidDelegate() {
+        return this.fluidDelegate;
     }
 
     public boolean isExport() {
