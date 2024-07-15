@@ -257,11 +257,11 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     @Override
-    protected boolean recipeMatch(Recipe recipe, IItemHandlerModifiable inputItems, IMultipleTankHandler inputFluids) {
-        List<ItemStack> items = gatherItems(inputItems, inputFluids);
-        List<FluidStack> fluids = gatherFluids(inputItems, inputFluids);
+    protected boolean recipeMatch(Recipe recipe, boolean shouldConsume) {
+        List<ItemStack> items = gatherItems(getInputInventory(), getInputTank());
+        List<FluidStack> fluids = gatherFluids(getInputInventory(), getInputTank());
 
-        return recipe.matches(true, items, fluids);
+        return recipe.matches(shouldConsume, items, fluids);
     }
 
     @Override
