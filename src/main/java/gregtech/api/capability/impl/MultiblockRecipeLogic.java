@@ -277,7 +277,10 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     protected boolean checkPreviousRecipeDistinct(IItemHandlerModifiable previousBus) {
-        return previousRecipe != null && previousRecipe.matches(false, previousBus, getInputTank());
+        List<ItemStack> items = gatherItems(previousBus, getInputTank());
+        List<FluidStack> fluids = gatherFluids(previousBus, getInputTank());
+
+        return previousRecipe != null && previousRecipe.matches(false, items, fluids);
     }
 
     protected boolean prepareRecipeDistinct(Recipe recipe) {

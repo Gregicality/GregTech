@@ -461,20 +461,14 @@ public class GTUtility {
     public static void addHandlerToCollection(Collection<ItemStack> collection, IItemHandler handler) {
         for (int i = 0; i < handler.getSlots(); i++) {
             var stack = handler.getStackInSlot(i);
-            if (stack.isEmpty())
-                continue;
-
-            collection.add(stack);
+            if (!stack.isEmpty()) collection.add(stack);
         }
     }
 
     public static void addHandlerToCollection(Collection<FluidStack> collection, IMultipleTankHandler handler) {
         for (var entry : handler.getFluidTanks()) {
             var fluid = entry.getFluid();
-            if (fluid == null)
-                continue;
-
-            collection.add(fluid);
+            if (fluid != null) collection.add(fluid);
         }
     }
 
