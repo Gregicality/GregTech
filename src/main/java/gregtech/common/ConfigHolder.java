@@ -45,6 +45,8 @@ public class ConfigHolder {
 
     public static class MachineOptions {
 
+        public NuclearOptions nuclear = new NuclearOptions();
+
         @Config.Comment({ "Whether insufficient energy supply should reset Machine recipe progress to zero.",
                 "If true, progress will reset.", "If false, progress will decrease to zero with 2x speed",
                 "Default: false" })
@@ -161,6 +163,27 @@ public class ConfigHolder {
                 "This does NOT apply to the World Accelerator, but to external effects like Time in a Bottle.",
                 "Default: true" })
         public boolean allowTickAcceleration = true;
+
+        public static class NuclearOptions {
+
+            @Config.Comment({ "Nuclear Max Power multiplier for balancing purposes", "Default: 0.1" })
+            @Config.RangeDouble(min = 0, max = 10000)
+            public double nuclearPowerMultiplier = 0.1;
+
+            @Config.Comment({ "How much the amount of power required to boil a coolant is divided by." })
+            @Config.RangeDouble(min = 0.1, max = 1000)
+            public double fissionCoolantDivisor = 14;
+
+            @Config.Comment({
+                    "The level of detail to which fission reactors are analyzed. May cause more lag at higher values." })
+            @Config.RangeInt(min = 5, max = 10000)
+            public double fissionReactorResolution = 100;
+
+            @Config.Comment({ "Nuclear coolant heat exchanger recipe efficiency multiplier for balancing purposes",
+                    "Default: 0.1" })
+            @Config.RangeDouble(min = 0, max = 1000)
+            public double heatExchangerEfficiencyMultiplier = 0.0625;
+        }
     }
 
     public static class WorldGenOptions {

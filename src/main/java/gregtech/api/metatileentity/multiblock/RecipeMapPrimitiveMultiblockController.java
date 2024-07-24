@@ -11,7 +11,6 @@ import gregtech.api.recipes.RecipeMap;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -20,13 +19,11 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RecipeMapPrimitiveMultiblockController extends MultiblockWithDisplayBase {
-
-    protected PrimitiveRecipeLogic recipeMapWorkable;
+public abstract class RecipeMapPrimitiveMultiblockController extends RecipeMapMultiblockController {
 
     public RecipeMapPrimitiveMultiblockController(ResourceLocation metaTileEntityId, RecipeMap<?> recipeMap) {
-        super(metaTileEntityId);
-        this.recipeMapWorkable = new PrimitiveRecipeLogic(this, recipeMap);
+        super(metaTileEntityId, recipeMap);
+        this.recipeMapWorkable = new PrimitiveRecipeLogic(this);
         initializeAbilities();
     }
 
@@ -63,29 +60,8 @@ public abstract class RecipeMapPrimitiveMultiblockController extends MultiblockW
     }
 
     @Override
-    protected void updateFormedValid() {
-        recipeMapWorkable.update();
-    }
-
-    @Override
-    public boolean isActive() {
-        return super.isActive() && this.recipeMapWorkable.isWorkingEnabled() && this.recipeMapWorkable.isActive();
-    }
-
-    @Override
-    public void invalidateStructure() {
-        super.invalidateStructure();
-        recipeMapWorkable.invalidate();
-    }
-
-    @Override
     protected boolean shouldUpdate(MTETrait trait) {
         return !(trait instanceof PrimitiveRecipeLogic);
-    }
-
-    @Override
-    public SoundEvent getSound() {
-        return recipeMapWorkable.getRecipeMap().getSound();
     }
 
     @Override

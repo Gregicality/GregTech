@@ -79,4 +79,12 @@ public interface IArmorLogic {
     default float getHeatResistance() {
         return 1.0f;
     }
+
+    /**
+     *
+     * @return the value to multiply radiation damage by
+     */
+    default float getRadiationResistance() {
+        return 1.0f;
+    }
 }

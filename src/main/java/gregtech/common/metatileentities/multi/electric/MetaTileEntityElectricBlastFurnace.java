@@ -52,6 +52,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static gregtech.api.util.RelativeDirection.*;
+
 public class MetaTileEntityElectricBlastFurnace extends RecipeMapMultiblockController implements IHeatingCoil {
 
     private int blastFurnaceTemperature;
@@ -179,7 +181,7 @@ public class MetaTileEntityElectricBlastFurnace extends RecipeMapMultiblockContr
     @Override
     public List<MultiblockShapeInfo> getMatchingShapes() {
         ArrayList<MultiblockShapeInfo> shapeInfo = new ArrayList<>();
-        MultiblockShapeInfo.Builder builder = MultiblockShapeInfo.builder()
+        MultiblockShapeInfo.Builder builder = MultiblockShapeInfo.builder(RIGHT, DOWN, FRONT)
                 .aisle("EEM", "CCC", "CCC", "XXX")
                 .aisle("FXD", "C#C", "C#C", "XHX")
                 .aisle("ISO", "CCC", "CCC", "XXX")

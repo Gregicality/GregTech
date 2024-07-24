@@ -125,6 +125,8 @@ public class GuiTextures {
             .fullImage("textures/gui/widget/button_throttle_minus.png");
     public static final TextureArea BUTTON_THROTTLE_PLUS = TextureArea
             .fullImage("textures/gui/widget/button_throttle_plus.png");
+    public static final TextureArea BUTTON_CONTROL_ROD_HELPER = TextureArea
+            .fullImage("textures/gui/widget/button_control_rod_helper.png");
 
     // INDICATORS & ICONS
     public static final TextureArea INDICATOR_NO_ENERGY = TextureArea
@@ -139,6 +141,11 @@ public class GuiTextures {
     public static final TextureArea SLIDER_BACKGROUND_VERTICAL = TextureArea
             .fullImage("textures/gui/widget/slider_background_vertical.png");
     public static final TextureArea SLIDER_ICON = TextureArea.fullImage("textures/gui/widget/slider.png");
+    public static final TextureArea DARK_SLIDER_BACKGROUND = TextureArea
+            .fullImage("textures/gui/widget/dark_slider_background.png");
+    public static final TextureArea DARK_SLIDER_BACKGROUND_VERTICAL = TextureArea
+            .fullImage("textures/gui/widget/dark_slider_background_vertical.png");
+    public static final TextureArea DARK_SLIDER_ICON = TextureArea.fullImage("textures/gui/widget/dark_slider.png");
     public static final TextureArea MAINTENANCE_ICON = TextureArea
             .fullImage("textures/gui/widget/button_maintenance.png");
 
@@ -411,6 +418,12 @@ public class GuiTextures {
             .fullImage("textures/gui/progress_bar/progress_bar_turbine_rotor_durability.png");
     public static final TextureArea PROGRESS_BAR_FLUID_RIG_DEPLETION = TextureArea
             .fullImage("textures/gui/progress_bar/progress_bar_fluid_rig_depletion.png");
+    public static final TextureArea PROGRESS_BAR_FISSION_HEAT = TextureArea
+            .fullImage("textures/gui/progress_bar/progress_bar_fission_heat.png");
+    public static final TextureArea PROGRESS_BAR_FISSION_PRESSURE = TextureArea
+            .fullImage("textures/gui/progress_bar/progress_bar_fission_pressure.png");
+    public static final TextureArea PROGRESS_BAR_FISSION_ENERGY = TextureArea
+            .fullImage("textures/gui/progress_bar/progress_bar_fission_energy.png");
 
     // Fusion reactor diagram progress bar parts
     public static final TextureArea PROGRESS_BAR_FUSION_REACTOR_DIAGRAM_BL = TextureArea

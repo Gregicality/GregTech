@@ -1,4 +1,4 @@
-name: Nuclear Test Release
+name: Java CI with Gradle on main Commit
 
 on:
   push:

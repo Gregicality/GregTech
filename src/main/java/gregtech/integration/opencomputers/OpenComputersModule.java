@@ -7,6 +7,7 @@ import gregtech.api.util.Mods;
 import gregtech.integration.IntegrationSubmodule;
 import gregtech.integration.opencomputers.drivers.*;
 import gregtech.integration.opencomputers.drivers.specific.DriverConverter;
+import gregtech.integration.opencomputers.drivers.specific.DriverFissionReactor;
 import gregtech.integration.opencomputers.drivers.specific.DriverFusionReactor;
 import gregtech.integration.opencomputers.drivers.specific.DriverPowerSubstation;
 import gregtech.integration.opencomputers.drivers.specific.DriverWorldAccelerator;
@@ -44,6 +45,7 @@ public class OpenComputersModule extends IntegrationSubmodule {
         registerDriver(new DriverWorldAccelerator());
         registerDriver(new DriverConverter());
         registerDriver(new DriverPowerSubstation());
+        registerDriver(new DriverFissionReactor());
     }
 
     public static void registerDriver(DriverBlock driver) {

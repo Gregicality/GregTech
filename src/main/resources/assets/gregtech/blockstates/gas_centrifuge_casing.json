@@ -1,0 +1,21 @@
+{
+  "forge_marker" : 1,
+  "defaults": {
+    "model" : "minecraft:cube_all",
+    "textures" : {
+      "all" : "gregtech:blocks/casings/solid/machine_casing_solid_steel"
+    }
+  },
+  "variants" : {
+    "variant" : {
+      "gas_centrifuge_column" : {
+        "model" : "gregtech:gas_centrifuge",
+        "textures" : {
+          "0" : "gregtech:blocks/casings/nuclear/gas_centrifuge_side",
+          "1" : "gregtech:blocks/casings/nuclear/gas_centrifuge_end",
+          "particle" : "gregtech:blocks/casings/nuclear/gas_centrifuge_side"
+        }
+      }
+    }
+  }
+}

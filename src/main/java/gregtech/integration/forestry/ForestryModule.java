@@ -323,7 +323,7 @@ public class ForestryModule extends IntegrationSubmodule {
                 createOreProperty(Materials.Osmium, Materials.Iridium);
                 createOreProperty(Materials.Iridium, Materials.Platinum, Materials.Osmium);
                 createOreProperty(Materials.Electrum, Materials.Gold, Materials.Silver);
-                createOreProperty(Materials.Uranium238, Materials.Lead, Materials.Uranium235, Materials.Thorium);
+                createOreProperty(Materials.Uranium, Materials.Lead, Materials.Uranium235, Materials.Thorium);
                 createOreProperty(Materials.NaquadahEnriched, Materials.Naquadah, Materials.Naquadria);
                 createOreProperty(Materials.Uranium235);
                 createOreProperty(Materials.Neutronium);

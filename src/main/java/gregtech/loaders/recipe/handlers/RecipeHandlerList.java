@@ -12,5 +12,6 @@ public class RecipeHandlerList {
         ToolRecipeHandler.register();
         PolarizingRecipeHandler.register();
         RecyclingRecipeHandler.register();
+        NuclearRecipeHandler.register();
     }
 }

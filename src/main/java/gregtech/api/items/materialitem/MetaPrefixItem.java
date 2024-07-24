@@ -84,12 +84,7 @@ public class MetaPrefixItem extends StandardMetaItem {
         if (prefix.getAlternativeOreName() != null) {
             OreDictUnifier.registerOre(item, prefix.getAlternativeOreName(), material);
         }
-
-        if (material == Materials.Plutonium239) {
-            OreDictUnifier.registerOre(item, prefix.name() + material.toCamelCaseString() + "239");
-        } else if (material == Materials.Uranium238) {
-            OreDictUnifier.registerOre(item, prefix.name() + material.toCamelCaseString() + "238");
-        } else if (material == Materials.Saltpeter) {
+        if (material == Materials.Saltpeter) {
             OreDictUnifier.registerOre(item, prefix.name() + material.toCamelCaseString());
         }
     }
@@ -157,25 +152,57 @@ public class MetaPrefixItem extends StandardMetaItem {
         super.onUpdate(itemStack, worldIn, entityIn, itemSlot, isSelected);
         if (metaItems.containsKey((short) itemStack.getItemDamage()) && entityIn instanceof EntityLivingBase entity) {
             if (entityIn.ticksExisted % 20 == 0) {
-                if (prefix.heatDamageFunction == null) return;
-
                 Material material = getMaterial(itemStack);
-                if (material == null || !material.hasProperty(PropertyKey.BLAST)) return;
 
-                float heatDamage = prefix.heatDamageFunction.apply(material.getBlastTemperature());
-                ItemStack armor = entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-                if (!armor.isEmpty() && armor.getItem() instanceof ArmorMetaItem<?>) {
-                    ArmorMetaItem<?>.ArmorMetaValueItem metaValueItem = ((ArmorMetaItem<?>) armor.getItem())
-                            .getItem(armor);
-                    if (metaValueItem != null) heatDamage *= metaValueItem.getArmorLogic().getHeatResistance();
-                }
+                if (material != null) {
+                    // Handle heat damage
+                    if (prefix.heatDamageFunction != null) {
+                        handleHeatDamage(material, entity);
+                    }
 
-                if (heatDamage > 0.0) {
-                    entity.attackEntityFrom(DamageSources.getHeatDamage().setDamageBypassesArmor(), heatDamage);
-                } else if (heatDamage < 0.0) {
-                    entity.attackEntityFrom(DamageSources.getFrostDamage().setDamageBypassesArmor(), -heatDamage);
+                    // Handle radiation damage
+                    if (prefix.radiationDamageFunction != null) {
+                        handleRadiationDamage(material, entity);
+                    }
                 }
             }
+        }
+    }
+
+    private void handleHeatDamage(@NotNull Material material, @NotNull EntityLivingBase entity) {
+        float heatDamage = 0.f;
+        if (material.hasProperty(PropertyKey.BLAST)) {
+            heatDamage = prefix.heatDamageFunction.apply(material.getBlastTemperature());
+        } else if (material.hasProperty(PropertyKey.FISSION_FUEL)) {
+            heatDamage = prefix.heatDamageFunction.apply(0);
+        }
+        ItemStack armor = entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+        if (!armor.isEmpty() && armor.getItem() instanceof ArmorMetaItem<?>) {
+            ArmorMetaItem<?>.ArmorMetaValueItem metaValueItem = ((ArmorMetaItem<?>) armor.getItem())
+                    .getItem(armor);
+            if (metaValueItem != null) heatDamage *= metaValueItem.getArmorLogic().getHeatResistance();
+        }
+        if (heatDamage > 0.0) {
+            entity.attackEntityFrom(DamageSources.getHeatDamage().setDamageBypassesArmor(), heatDamage);
+        } else if (heatDamage < 0.0) {
+            entity.attackEntityFrom(DamageSources.getFrostDamage().setDamageBypassesArmor(),
+                    -heatDamage);
+        }
+    }
+
+    private void handleRadiationDamage(@NotNull Material material, EntityLivingBase entity) {
+        double radiationDamage = prefix.radiationDamageFunction.apply(material.getDecaysPerSecond());
+        ItemStack armor = entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+        if (!armor.isEmpty() && armor.getItem() instanceof ArmorMetaItem<?>) {
+            ArmorMetaItem<?>.ArmorMetaValueItem metaValueItem = ((ArmorMetaItem<?>) armor.getItem())
+                    .getItem(armor);
+            if (metaValueItem != null) {
+                radiationDamage *= metaValueItem.getArmorLogic().getRadiationResistance();
+            }
+        }
+        if (radiationDamage > 0.0) {
+            entity.attackEntityFrom(DamageSources.getRadioactiveDamage().setDamageBypassesArmor(),
+                    (float) radiationDamage);
         }
     }
 
@@ -190,8 +217,8 @@ public class MetaPrefixItem extends StandardMetaItem {
     }
 
     /**
-     * For general use. Can return null if the stack metadata is an invalid material ID.
-     * Requires the ItemStack's item to be a MetaPrefixItem.
+     * For general use. Can return null if the stack metadata is an invalid material ID. Requires the ItemStack's item
+     * to be a MetaPrefixItem.
      *
      * @return the material
      */

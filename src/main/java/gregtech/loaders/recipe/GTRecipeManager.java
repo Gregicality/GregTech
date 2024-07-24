@@ -2,6 +2,7 @@ package gregtech.loaders.recipe;
 
 import gregtech.api.event.MaterialInfoEvent;
 import gregtech.loaders.recipe.handlers.DecompositionRecipeHandler;
+import gregtech.loaders.recipe.handlers.FluidRecipeHandler;
 import gregtech.loaders.recipe.handlers.RecipeHandlerList;
 import gregtech.loaders.recipe.handlers.ToolRecipeHandler;
 
@@ -26,6 +27,7 @@ public final class GTRecipeManager {
     public static void loadLatest() {
         MinecraftForge.EVENT_BUS.post(new MaterialInfoEvent());
         DecompositionRecipeHandler.runRecipeGeneration();
+        FluidRecipeHandler.runRecipeGeneration();
         RecyclingRecipes.init();
     }
 }

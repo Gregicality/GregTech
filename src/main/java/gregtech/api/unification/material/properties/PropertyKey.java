@@ -3,9 +3,12 @@ package gregtech.api.unification.material.properties;
 public class PropertyKey<T extends IMaterialProperty> {
 
     public static final PropertyKey<BlastProperty> BLAST = new PropertyKey<>("blast", BlastProperty.class);
+    public static final PropertyKey<CoolantProperty> COOLANT = new PropertyKey<>("coolant", CoolantProperty.class);
     public static final PropertyKey<DustProperty> DUST = new PropertyKey<>("dust", DustProperty.class);
     public static final PropertyKey<FluidPipeProperties> FLUID_PIPE = new PropertyKey<>("fluid_pipe",
             FluidPipeProperties.class);
+    public static final PropertyKey<FissionFuelProperty> FISSION_FUEL = new PropertyKey<>("fission_fuel",
+            FissionFuelProperty.class);
     public static final PropertyKey<FluidProperty> FLUID = new PropertyKey<>("fluid", FluidProperty.class);
     public static final PropertyKey<GemProperty> GEM = new PropertyKey<>("gem", GemProperty.class);
     public static final PropertyKey<IngotProperty> INGOT = new PropertyKey<>("ingot", IngotProperty.class);

@@ -42,11 +42,13 @@ import gregtech.common.metatileentities.electric.SimpleMachineMetaTileEntityResi
 import gregtech.common.metatileentities.multi.BoilerType;
 import gregtech.common.metatileentities.multi.MetaTileEntityCokeOven;
 import gregtech.common.metatileentities.multi.MetaTileEntityCokeOvenHatch;
+import gregtech.common.metatileentities.multi.MetaTileEntityFissionReactor;
 import gregtech.common.metatileentities.multi.MetaTileEntityLargeBoiler;
 import gregtech.common.metatileentities.multi.MetaTileEntityMultiblockTank;
 import gregtech.common.metatileentities.multi.MetaTileEntityPrimitiveBlastFurnace;
 import gregtech.common.metatileentities.multi.MetaTileEntityPrimitiveWaterPump;
 import gregtech.common.metatileentities.multi.MetaTileEntityPumpHatch;
+import gregtech.common.metatileentities.multi.MetaTileEntitySpentFuelPool;
 import gregtech.common.metatileentities.multi.MetaTileEntityTankValve;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityActiveTransformer;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityAssemblyLine;
@@ -57,6 +59,7 @@ import gregtech.common.metatileentities.multi.electric.MetaTileEntityDistillatio
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityElectricBlastFurnace;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityFluidDrill;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityFusionReactor;
+import gregtech.common.metatileentities.multi.electric.MetaTileEntityGasCentrifuge;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityHPCA;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityImplosionCompressor;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityLargeChemicalReactor;
@@ -75,9 +78,14 @@ import gregtech.common.metatileentities.multi.electric.generator.MetaTileEntityL
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityAutoMaintenanceHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityCleaningMaintenanceHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityComputationHatch;
+import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityControlRodPort;
+import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityCoolantExportHatch;
+import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityCoolantImportHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityDataAccessHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityEnergyHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityFluidHatch;
+import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityFuelRodExportBus;
+import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityFuelRodImportBus;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityItemBus;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityLaserHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMachineHatch;
@@ -332,6 +340,16 @@ public class MetaTileEntities {
     public static MetaTileEntityNetworkSwitch NETWORK_SWITCH;
     public static MetaTileEntityPowerSubstation POWER_SUBSTATION;
     public static MetaTileEntityActiveTransformer ACTIVE_TRANSFORMER;
+    public static MetaTileEntityFissionReactor FISSION_REACTOR;
+    public static MetaTileEntityHeatExchanger HEAT_EXCHANGER;
+    public static MetaTileEntityFuelRodImportBus FUEL_ROD_INPUT;
+    public static MetaTileEntityFuelRodExportBus FUEL_ROD_OUTPUT;
+    public static MetaTileEntityCoolantImportHatch COOLANT_INPUT;
+    public static MetaTileEntityCoolantExportHatch COOLANT_OUTPUT;
+    public static MetaTileEntityControlRodPort CONTROL_ROD;
+    public static MetaTileEntityControlRodPort CONTROL_ROD_MODERATED;
+    public static MetaTileEntitySpentFuelPool SPENT_FUEL_POOL;
+    public static MetaTileEntityGasCentrifuge GAS_CENTRIFUGE;
 
     // STORAGE SECTION
     public static MetaTileEntityTankValve WOODEN_TANK_VALVE;
@@ -774,6 +792,11 @@ public class MetaTileEntities {
         ACTIVE_TRANSFORMER = registerMetaTileEntity(1042,
                 new MetaTileEntityActiveTransformer(gregtechId("active_transformer")));
 
+        FISSION_REACTOR = registerMetaTileEntity(1043, new MetaTileEntityFissionReactor(gregtechId("fission_reactor")));
+        SPENT_FUEL_POOL = registerMetaTileEntity(1044, new MetaTileEntitySpentFuelPool(gregtechId("spent_fuel_pool")));
+        HEAT_EXCHANGER = registerMetaTileEntity(1045, new MetaTileEntityHeatExchanger(gregtechId("heat_exchanger")));
+        GAS_CENTRIFUGE = registerMetaTileEntity(1046, new MetaTileEntityGasCentrifuge(gregtechId("gas_centrifuge")));
+
         // MISC MTE's START: IDs 1150-2000
 
         // Import/Export Buses/Hatches, IDs 1150-1209
@@ -1156,6 +1179,18 @@ public class MetaTileEntities {
         ALARM = registerMetaTileEntity(1751, new MetaTileEntityAlarm(gregtechId("alarm")));
 
         // IDs 1752-1756 are taken by AE2 parts
+
+        // Nuclear hatches, 1800-1805
+        FUEL_ROD_INPUT = registerMetaTileEntity(1800,
+                new MetaTileEntityFuelRodImportBus(gregtechId("fuel_rod_input")));
+        FUEL_ROD_OUTPUT = registerMetaTileEntity(1801,
+                new MetaTileEntityFuelRodExportBus(gregtechId("fuel_rod_output")));
+        COOLANT_INPUT = registerMetaTileEntity(1802, new MetaTileEntityCoolantImportHatch(gregtechId("coolant_input")));
+        COOLANT_OUTPUT = registerMetaTileEntity(1803,
+                new MetaTileEntityCoolantExportHatch(gregtechId("coolant_output")));
+        CONTROL_ROD = registerMetaTileEntity(1804, new MetaTileEntityControlRodPort(gregtechId("control_rod"), false));
+        CONTROL_ROD_MODERATED = registerMetaTileEntity(1805,
+                new MetaTileEntityControlRodPort(gregtechId("control_rod_moderated"), true));
 
         // Multi-Fluid Hatches, IDs 1190, 1191, 1205, 1206, 1780-1799
         // EV hatches separate because of old names/IDs

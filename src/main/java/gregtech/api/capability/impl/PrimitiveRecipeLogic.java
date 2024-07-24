@@ -1,8 +1,7 @@
 package gregtech.api.capability.impl;
 
 import gregtech.api.GTValues;
-import gregtech.api.metatileentity.multiblock.RecipeMapPrimitiveMultiblockController;
-import gregtech.api.recipes.RecipeMap;
+import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
 import gregtech.api.recipes.recipeproperties.IRecipePropertyStorage;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,10 +11,10 @@ import static gregtech.api.recipes.logic.OverclockingLogic.standardOverclockingL
 /**
  * Recipe Logic for a Multiblock that does not require power.
  */
-public class PrimitiveRecipeLogic extends AbstractRecipeLogic {
+public class PrimitiveRecipeLogic extends MultiblockRecipeLogic {
 
-    public PrimitiveRecipeLogic(RecipeMapPrimitiveMultiblockController tileEntity, RecipeMap<?> recipeMap) {
-        super(tileEntity, recipeMap);
+    public PrimitiveRecipeLogic(RecipeMapMultiblockController tileEntity) {
+        super(tileEntity);
     }
 
     @Override

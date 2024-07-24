@@ -12,6 +12,8 @@ import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.SteamMetaTileEntity;
 import gregtech.api.metatileentity.registry.MTERegistry;
 import gregtech.api.modules.GregTechModule;
+import gregtech.api.nuclear.fission.CoolantRegistry;
+import gregtech.api.nuclear.fission.FissionFuelRegistry;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.category.GTRecipeCategory;
@@ -31,6 +33,10 @@ import gregtech.common.gui.widget.craftingstation.CraftingSlotWidget;
 import gregtech.common.items.MetaItems;
 import gregtech.common.metatileentities.MetaTileEntities;
 import gregtech.integration.IntegrationSubmodule;
+import gregtech.integration.jei.basic.CoolantCategory;
+import gregtech.integration.jei.basic.CoolantInfo;
+import gregtech.integration.jei.basic.FissionFuelCategory;
+import gregtech.integration.jei.basic.FissionFuelInfo;
 import gregtech.integration.jei.basic.GTFluidVeinCategory;
 import gregtech.integration.jei.basic.GTFluidVeinInfo;
 import gregtech.integration.jei.basic.GTOreCategory;
@@ -55,6 +61,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -138,6 +145,8 @@ public class JustEnoughItemsModule extends IntegrationSubmodule implements IModP
         registry.addRecipeCategories(new GTOreCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new GTFluidVeinCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new MaterialTreeCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new CoolantCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new FissionFuelCategory(registry.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -293,6 +302,30 @@ public class JustEnoughItemsModule extends IntegrationSubmodule implements IModP
         registry.addRecipeCatalyst(MetaItems.PROSPECTOR_HV.getStackForm(), fluidVeinSpawnID);
         registry.addRecipeCatalyst(MetaItems.PROSPECTOR_LUV.getStackForm(), fluidVeinSpawnID);
         // Fluid Veins End
+
+        // Nuclear
+        Collection<ItemStack> fissionFuels = FissionFuelRegistry.getAllFissionableRods();
+        List<FissionFuelInfo> fissionFuelInfos = new ArrayList<>();
+        for (ItemStack fuel : fissionFuels) {
+            fissionFuelInfos.add(new FissionFuelInfo(fuel,
+                    FissionFuelRegistry.getDepletedFuel(FissionFuelRegistry.getFissionFuel(fuel))));
+        }
+
+        String fissionFuelID = GTValues.MODID + ":" + "fission_fuel";
+
+        registry.addRecipes(fissionFuelInfos, fissionFuelID);
+        registry.addRecipeCatalyst(MetaTileEntities.FISSION_REACTOR.getStackForm(), fissionFuelID);
+
+        Collection<Fluid> coolants = CoolantRegistry.getAllCoolants();
+        List<CoolantInfo> coolantInfos = new ArrayList<>();
+        for (Fluid coolant : coolants) {
+            coolantInfos.add(new CoolantInfo(coolant, CoolantRegistry.getCoolant(coolant).getHotCoolant()));
+        }
+
+        String coolantID = GTValues.MODID + ":" + "coolant";
+        registry.addRecipes(coolantInfos, coolantID);
+        registry.addRecipeCatalyst(MetaTileEntities.FISSION_REACTOR.getStackForm(), coolantID);
+        // Nuclear End
 
         ingredientRegistry = registry.getIngredientRegistry();
         for (int i = 0; i <= IntCircuitIngredient.CIRCUIT_MAX; i++) {

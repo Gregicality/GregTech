@@ -4,9 +4,9 @@ import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverableView;
+import gregtech.api.cover.ICustomEnergyCover;
 import gregtech.api.util.RedstoneUtil;
 import gregtech.client.renderer.texture.Textures;
-import gregtech.common.metatileentities.multi.electric.MetaTileEntityPowerSubstation;
 
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -28,12 +28,12 @@ public class CoverDetectorEnergy extends CoverDetectorBase implements ITickable 
     @Override
     public boolean canAttach(@NotNull CoverableView coverable, @NotNull EnumFacing side) {
         return coverable.getCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, null) != null ||
-                coverable instanceof MetaTileEntityPowerSubstation; // todo check this
+                coverable instanceof ICustomEnergyCover; // todo check this
     }
 
     public long getCoverHolderCapacity() {
-        if (getCoverableView() instanceof MetaTileEntityPowerSubstation pss) {
-            return pss.getCapacityLong();
+        if (getCoverableView() instanceof ICustomEnergyCover custom) {
+            return custom.getCoverCapacity();
         } else {
             IEnergyContainer energyContainer = getCoverableView()
                     .getCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, null);
@@ -43,8 +43,8 @@ public class CoverDetectorEnergy extends CoverDetectorBase implements ITickable 
     }
 
     public long getCoverHolderStored() {
-        if (getCoverableView() instanceof MetaTileEntityPowerSubstation pss) {
-            return pss.getStoredLong();
+        if (getCoverableView() instanceof ICustomEnergyCover custom) {
+            return custom.getCoverStored();
         } else {
             IEnergyContainer energyContainer = getCoverableView()
                     .getCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, null);

@@ -7,6 +7,7 @@ import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
 import gregtech.api.recipes.ingredients.GTRecipeItemInput;
 import gregtech.api.recipes.ingredients.GTRecipeOreInput;
+import gregtech.api.unification.material.MarkerMaterials;
 import gregtech.api.unification.stack.UnificationEntry;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.Mods;
@@ -1406,5 +1407,58 @@ public class MetaTileEntityMachineRecipeLoader {
                 .circuitMeta(3)
                 .output(LASER_OUTPUT_HATCH_4096[3])
                 .duration(1200).EUt(VA[UV]).buildAndRegister();
+
+        // Nuclear Technology
+
+        ASSEMBLER_RECIPES.recipeBuilder()
+                .input(pipeLargeFluid, Inconel)
+                .input(HULL[EV])
+                .fluidInputs(Polyethylene.getFluid(144))
+                .circuitMeta(1)
+                .outputs(COOLANT_INPUT.getStackForm())
+                .duration(300).EUt(VA[EV]).buildAndRegister();
+
+        ASSEMBLER_RECIPES.recipeBuilder()
+                .input(pipeLargeFluid, Inconel)
+                .input(HULL[EV])
+                .fluidInputs(Polyethylene.getFluid(144))
+                .circuitMeta(2)
+                .outputs(COOLANT_OUTPUT.getStackForm())
+                .duration(300).EUt(VA[EV]).buildAndRegister();
+
+        ASSEMBLER_RECIPES.recipeBuilder()
+                .input(stick, Zircaloy, 6)
+                .input(HULL[EV])
+                .fluidInputs(Polyethylene.getFluid(144))
+                .circuitMeta(1)
+                .outputs(FUEL_ROD_INPUT.getStackForm())
+                .duration(300).EUt(VA[EV]).buildAndRegister();
+
+        ASSEMBLER_RECIPES.recipeBuilder()
+                .input(stick, Zircaloy, 6)
+                .input(HULL[EV])
+                .fluidInputs(Polyethylene.getFluid(144))
+                .circuitMeta(2)
+                .outputs(FUEL_ROD_OUTPUT.getStackForm())
+                .duration(300).EUt(VA[EV]).buildAndRegister();
+
+        ASSEMBLER_RECIPES.recipeBuilder()
+                .input(stickLong, Hafnium)
+                .input(circuit, MarkerMaterials.Tier.EV)
+                .input(HULL[EV])
+                .circuitMeta(1)
+                .fluidInputs(Polyethylene.getFluid(144))
+                .outputs(CONTROL_ROD.getStackForm())
+                .duration(300).EUt(VA[EV]).buildAndRegister();
+
+        ASSEMBLER_RECIPES.recipeBuilder()
+                .input(stickLong, Hafnium)
+                .input(dust, Graphite)
+                .input(circuit, MarkerMaterials.Tier.EV)
+                .input(HULL[EV])
+                .circuitMeta(2)
+                .fluidInputs(Polyethylene.getFluid(144))
+                .outputs(CONTROL_ROD_MODERATED.getStackForm())
+                .duration(300).EUt(VA[EV]).buildAndRegister();
     }
 }

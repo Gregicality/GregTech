@@ -2,6 +2,8 @@ package gregtech.api.util;
 
 import gregtech.api.fluids.FluidState;
 import gregtech.api.fluids.GTFluid;
+import gregtech.api.nuclear.fission.CoolantRegistry;
+import gregtech.api.nuclear.fission.ICoolantStats;
 import gregtech.api.unification.material.Material;
 
 import net.minecraft.client.resources.I18n;
@@ -107,6 +109,10 @@ public class FluidTooltipUtil {
                 tooltip.add(I18n.format("gregtech.fluid.temperature.cryogenic"));
             }
 
+            ICoolantStats coolant = CoolantRegistry.getCoolant(fluid);
+            if (coolant != null) {
+                tooltip.add(I18n.format("gregtech.coolant.general"));
+            }
             return tooltip;
         };
     }

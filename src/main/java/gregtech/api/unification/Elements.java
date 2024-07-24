@@ -109,13 +109,22 @@ public class Elements {
     public static final Element Ac = add(89, 136, -1, null, "Actinium", "Ac", false);
     public static final Element Th = add(90, 140, -1, null, "Thorium", "Th", false);
     public static final Element Pa = add(91, 138, -1, null, "Protactinium", "Pa", false);
-    public static final Element U = add(92, 146, -1, null, "Uranium", "U", false);
-    public static final Element U238 = add(92, 146, -1, null, "Uranium-238", "U-238", false);
-    public static final Element U235 = add(92, 143, -1, null, "Uranium-235", "U-235", true);
+    public static final Element U = add(92, 146, 1.4090285e+17, null, "Uranium", "U", false);
+    public static final Element U238 = add(92, 146, 1.4090285e+17, null, "Uranium-238", "U-238", false);
+    public static final Element U235 = add(92, 143, 2.2195037e+16, null, "Uranium-235", "U-235", true);
+    public static final Element U239 = add(92, 147, 1407, null, "Uranium-239", "U-239", true);
     public static final Element Np = add(93, 144, -1, null, "Neptunium", "Np", false);
+    public static final Element Np235 = add(93, 142, -1, null, "Neptunium-235", "Np-235", true);
+    public static final Element Np236 = add(93, 143, -1, null, "Neptunium-236", "Np-236", true);
+    public static final Element Np237 = add(93, 144, -1, null, "Neptunium-237", "Np-237", true);
+    public static final Element Np239 = add(93, 146, -1, null, "Neptunium-239", "Np-239", true);
     public static final Element Pu = add(94, 152, -1, null, "Plutonium", "Pu", false);
-    public static final Element Pu239 = add(94, 145, -1, null, "Plutonium-239", "Pu-239", false);
-    public static final Element Pu241 = add(94, 149, -1, null, "Plutonium-241", "Pu-241", true);
+    public static final Element Pu238 = add(94, 144, 2765707200d, null, "Plutonium-238", "Pu-238", true);
+    public static final Element Pu239 = add(94, 145, 760332960000d, null, "Plutonium-239", "Pu-239", true);
+    public static final Element Pu240 = add(94, 146, 206907696000d, null, "Plutonium-240", "Pu-240", true);
+    public static final Element Pu241 = add(94, 147, 450649440d, null, "Plutonium-241", "Pu-241", true);
+    public static final Element Pu242 = add(94, 148, 1.1826e+13, null, "Plutonium-242", "Pu-242", true);
+    public static final Element Pu244 = add(94, 150, 2.52288e+15, null, "Plutonium-244", "Pu-244", true);
     public static final Element Am = add(95, 150, -1, null, "Americium", "Am", false);
     public static final Element Cm = add(96, 153, -1, null, "Curium", "Cm", false);
     public static final Element Bk = add(97, 152, -1, null, "Berkelium", "Bk", false);
@@ -155,7 +164,7 @@ public class Elements {
     // TODO Cosmic Neutronium, other Gregicality Elements
 
     @ZenMethod
-    public static Element add(long protons, long neutrons, long halfLifeSeconds, String decayTo, String name,
+    public static Element add(long protons, long neutrons, double halfLifeSeconds, String decayTo, String name,
                               String symbol, boolean isIsotope) {
         Element element = new Element(protons, neutrons, halfLifeSeconds, decayTo, name, symbol, isIsotope);
         elements.put(name, element);

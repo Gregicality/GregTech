@@ -3,10 +3,12 @@ package gregtech.api.pattern;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
 import gregtech.api.util.BlockInfo;
+import gregtech.api.util.RelativeDirection;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+
+import static gregtech.api.util.RelativeDirection.*;
 
 public class MultiblockShapeInfo {
 
@@ -33,13 +37,34 @@ public class MultiblockShapeInfo {
     }
 
     public static Builder builder() {
-        return new Builder();
+        return new Builder(RIGHT, DOWN, BACK);
+    }
+
+    public static Builder builder(RelativeDirection... structureDir) {
+        return new Builder(structureDir);
     }
 
     public static class Builder {
 
+        private final RelativeDirection[] structureDir = new RelativeDirection[3];
+
         private List<String[]> shape = new ArrayList<>();
         private Map<Character, BlockInfo> symbolMap = new HashMap<>();
+
+        public Builder(RelativeDirection... structureDir) {
+            this.structureDir[0] = structureDir[0];
+            this.structureDir[1] = structureDir[1];
+            this.structureDir[2] = structureDir[2];
+            int flags = 0;
+            for (int i = 0; i < this.structureDir.length; i++) {
+                switch (structureDir[i]) {
+                    case UP, DOWN -> flags |= 0x1;
+                    case LEFT, RIGHT -> flags |= 0x2;
+                    case FRONT, BACK -> flags |= 0x4;
+                }
+            }
+            if (flags != 0x7) throw new IllegalArgumentException("Must have 3 different axes!");
+        }
 
         public Builder aisle(String... data) {
             this.shape.add(data);
@@ -85,7 +110,13 @@ public class MultiblockShapeInfo {
             final int maxZ = shape.size();
             final int maxY = shape.get(0).length;
             final int maxX = shape.get(0)[0].length();
-            BlockInfo[][][] blockInfos = new BlockInfo[maxX][maxY][maxZ];
+
+            BlockPos end = RelativeDirection.setActualRelativeOffset(maxX, maxY, maxZ, EnumFacing.SOUTH, EnumFacing.UP,
+                    true, structureDir);
+            BlockPos addition = new BlockPos(end.getX() < 0 ? -end.getX() - 1 : 0, end.getY() < 0 ? -end.getY() - 1 : 0,
+                    end.getZ() < 0 ? -end.getZ() - 1 : 0);
+            BlockPos bound = new BlockPos(Math.abs(end.getX()), Math.abs(end.getY()), Math.abs(end.getZ()));
+            BlockInfo[][][] blockInfos = new BlockInfo[bound.getX()][bound.getY()][bound.getZ()];
             for (int z = 0; z < maxZ; z++) {
                 String[] aisleEntry = shape.get(z);
                 for (int y = 0; y < maxY; y++) {
@@ -103,7 +134,9 @@ public class MultiblockShapeInfo {
                         } else if (tileEntity != null) {
                             info = new BlockInfo(info.getBlockState(), tileEntity);
                         }
-                        blockInfos[x][y][z] = info;
+                        BlockPos pos = RelativeDirection.setActualRelativeOffset(x, y, z, EnumFacing.SOUTH,
+                                EnumFacing.UP, true, structureDir).add(addition);
+                        blockInfos[pos.getX()][pos.getY()][pos.getZ()] = info;
                     }
                 }
             }
@@ -111,7 +144,7 @@ public class MultiblockShapeInfo {
         }
 
         public Builder shallowCopy() {
-            Builder builder = new Builder();
+            Builder builder = new Builder(this.structureDir);
             builder.shape = new ArrayList<>(this.shape);
             builder.symbolMap = new HashMap<>(this.symbolMap);
             return builder;

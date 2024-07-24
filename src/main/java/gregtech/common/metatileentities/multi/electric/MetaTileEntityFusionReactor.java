@@ -83,6 +83,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
+import static gregtech.api.util.RelativeDirection.*;
+
 public class MetaTileEntityFusionReactor extends RecipeMapMultiblockController
                                          implements IFastRenderMetaTileEntity, IBloomEffect {
 
@@ -158,7 +160,7 @@ public class MetaTileEntityFusionReactor extends RecipeMapMultiblockController
     public List<MultiblockShapeInfo> getMatchingShapes() {
         List<MultiblockShapeInfo> shapeInfos = new ArrayList<>();
 
-        MultiblockShapeInfo.Builder baseBuilder = MultiblockShapeInfo.builder()
+        MultiblockShapeInfo.Builder baseBuilder = MultiblockShapeInfo.builder(RIGHT, DOWN, FRONT)
                 .aisle("###############", "######WGW######", "###############")
                 .aisle("######DCD######", "####GG###GG####", "######UCU######")
                 .aisle("####CC###CC####", "###w##EGE##s###", "####CC###CC####")

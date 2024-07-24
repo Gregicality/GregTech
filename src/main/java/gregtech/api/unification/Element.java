@@ -21,7 +21,7 @@ public class Element {
     @ZenProperty("isotope")
     public final boolean isIsotope;
     @ZenProperty("halfLifeSeconds")
-    public final long halfLifeSeconds;
+    public final double halfLifeSeconds;
     @ZenProperty("decayTo")
     public final String decayTo;
 
@@ -34,7 +34,7 @@ public class Element {
      * @param name            Name of the Element
      * @param symbol          Symbol of the Element
      */
-    public Element(long protons, long neutrons, long halfLifeSeconds, String decayTo, String name, String symbol,
+    public Element(long protons, long neutrons, double halfLifeSeconds, String decayTo, String name, String symbol,
                    boolean isIsotope) {
         this.protons = protons;
         this.neutrons = neutrons;

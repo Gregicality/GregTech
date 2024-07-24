@@ -48,7 +48,7 @@ public class GrowthMediumRecipes {
 
         // Enriched Bacterial Sludge
         BREWING_RECIPES.recipeBuilder().EUt(4).duration(128)
-                .input(dust, Uranium238)
+                .input(dust, Uranium)
                 .fluidInputs(BacterialSludge.getFluid(1000))
                 .fluidOutputs(EnrichedBacterialSludge.getFluid(1000))
                 .cleanroom(CleanroomType.STERILE_CLEANROOM)

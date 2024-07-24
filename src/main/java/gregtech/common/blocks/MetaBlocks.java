@@ -138,6 +138,9 @@ public class MetaBlocks {
     public static BlockCleanroomCasing CLEANROOM_CASING;
     public static BlockComputerCasing COMPUTER_CASING;
     public static BlockBatteryPart BATTERY_BLOCK;
+    public static BlockFissionCasing FISSION_CASING;
+    public static BlockNuclearCasing NUCLEAR_CASING;
+    public static BlockGasCentrifugeCasing GAS_CENTRIFUGE_CASING;
 
     public static final EnumMap<EnumDyeColor, BlockLamp> LAMPS = new EnumMap<>(EnumDyeColor.class);
     public static final EnumMap<EnumDyeColor, BlockLamp> BORDERLESS_LAMPS = new EnumMap<>(EnumDyeColor.class);
@@ -174,6 +177,7 @@ public class MetaBlocks {
     public static BlockColored METAL_SHEET;
     public static BlockColored LARGE_METAL_SHEET;
     public static BlockColored STUDS;
+    public static BlockPanelling PANELLING;
 
     public static final Map<Material, BlockCompressed> COMPRESSED = new Object2ObjectOpenHashMap<>();
     public static final Map<Material, BlockFrame> FRAMES = new Object2ObjectOpenHashMap<>();
@@ -263,6 +267,12 @@ public class MetaBlocks {
         COMPUTER_CASING.setRegistryName("computer_casing");
         BATTERY_BLOCK = new BlockBatteryPart();
         BATTERY_BLOCK.setRegistryName("battery_block");
+        FISSION_CASING = new BlockFissionCasing();
+        FISSION_CASING.setRegistryName("fission_casing");
+        NUCLEAR_CASING = new BlockNuclearCasing();
+        NUCLEAR_CASING.setRegistryName("nuclear_casing");
+        GAS_CENTRIFUGE_CASING = new BlockGasCentrifugeCasing();
+        GAS_CENTRIFUGE_CASING.setRegistryName("gas_centrifuge_casing");
 
         for (EnumDyeColor color : EnumDyeColor.values()) {
             BlockLamp block = new BlockLamp(color);
@@ -336,6 +346,8 @@ public class MetaBlocks {
         STUDS = new BlockColored(net.minecraft.block.material.Material.CARPET, "studs", 1.5f, 2.5f, SoundType.CLOTH,
                 EnumDyeColor.BLACK);
         STUDS.setRegistryName("studs");
+        PANELLING = new BlockPanelling();
+        PANELLING.setRegistryName("panelling");
 
         createGeneratedBlock(m -> m.hasProperty(PropertyKey.DUST) && m.hasFlag(GENERATE_FRAME),
                 MetaBlocks::createFrameBlock);
@@ -469,6 +481,9 @@ public class MetaBlocks {
         registerItemModel(COMPUTER_CASING);
         registerItemModel(BATTERY_BLOCK);
         registerItemModel(ASPHALT);
+        registerItemModel(FISSION_CASING);
+        registerItemModel(GAS_CENTRIFUGE_CASING);
+        registerItemModel(PANELLING);
         for (StoneVariantBlock block : STONE_BLOCKS.values())
             registerItemModel(block);
         registerItemModelWithOverride(RUBBER_LOG, ImmutableMap.of(BlockLog.LOG_AXIS, EnumAxis.Y));
@@ -507,6 +522,7 @@ public class MetaBlocks {
         FUSION_CASING.onModelRegister();
         MULTIBLOCK_CASING.onModelRegister();
         TRANSPARENT_CASING.onModelRegister();
+        NUCLEAR_CASING.onModelRegister();
 
         for (BlockLamp lamp : LAMPS.values()) lamp.onModelRegister();
         for (BlockLamp lamp : BORDERLESS_LAMPS.values()) lamp.onModelRegister();

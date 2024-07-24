@@ -1,0 +1,41 @@
+{
+  "forge_marker" : 1,
+  "variants" : {
+    "active=false,variant=spent_fuel_casing" : {
+      "model": "minecraft:cube_column",
+      "textures": {
+        "end": "gregtech:blocks/casings/nuclear/spent_fuel_casing_empty_top",
+        "side": "gregtech:blocks/casings/nuclear/spent_fuel_casing_empty_side"
+      }
+    },
+    "active=true,variant=spent_fuel_casing" : {
+      "model" : "gregtech:cube_2_layer_bottom_top",
+      "textures" : {
+        "bot_side" : "gregtech:blocks/casings/nuclear/spent_fuel_casing_side",
+        "bot_bottom" : "gregtech:blocks/casings/nuclear/spent_fuel_casing_top",
+        "bot_top" : "gregtech:blocks/casings/nuclear/spent_fuel_casing_top",
+        "top_side" : "gregtech:blocks/casings/nuclear/spent_fuel_casing_side_bloom",
+        "top_bottom" : "gregtech:blocks/casings/nuclear/spent_fuel_casing_top_bloom",
+        "top_top" : "gregtech:blocks/casings/nuclear/spent_fuel_casing_top_bloom"
+      }
+    },
+    "active=false,variant=gas_centrifuge_heater" : {
+      "model" : "minecraft:cube_column",
+      "textures" : {
+        "end" : "gregtech:blocks/casings/nuclear/gas_centrifuge_heater_top",
+        "side" : "gregtech:blocks/casings/nuclear/gas_centrifuge_heater_side"
+      }
+    },
+    "active=true,variant=gas_centrifuge_heater" : {
+      "model" : "gregtech:cube_2_layer_bottom_top",
+      "textures" : {
+        "bot_side" : "gregtech:blocks/casings/nuclear/gas_centrifuge_heater_side",
+        "bot_bottom" : "gregtech:blocks/casings/nuclear/gas_centrifuge_heater_top",
+        "bot_top" : "gregtech:blocks/casings/nuclear/gas_centrifuge_heater_top",
+        "top_side" : "gregtech:blocks/casings/nuclear/gas_centrifuge_heater_side_bloom",
+        "top_bottom" : "gregtech:blocks/casings/nuclear/gas_centrifuge_heater_top_bloom",
+        "top_top" : "gregtech:blocks/casings/nuclear/gas_centrifuge_heater_top_bloom"
+      }
+    }
+  }
+}

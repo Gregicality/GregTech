@@ -247,14 +247,14 @@ public class CombRecipes {
         addProcessGT(GTCombType.ALMANDINE,
                 new Material[] { Materials.Almandine, Materials.Pyrope, Materials.Sapphire, Materials.GreenSapphire },
                 Voltage.LV);
-        addProcessGT(GTCombType.URANIUM, new Material[] { Materials.Uranium238, Materials.Pitchblende,
+        addProcessGT(GTCombType.URANIUM, new Material[] { Materials.Uranium, Materials.Pitchblende,
                 Materials.Uraninite, Materials.Uranium235 }, Voltage.EV);
         addProcessGT(GTCombType.PLUTONIUM, new Material[] { Materials.Plutonium239, Materials.Uranium235 }, Voltage.EV);
         addProcessGT(GTCombType.NAQUADAH,
                 new Material[] { Materials.Naquadah, Materials.NaquadahEnriched, Materials.Naquadria }, Voltage.IV);
         addProcessGT(GTCombType.NAQUADRIA,
                 new Material[] { Materials.Naquadria, Materials.NaquadahEnriched, Materials.Naquadah }, Voltage.LUV);
-        addProcessGT(GTCombType.THORIUM, new Material[] { Materials.Thorium, Materials.Uranium238, Materials.Coal },
+        addProcessGT(GTCombType.THORIUM, new Material[] { Materials.Thorium, Materials.Uranium, Materials.Coal },
                 Voltage.EV);
         addProcessGT(GTCombType.LUTETIUM, new Material[] { Materials.Lutetium, Materials.Thorium }, Voltage.IV);
         addProcessGT(GTCombType.AMERICIUM, new Material[] { Materials.Americium, Materials.Lutetium }, Voltage.LUV);

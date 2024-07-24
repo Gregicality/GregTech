@@ -7,6 +7,7 @@ import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IControllable;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.impl.EnergyContainerList;
+import gregtech.api.cover.ICustomEnergyCover;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.*;
@@ -54,7 +55,7 @@ import java.util.function.Supplier;
 import static gregtech.api.util.RelativeDirection.*;
 
 public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase
-                                           implements IControllable, IProgressBarMultiblock {
+                                           implements IControllable, IProgressBarMultiblock, ICustomEnergyCover {
 
     // Structure Constants
     public static final int MAX_BATTERY_LAYERS = 18;
@@ -247,7 +248,7 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase
     @Override
     public List<MultiblockShapeInfo> getMatchingShapes() {
         List<MultiblockShapeInfo> shapeInfo = new ArrayList<>();
-        MultiblockShapeInfo.Builder builder = MultiblockShapeInfo.builder()
+        MultiblockShapeInfo.Builder builder = MultiblockShapeInfo.builder(RIGHT, DOWN, FRONT)
                 .aisle("CCCCC", "CCCCC", "GGGGG", "GGGGG", "GGGGG")
                 .aisle("CCCCC", "CCCCC", "GBBBG", "GBBBG", "GGGGG")
                 .aisle("CCCCC", "CCCCC", "GBBBG", "GBBBG", "GGGGG")
@@ -555,6 +556,16 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase
             return "0";
         }
         return TextFormattingUtil.formatNumbers(energyBank.getCapacity());
+    }
+
+    @Override
+    public long getCoverCapacity() {
+        return getCapacityLong();
+    }
+
+    @Override
+    public long getCoverStored() {
+        return getStoredLong();
     }
 
     public long getAverageInLastSec() {

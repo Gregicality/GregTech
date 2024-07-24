@@ -97,6 +97,8 @@ public class Textures {
             "casings/pipe/machine_casing_grate");
     public static final SimpleOverlayRenderer HIGH_POWER_CASING = new SimpleOverlayRenderer(
             "casings/computer/high_power_casing");
+    public static final SimpleOverlayRenderer FISSION_REACTOR_TEXTURE = new SimpleOverlayRenderer(
+            "casings/fission/reactor_vessel");
 
     // Simple Sided Cube Renderers
     public static final SimpleSidedCubeRenderer STEAM_CASING_BRONZE = new SimpleSidedCubeRenderer(
@@ -196,6 +198,14 @@ public class Textures {
             "multiblock/network_switch");
     public static final OrientedOverlayRenderer POWER_SUBSTATION_OVERLAY = new OrientedOverlayRenderer(
             "multiblock/power_substation");
+    public static final OrientedOverlayRenderer FISSION_REACTOR_OVERLAY = new OrientedOverlayRenderer(
+            "multiblock/fission_reactor");
+    public static final OrientedOverlayRenderer SPENT_FUEL_POOL_OVERLAY = new OrientedOverlayRenderer(
+            "multiblock/spent_fuel_pool");
+    public static final OrientedOverlayRenderer HEAT_EXCHANGER_OVERLAY = new OrientedOverlayRenderer(
+            "multiblock/heat_exchanger");
+    public static final OrientedOverlayRenderer GAS_CENTRIFUGE_OVERLAY = new OrientedOverlayRenderer(
+            "multiblock/gas_centrifuge");
 
     public static final OrientedOverlayRenderer ALLOY_SMELTER_OVERLAY = new OrientedOverlayRenderer(
             "machines/alloy_smelter");
@@ -511,6 +521,11 @@ public class Textures {
     public static final SimpleOverlayRenderer ME_INPUT_BUS = new SimpleOverlayRenderer("overlay/appeng/me_input_bus");
     public static final SimpleOverlayRenderer ME_INPUT_BUS_ACTIVE = new SimpleOverlayRenderer(
             "overlay/appeng/me_input_bus_active");
+
+    public static final SimpleOverlayRenderer CONTROL_ROD = new SimpleOverlayRenderer(
+            "overlay/machine/overlay_control_rod");
+    public static final SimpleOverlayRenderer CONTROL_ROD_MODERATED = new SimpleOverlayRenderer(
+            "overlay/machine/overlay_control_rod_moderated");
 
     public static final ResourceLocation ACE_CAPE_TEXTURE = gregtechId("textures/capes/acecape.png");
     public static final ResourceLocation AGENDER_CAPE_TEXTURE = gregtechId("textures/capes/agendercape.png");

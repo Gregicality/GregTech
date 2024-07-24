@@ -56,8 +56,12 @@ public class ItemStackTextRenderer extends ItemStackRenderer {
             GlStateManager.scale(0.5, 0.5, 1);
             // z hackery to render the text above the item
             GlStateManager.translate(0, 0, 160);
-
-            String s = (this.chanceBase / 100) + "%";
+            String s;
+            if (chanceBase >= 100 || chanceBase == 0) {
+                s = (this.chanceBase / 100) + "%";
+            } else {
+                s = "0." + this.chanceBase + "%";
+            }
             if (this.chanceLogic != null && this.chanceLogic != ChancedOutputLogic.NONE &&
                     this.chanceLogic != ChancedOutputLogic.OR) {
                 s += "*";

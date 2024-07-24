@@ -232,6 +232,10 @@ public class MaterialInfoLoader {
                 new ItemMaterialInfo(new MaterialStack(Bronze, M * 6 * 2 / 64), // 2 large pipe / 64
                         new MaterialStack(Steel, M * 8 / 64))); // 8 steel plate / 64
 
+        OreDictUnifier.registerOre(new ItemStack(MetaBlocks.PANELLING), new ItemMaterialInfo(
+                new MaterialStack(Materials.Steel, M / 4) // 4 plates per 16 blocks
+        ));
+
         if (ConfigHolder.recipes.hardAdvancedIronRecipes) {
             OreDictUnifier.registerOre(new ItemStack(Items.IRON_DOOR, 1), new ItemMaterialInfo(
                     new MaterialStack(Materials.Iron, M * 4 + (M * 3 / 16)), // 4 iron plates + 1 iron bars

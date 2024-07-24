@@ -37,6 +37,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static gregtech.api.util.RelativeDirection.*;
+
 public class MetaTileEntityLargeChemicalReactor extends RecipeMapMultiblockController {
 
     public MetaTileEntityLargeChemicalReactor(ResourceLocation metaTileEntityId) {
@@ -69,7 +71,7 @@ public class MetaTileEntityLargeChemicalReactor extends RecipeMapMultiblockContr
     @Override
     public List<MultiblockShapeInfo> getMatchingShapes() {
         ArrayList<MultiblockShapeInfo> shapeInfo = new ArrayList<>();
-        MultiblockShapeInfo.Builder baseBuilder = MultiblockShapeInfo.builder()
+        MultiblockShapeInfo.Builder baseBuilder = MultiblockShapeInfo.builder(RIGHT, DOWN, FRONT)
                 .where('S', MetaTileEntities.LARGE_CHEMICAL_REACTOR, EnumFacing.SOUTH)
                 .where('X', MetaBlocks.METAL_CASING.getState(BlockMetalCasing.MetalCasingType.PTFE_INERT_CASING))
                 .where('P',

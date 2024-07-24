@@ -534,7 +534,7 @@ public class MixerRecipes {
                 .buildAndRegister();
 
         MIXER_RECIPES.recipeBuilder().duration(200).EUt(VA[EV])
-                .input(dust, Uranium238)
+                .input(dust, Uranium)
                 .input(dust, Platinum, 3)
                 .circuitMeta(4)
                 .output(dust, UraniumTriplatinum, 4)
@@ -561,7 +561,7 @@ public class MixerRecipes {
                 .buildAndRegister();
 
         MIXER_RECIPES.recipeBuilder().duration(150).EUt(VA[ZPM])
-                .input(dust, Uranium238)
+                .input(dust, Uranium)
                 .input(dust, Rhodium)
                 .input(dust, Naquadah, 2)
                 .circuitMeta(4)

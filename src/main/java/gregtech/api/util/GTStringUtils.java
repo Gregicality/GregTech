@@ -97,8 +97,7 @@ public final class GTStringUtils {
     }
 
     /**
-     * Draws a String centered within a given width.
-     * If the String exceeds the given width, it is cutoff
+     * Draws a String centered within a given width. If the String exceeds the given width, it is cutoff
      *
      * @param stringToDraw The String to draw
      * @param fontRenderer An instance of the MC FontRenderer
@@ -114,5 +113,24 @@ public final class GTStringUtils {
         int startPosition = (maxLength - fontRenderer.getStringWidth(stringToDraw)) / 2;
 
         fontRenderer.drawString(stringToDraw, startPosition, 1, 0x111111);
+    }
+
+    /**
+     * Returns a new String with the character at the given index replaced with the given character
+     *
+     * @param str     The original string whose character is to be replaced
+     * @param index   The index of the character to be replaced
+     * @param replace The character to replace the character at the given index
+     * @return The new string with the character at the given index replaced with the given character
+     */
+    public static String replace(String str, int index, char replace) {
+        if (str == null) {
+            return str;
+        } else if (index < 0 || index >= str.length()) {
+            return str;
+        }
+        char[] chars = str.toCharArray();
+        chars[index] = replace;
+        return String.valueOf(chars);
     }
 }

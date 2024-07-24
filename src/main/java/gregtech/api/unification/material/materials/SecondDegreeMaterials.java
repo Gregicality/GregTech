@@ -503,5 +503,41 @@ public class SecondDegreeMaterials {
                         EXCLUDE_PLATE_COMPRESSOR_RECIPE, DECOMPOSITION_BY_CENTRIFUGING)
                 .components(Silicon, 1, Pyrite, 5, Ruby, 1, Mercury, 3)
                 .build();
+
+        LEU235 = new Material.Builder(2065, gregtechId("leu_235"))
+                .dust(3)
+                .color(0x232323).iconSet(METALLIC)
+                .flags(DISABLE_DECOMPOSITION)
+                .components(HighEnrichedUraniumDioxide, 1, DepletedUraniumDioxide, 19)
+                .fissionFuel(1500, 750, 55., 1., 2500., 0., 3.5)
+                .build()
+                .setFormula("UO2", true);
+
+        HEU235 = new Material.Builder(2066, gregtechId("heu_235"))
+                .dust(3)
+                .color(0x424845).iconSet(METALLIC)
+                .flags(DISABLE_DECOMPOSITION)
+                .components(HighEnrichedUraniumDioxide, 1, DepletedUraniumDioxide, 4)
+                .fissionFuel(1800, 600, 40., 1., 3000., 0., 2.5)
+                .build()
+                .setFormula("UO2", true);
+
+        LowGradeMOX = new Material.Builder(2067, gregtechId("low_grade_mox"))
+                .dust(3)
+                .color(0x62C032).iconSet(METALLIC)
+                .flags(DISABLE_DECOMPOSITION)
+                .components(FissilePlutoniumDioxide, 1, Uraninite, 19)
+                .fissionFuel(1600, 1000, 50., 10., 4000., 10., 1.5)
+                .build()
+                .setFormula("(U,Pu)O2", true);
+
+        HighGradeMOX = new Material.Builder(2068, gregtechId("high_grade_mox"))
+                .dust(3)
+                .color(0x7EA432).iconSet(METALLIC)
+                .flags(DISABLE_DECOMPOSITION)
+                .components(FissilePlutoniumDioxide, 1, Uraninite, 4)
+                .fissionFuel(2000, 800, 35., 25., 5500., 0., 1)
+                .build()
+                .setFormula("(U,Pu)O2", true);
     }
 }

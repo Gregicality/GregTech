@@ -128,7 +128,7 @@ public class FusionLoader {
         RecipeMaps.FUSION_RECIPES.recipeBuilder()
                 .fluidInputs(Materials.Gold.getFluid(16))
                 .fluidInputs(Materials.Aluminium.getFluid(16))
-                .fluidOutputs(Materials.Uranium238.getFluid(16))
+                .fluidOutputs(Materials.Uranium.getFluid(16))
                 .duration(128)
                 .EUt(24576)
                 .EUToStart(140_000_000)
