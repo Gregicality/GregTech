@@ -161,9 +161,10 @@ public class MetaTileEntityMufflerHatch extends MetaTileEntityMultiblockPart imp
     }
 
     @Override
-    public @NotNull List<? extends IMufflerHatch> registerAbilities(
-                                                                    @NotNull MultiblockAbility<? extends IMufflerHatch> multiblockAbility) {
-        return Collections.singletonList(this);
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<IMufflerHatch> multiblockAbility,
+                                  @NotNull List<IMufflerHatch> abilities) {
+        abilities.add(this);
     }
 
     @Override

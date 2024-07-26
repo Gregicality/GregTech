@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntityOpticalDataHatch extends MetaTileEntityMultiblockNotifiablePart implements
@@ -129,9 +128,10 @@ public class MetaTileEntityOpticalDataHatch extends MetaTileEntityMultiblockNoti
     }
 
     @Override
-    public @NotNull List<? extends IOpticalDataAccessHatch> registerAbilities(
-                                                                              @NotNull MultiblockAbility<? extends IOpticalDataAccessHatch> multiblockAbility) {
-        return Collections.singletonList(this);
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<IOpticalDataAccessHatch> multiblockAbility,
+                                  @NotNull List<IOpticalDataAccessHatch> abilities) {
+        abilities.add(this);
     }
 
     @Override

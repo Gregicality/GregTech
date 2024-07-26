@@ -71,9 +71,10 @@ public class MetaTileEntityLaserHatch extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public @NotNull List<? extends ILaserContainer> registerAbilities(
-                                                                      @NotNull MultiblockAbility<? extends ILaserContainer> multiblockAbility) {
-        return Collections.singletonList(this.buffer);
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<ILaserContainer> multiblockAbility,
+                                  @NotNull List<ILaserContainer> abilities) {
+        abilities.add(this.buffer);
     }
 
     @Override

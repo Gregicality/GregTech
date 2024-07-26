@@ -33,7 +33,6 @@ import codechicken.lib.vec.Matrix4;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public abstract class MetaTileEntityHPCAComponent extends MetaTileEntityMultiblockPart implements
@@ -68,9 +67,10 @@ public abstract class MetaTileEntityHPCAComponent extends MetaTileEntityMultiblo
     }
 
     @Override
-    public @NotNull List<? extends IHPCAComponentHatch> registerAbilities(
-                                                                          @NotNull MultiblockAbility<? extends IHPCAComponentHatch> multiblockAbility) {
-        return Collections.singletonList(this);
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<IHPCAComponentHatch> multiblockAbility,
+                                  @NotNull List<IHPCAComponentHatch> abilities) {
+        abilities.add(this);
     }
 
     @Override

@@ -360,7 +360,7 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
 
                         List abilityInstancesList = abilities.computeIfAbsent(ability,
                                 k -> new ArrayList<>());
-                        abilityInstancesList.addAll(abilityPart.registerAbilities(ability));
+                        abilityPart.registerAbilities(ability, abilityInstancesList);
                     }
                 }
             }

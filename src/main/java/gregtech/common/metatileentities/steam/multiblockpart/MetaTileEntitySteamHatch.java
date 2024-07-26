@@ -129,9 +129,10 @@ public class MetaTileEntitySteamHatch extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public @NotNull List<? extends IFluidTank> registerAbilities(
-                                                                 @NotNull MultiblockAbility<? extends IFluidTank> multiblockAbility) {
-        return this.importFluids.getFluidTanks();
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<IFluidTank> multiblockAbility,
+                                  @NotNull List<IFluidTank> abilities) {
+        abilities.addAll(this.importFluids.getFluidTanks());
     }
 
     @Override

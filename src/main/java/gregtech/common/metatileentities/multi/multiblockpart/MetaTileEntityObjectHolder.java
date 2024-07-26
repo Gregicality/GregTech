@@ -40,7 +40,6 @@ import com.cleanroommc.modularui.widgets.SlotGroupWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntityObjectHolder extends MetaTileEntityMultiblockNotifiablePart
@@ -116,9 +115,10 @@ public class MetaTileEntityObjectHolder extends MetaTileEntityMultiblockNotifiab
     }
 
     @Override
-    public @NotNull List<? extends IObjectHolder> registerAbilities(
-                                                                    @NotNull MultiblockAbility<? extends IObjectHolder> multiblockAbility) {
-        return Collections.singletonList(this);
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<IObjectHolder> multiblockAbility,
+                                  @NotNull List<IObjectHolder> abilities) {
+        abilities.add(this);
     }
 
     @Override

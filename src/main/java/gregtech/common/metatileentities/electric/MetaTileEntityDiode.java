@@ -36,7 +36,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static gregtech.api.capability.GregtechDataCodes.AMP_INDEX;
@@ -183,9 +182,10 @@ public class MetaTileEntityDiode extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public @NotNull List<? extends IPassthroughHatch> registerAbilities(
-                                                                        @NotNull MultiblockAbility<? extends IPassthroughHatch> multiblockAbility) {
-        return Collections.singletonList(this);
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<IPassthroughHatch> multiblockAbility,
+                                  @NotNull List<IPassthroughHatch> abilities) {
+        abilities.add(this);
     }
 
     @NotNull

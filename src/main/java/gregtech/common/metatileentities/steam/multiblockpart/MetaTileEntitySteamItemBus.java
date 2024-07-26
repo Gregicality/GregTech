@@ -34,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntitySteamItemBus extends MetaTileEntityItemBus {
@@ -57,9 +56,10 @@ public class MetaTileEntitySteamItemBus extends MetaTileEntityItemBus {
     }
 
     @Override
-    public @NotNull List<? extends IItemHandlerModifiable> registerAbilities(
-                                                                             @NotNull MultiblockAbility<? extends IItemHandlerModifiable> multiblockAbility) {
-        return Collections.singletonList(isExportHatch ? this.exportItems : this.importItems);
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<IItemHandlerModifiable> multiblockAbility,
+                                  @NotNull List<IItemHandlerModifiable> abilities) {
+        abilities.add(isExportHatch ? this.exportItems : this.importItems);
     }
 
     // Override base texture to have a bus with 4 slots, but ULV textures

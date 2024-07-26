@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntityComputationHatch extends MetaTileEntityMultiblockPart implements
@@ -152,9 +151,10 @@ public class MetaTileEntityComputationHatch extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public @NotNull List<? extends IOpticalComputationHatch> registerAbilities(
-                                                                               @NotNull MultiblockAbility<? extends IOpticalComputationHatch> multiblockAbility) {
-        return Collections.singletonList(this);
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<IOpticalComputationHatch> multiblockAbility,
+                                  @NotNull List<IOpticalComputationHatch> abilities) {
+        abilities.add(this);
     }
 
     @Override

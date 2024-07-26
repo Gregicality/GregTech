@@ -53,7 +53,6 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -517,9 +516,10 @@ public class MetaTileEntityMaintenanceHatch extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public @NotNull List<? extends IMaintenanceHatch> registerAbilities(
-                                                                        @NotNull MultiblockAbility<? extends IMaintenanceHatch> multiblockAbility) {
-        return Collections.singletonList(this);
+    public void registerAbilities(
+                                  @NotNull MultiblockAbility<IMaintenanceHatch> multiblockAbility,
+                                  @NotNull List<IMaintenanceHatch> abilities) {
+        abilities.add(this);
     }
 
     @Override
