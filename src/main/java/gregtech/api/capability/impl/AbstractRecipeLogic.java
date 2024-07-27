@@ -767,34 +767,32 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
         return recipe.matches(shouldConsume, getInputInventory(), getInputTank());
     }
 
-    protected List<ItemStack> gatherItems(IItemHandlerModifiable inputInventory, IMultipleTankHandler inputFluids) {
-        List<ItemStack> items = new ArrayList<>();
+    protected IItemHandlerModifiable gatherItems(IItemHandlerModifiable inputInventory, IMultipleTankHandler inputFluids) {
+        List<IItemHandlerModifiable> items = new ArrayList<>();
 
-        GTUtility.addHandlerToCollection(items, inputInventory);
+        items.add(inputInventory);
 
         for (var tank : inputFluids.getFluidTanks()) {
-            if (tank.getDelegate() instanceof IItemHandler handler)
-                GTUtility.addHandlerToCollection(items, handler);
+            if (tank.getDelegate() instanceof IItemHandlerModifiable handler)
+                items.add(handler);
         }
 
-        return items;
+        return new ItemHandlerList(items);
     }
 
-    protected List<FluidStack> gatherFluids(IItemHandlerModifiable inputInventory, IMultipleTankHandler inputFluids) {
-        List<FluidStack> fluids = new ArrayList<>();
-
-        GTUtility.addHandlerToCollection(fluids, inputFluids);
+    protected IMultipleTankHandler gatherFluids(IItemHandlerModifiable inputInventory, IMultipleTankHandler inputFluids) {
+        List<IFluidTank> fluids = new ArrayList<>(inputFluids.getFluidTanks());
 
         if (inputInventory instanceof IMultipleTankHandler tankHandler) {
-            GTUtility.addHandlerToCollection(fluids, tankHandler);
+            fluids.addAll(tankHandler.getFluidTanks());
         } else if (inputInventory instanceof ItemHandlerList handlerList) {
             for (IItemHandler handler : handlerList.getBackingHandlers()) {
                 if (handler instanceof IMultipleTankHandler tankHandler)
-                    GTUtility.addHandlerToCollection(fluids, tankHandler);
+                    fluids.addAll(tankHandler.getFluidTanks());
             }
         }
 
-        return fluids;
+        return new FluidTankList(inputFluids.allowSameFluidFill(), fluids);
     }
 
     /**

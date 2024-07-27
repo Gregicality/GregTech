@@ -250,16 +250,16 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
             return null;
         }
 
-        List<ItemStack> items = gatherItems(inputs, fluidInputs);
-        List<FluidStack> fluids = gatherFluids(inputs, fluidInputs);
+        IItemHandlerModifiable items = gatherItems(inputs, fluidInputs);
+        IMultipleTankHandler fluids = gatherFluids(inputs, fluidInputs);
 
         return map.findRecipe(maxVoltage, items, fluids);
     }
 
     @Override
     protected boolean recipeMatch(Recipe recipe, boolean shouldConsume) {
-        List<ItemStack> items = gatherItems(getInputInventory(), getInputTank());
-        List<FluidStack> fluids = gatherFluids(getInputInventory(), getInputTank());
+         IItemHandlerModifiable items = gatherItems(getInputInventory(), getInputTank());
+         IMultipleTankHandler fluids = gatherFluids(getInputInventory(), getInputTank());
 
         return recipe.matches(shouldConsume, items, fluids);
     }
@@ -277,8 +277,8 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     protected boolean checkPreviousRecipeDistinct(IItemHandlerModifiable previousBus) {
-        List<ItemStack> items = gatherItems(previousBus, getInputTank());
-        List<FluidStack> fluids = gatherFluids(previousBus, getInputTank());
+        IItemHandlerModifiable items = gatherItems(previousBus, getInputTank());
+        IMultipleTankHandler fluids = gatherFluids(previousBus, getInputTank());
 
         return previousRecipe != null && previousRecipe.matches(false, items, fluids);
     }
