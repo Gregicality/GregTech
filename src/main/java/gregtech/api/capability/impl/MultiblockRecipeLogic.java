@@ -16,9 +16,7 @@ import gregtech.api.recipes.properties.RecipePropertyStorage;
 import gregtech.api.util.GTUtility;
 import gregtech.common.ConfigHolder;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -258,8 +256,8 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
 
     @Override
     protected boolean recipeMatch(Recipe recipe, boolean shouldConsume) {
-         IItemHandlerModifiable items = gatherItems(getInputInventory(), getInputTank());
-         IMultipleTankHandler fluids = gatherFluids(getInputInventory(), getInputTank());
+        IItemHandlerModifiable items = gatherItems(getInputInventory(), getInputTank());
+        IMultipleTankHandler fluids = gatherFluids(getInputInventory(), getInputTank());
 
         return recipe.matches(shouldConsume, items, fluids);
     }

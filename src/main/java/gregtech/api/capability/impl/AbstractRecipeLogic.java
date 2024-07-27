@@ -767,7 +767,8 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
         return recipe.matches(shouldConsume, getInputInventory(), getInputTank());
     }
 
-    protected IItemHandlerModifiable gatherItems(IItemHandlerModifiable inputInventory, IMultipleTankHandler inputFluids) {
+    protected IItemHandlerModifiable gatherItems(IItemHandlerModifiable inputInventory,
+                                                 IMultipleTankHandler inputFluids) {
         List<IItemHandlerModifiable> items = new ArrayList<>();
 
         items.add(inputInventory);
@@ -780,7 +781,8 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
         return new ItemHandlerList(items);
     }
 
-    protected IMultipleTankHandler gatherFluids(IItemHandlerModifiable inputInventory, IMultipleTankHandler inputFluids) {
+    protected IMultipleTankHandler gatherFluids(IItemHandlerModifiable inputInventory,
+                                                IMultipleTankHandler inputFluids) {
         List<IFluidTank> fluids = new ArrayList<>(inputFluids.getFluidTanks());
 
         if (inputInventory instanceof IMultipleTankHandler tankHandler) {
