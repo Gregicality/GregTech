@@ -723,7 +723,7 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
 
         if (checkOutputSpaceItems(recipe, getOutputInventory()) && checkOutputSpaceFluids(recipe, getOutputTank())) {
             this.isOutputsFull = false;
-            if (recipe.matches(true, importInventory, importFluids)) {
+            if (recipeMatch(recipe, true)) {
                 this.metaTileEntity.addNotifiedInput(importInventory);
                 return recipe;
             }
