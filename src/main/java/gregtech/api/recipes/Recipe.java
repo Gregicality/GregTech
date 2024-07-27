@@ -245,6 +245,9 @@ public class Recipe {
      * @return true if the recipe matches the given inputs false otherwise.
      */
     public boolean matches(boolean consumeIfSuccessful, List<ItemStack> inputs, List<FluidStack> fluidInputs) {
+        if (inputs.size() == 0 && fluidInputs.size() == 0)
+            return false;
+
         Pair<Boolean, int[]> fluids = matchesFluid(fluidInputs);
         if (!fluids.getKey()) {
             return false;
