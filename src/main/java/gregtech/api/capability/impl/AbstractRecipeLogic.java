@@ -769,12 +769,16 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
 
     protected IItemHandlerModifiable gatherItems(IItemHandlerModifiable inputInventory,
                                                  IMultipleTankHandler inputFluids) {
-        List<IItemHandlerModifiable> items = new ArrayList<>();
+        List<IItemHandler> items = new ArrayList<>();
 
-        items.add(inputInventory);
+        if (inputInventory instanceof ItemHandlerList list) {
+            items.addAll(list.getBackingHandlers());
+        } else {
+            items.add(inputInventory);
+        }
 
         for (var tank : inputFluids.getFluidTanks()) {
-            if (tank.getDelegate() instanceof IItemHandlerModifiable handler)
+            if (tank.getDelegate() instanceof IItemHandler handler)
                 items.add(handler);
         }
 
