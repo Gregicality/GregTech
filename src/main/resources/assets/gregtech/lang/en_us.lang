@@ -4738,6 +4738,7 @@ behaviour.paintspray.red.tooltip=Can paint things in Red
 behaviour.paintspray.black.tooltip=Can paint things in Black
 behaviour.paintspray.uses=Remaining Uses: %,d
 behaviour.paintspray.offhand=Hold in offhand to color while placing blocks
+behaviour.paintspray.crouch=Crouch to spray connected pipes
 behaviour.prospecting=Usable for Prospecting
 
 # Multiblock machine controllers
