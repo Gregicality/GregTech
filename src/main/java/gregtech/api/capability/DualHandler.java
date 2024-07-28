@@ -2,6 +2,8 @@ package gregtech.api.capability;
 
 import gregtech.api.capability.impl.FluidTankList;
 
+import gregtech.api.metatileentity.MetaTileEntity;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -15,12 +17,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler {
+public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler, INotifiableHandler {
 
     @NotNull
     IItemHandlerModifiable itemDelegate;
     @NotNull
     IMultipleTankHandler fluidDelegate;
+
+    List<MetaTileEntity> notifiableEntities = new ArrayList<>();
     private final boolean isExport;
 
     public DualHandler(@NotNull IItemHandlerModifiable itemDelegate,
@@ -63,11 +67,13 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+        if (!simulate) onContentsChanged();
         return itemDelegate.insertItem(slot, stack, simulate);
     }
 
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
+        if (!simulate) onContentsChanged();
         return itemDelegate.extractItem(slot, amount, simulate);
     }
 
@@ -79,6 +85,7 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
     @Override
     public void setStackInSlot(int slot, ItemStack stack) {
         itemDelegate.setStackInSlot(slot, stack);
+        if (!stack.isEmpty()) onContentsChanged();
     }
 
     @Override
@@ -88,16 +95,19 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
     @Override
     public int fill(FluidStack resource, boolean doFill) {
+        if (doFill) onContentsChanged();
         return fluidDelegate.fill(resource, doFill);
     }
 
     @Override
     public FluidStack drain(FluidStack resource, boolean doDrain) {
+        if (doDrain) onContentsChanged();
         return fluidDelegate.drain(resource, doDrain);
     }
 
     @Override
     public FluidStack drain(int maxDrain, boolean doDrain) {
+        if (doDrain) onContentsChanged();
         return fluidDelegate.drain(maxDrain, doDrain);
     }
 
@@ -140,6 +150,25 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         }
 
         return list;
+    }
+
+    public void onContentsChanged() {
+        for (MetaTileEntity metaTileEntity : notifiableEntities) {
+            if (metaTileEntity != null && metaTileEntity.isValid()) {
+                addToNotifiedList(metaTileEntity, this, isExport);
+            }
+        }
+    }
+
+    @Override
+    public void addNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
+        if (metaTileEntity == null) return;
+        this.notifiableEntities.add(metaTileEntity);
+    }
+
+    @Override
+    public void removeNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
+        this.notifiableEntities.remove(metaTileEntity);
     }
 
     public static class DualEntry implements IItemHandlerModifiable, IFluidTank, IFluidHandler {
