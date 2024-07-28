@@ -1,6 +1,7 @@
 package gregtech.api.capability.impl;
 
 import gregtech.api.GTValues;
+import gregtech.api.capability.IDistinctBusController;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.IMultiblockController;
 import gregtech.api.capability.IMultipleRecipeMaps;
@@ -256,8 +257,13 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
 
     @Override
     protected boolean recipeMatch(Recipe recipe, boolean shouldConsume) {
-        IItemHandlerModifiable items = gatherItems(getInputInventory(), getInputTank());
-        IMultipleTankHandler fluids = gatherFluids(getInputInventory(), getInputTank());
+        IItemHandler input = getInputInventory();
+        if (metaTileEntity instanceof IDistinctBusController distinct && distinct.isDistinct()) {
+            input = currentDistinctInputBus;
+        }
+
+        IItemHandlerModifiable items = gatherItems(input, getInputTank());
+        IMultipleTankHandler fluids = gatherFluids(input, getInputTank());
 
         return recipe.matches(shouldConsume, items, fluids);
     }
