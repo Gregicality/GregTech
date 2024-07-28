@@ -21,14 +21,14 @@ public abstract class MetaTileEntityMultiblockNotifiablePart extends MetaTileEnt
         this.isExportHatch = isExportHatch;
     }
 
-    private NotifiableItemStackHandler getItemHandler() {
-        NotifiableItemStackHandler handler = null;
-        if (isExportHatch && getExportItems() instanceof NotifiableItemStackHandler) {
-            handler = (NotifiableItemStackHandler) getExportItems();
-        } else if (!isExportHatch && getImportItems() instanceof NotifiableItemStackHandler) {
-            handler = (NotifiableItemStackHandler) getImportItems();
-        } else if (getItemInventory() instanceof NotifiableItemStackHandler) {
-            handler = (NotifiableItemStackHandler) getItemInventory();
+    private INotifiableHandler getItemHandler() {
+        INotifiableHandler handler = null;
+        if (isExportHatch && getExportItems() instanceof INotifiableHandler) {
+            handler = (INotifiableHandler) getExportItems();
+        } else if (!isExportHatch && getImportItems() instanceof INotifiableHandler) {
+            handler = (INotifiableHandler) getImportItems();
+        } else if (getItemInventory() instanceof INotifiableHandler) {
+            handler = (INotifiableHandler) getItemInventory();
         }
         return handler;
     }
@@ -46,8 +46,8 @@ public abstract class MetaTileEntityMultiblockNotifiablePart extends MetaTileEnt
     private List<INotifiableHandler> getPartHandlers() {
         List<INotifiableHandler> handlerList = new ArrayList<>();
 
-        NotifiableItemStackHandler itemHandler = getItemHandler();
-        if (itemHandler != null && itemHandler.getSlots() > 0) {
+        INotifiableHandler itemHandler = getItemHandler();
+        if (itemHandler != null && itemHandler.size() > 0) {
             handlerList.add(itemHandler);
         }
 
