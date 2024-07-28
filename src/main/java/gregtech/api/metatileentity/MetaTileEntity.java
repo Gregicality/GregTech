@@ -12,7 +12,6 @@ import gregtech.api.capability.impl.AbstractRecipeLogic;
 import gregtech.api.capability.impl.FluidHandlerProxy;
 import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.capability.impl.ItemHandlerProxy;
-import gregtech.api.capability.impl.NotifiableFluidTank;
 import gregtech.api.cover.Cover;
 import gregtech.api.cover.CoverHolder;
 import gregtech.api.cover.CoverRayTracer;
@@ -398,7 +397,8 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
             if (!notifiedItemInputList.contains(input)) {
                 this.notifiedItemInputList.add((IItemHandlerModifiable) input);
             }
-        } else if (input instanceof IFluidHandler) {
+        }
+        if (input instanceof IFluidHandler) {
             if (!notifiedFluidInputList.contains(input)) {
                 this.notifiedFluidInputList.add((IFluidHandler) input);
             }
@@ -410,9 +410,10 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
             if (!notifiedItemOutputList.contains(output)) {
                 this.notifiedItemOutputList.add((IItemHandlerModifiable) output);
             }
-        } else if (output instanceof NotifiableFluidTank) {
+        }
+        if (output instanceof IFluidHandler) {
             if (!notifiedFluidOutputList.contains(output)) {
-                this.notifiedFluidOutputList.add((NotifiableFluidTank) output);
+                this.notifiedFluidOutputList.add((IFluidHandler) output);
             }
         }
     }

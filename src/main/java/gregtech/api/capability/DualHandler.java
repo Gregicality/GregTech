@@ -1,7 +1,6 @@
 package gregtech.api.capability;
 
 import gregtech.api.capability.impl.FluidTankList;
-
 import gregtech.api.metatileentity.MetaTileEntity;
 
 import net.minecraft.item.ItemStack;
