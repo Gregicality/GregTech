@@ -85,6 +85,10 @@ public class MaterialIconType {
 
     public static final MaterialIconType turbineBlade = new MaterialIconType("turbineBlade");
 
+    public static final MaterialIconType turbineSmall = new MaterialIconType("turbineSmall");
+    public static final MaterialIconType turbineNormal = new MaterialIconType("turbineNormal");
+    public static final MaterialIconType turbineLarge = new MaterialIconType("turbineLarge");
+
     // BLOCK TEXTURES
     public static final MaterialIconType liquid = new MaterialIconType("liquid");
     public static final MaterialIconType gas = new MaterialIconType("gas");

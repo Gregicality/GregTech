@@ -72,6 +72,9 @@ import gregtech.common.metatileentities.multi.electric.centralmonitor.MetaTileEn
 import gregtech.common.metatileentities.multi.electric.centralmonitor.MetaTileEntityMonitorScreen;
 import gregtech.common.metatileentities.multi.electric.generator.MetaTileEntityLargeCombustionEngine;
 import gregtech.common.metatileentities.multi.electric.generator.MetaTileEntityLargeTurbine;
+import gregtech.common.metatileentities.multi.electric.generator.turbine.LargeGasTurbine;
+import gregtech.common.metatileentities.multi.electric.generator.turbine.LargePlasmaTurbine;
+import gregtech.common.metatileentities.multi.electric.generator.turbine.LargeSteamTurbine;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityAutoMaintenanceHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityCleaningMaintenanceHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityComputationHatch;
@@ -91,6 +94,7 @@ import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityPasst
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityReservoirHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityRotorHolder;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntitySubstationEnergyHatch;
+import gregtech.common.metatileentities.multi.multiblockpart.RotorHolder2;
 import gregtech.common.metatileentities.multi.multiblockpart.appeng.MetaTileEntityMEInputBus;
 import gregtech.common.metatileentities.multi.multiblockpart.appeng.MetaTileEntityMEInputHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.appeng.MetaTileEntityMEOutputBus;
@@ -779,6 +783,11 @@ public class MetaTileEntities {
                 new MetaTileEntityPowerSubstation(gregtechId("power_substation")));
         ACTIVE_TRANSFORMER = registerMetaTileEntity(1042,
                 new MetaTileEntityActiveTransformer(gregtechId("active_transformer")));
+        registerMetaTileEntity(1043, new LargeSteamTurbine(gregtechId("lst"), false));
+        registerMetaTileEntity(1044, new LargeSteamTurbine(gregtechId("lsthp"), true));
+        registerMetaTileEntity(1045, new LargeGasTurbine(gregtechId("lgt")));
+        registerMetaTileEntity(1046, new LargePlasmaTurbine(gregtechId("lpt")));
+        registerMetaTileEntity(1047, new RotorHolder2(gregtechId("rh2"), GTValues.IV));
 
         // MISC MTE's START: IDs 1150-2000
 

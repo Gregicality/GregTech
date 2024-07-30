@@ -14,7 +14,9 @@ public class PropertyKey<T extends IMaterialProperty> {
             ItemPipeProperties.class);
     public static final PropertyKey<OreProperty> ORE = new PropertyKey<>("ore", OreProperty.class);
     public static final PropertyKey<ToolProperty> TOOL = new PropertyKey<>("tool", ToolProperty.class);
+    @Deprecated
     public static final PropertyKey<RotorProperty> ROTOR = new PropertyKey<>("rotor", RotorProperty.class);
+    public static final PropertyKey<RotorProperty2> ROTOR_2 = new PropertyKey<>("rotor2", RotorProperty2.class);
     public static final PropertyKey<WireProperties> WIRE = new PropertyKey<>("wire", WireProperties.class);
     public static final PropertyKey<WoodProperty> WOOD = new PropertyKey<>("wood", WoodProperty.class);
 

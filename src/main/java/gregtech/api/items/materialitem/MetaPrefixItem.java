@@ -3,6 +3,7 @@ package gregtech.api.items.materialitem;
 import gregtech.api.GTValues;
 import gregtech.api.damagesources.DamageSources;
 import gregtech.api.items.armor.ArmorMetaItem;
+import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.items.metaitem.StandardMetaItem;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Material;
@@ -66,10 +67,13 @@ public class MetaPrefixItem extends StandardMetaItem {
         for (Material material : registry) {
             short i = (short) registry.getIDForObject(material);
             if (prefix != null && canGenerate(prefix, material)) {
-                addItem(i, new UnificationEntry(prefix, material).toString());
+                var valueItem = addItem(i, new UnificationEntry(prefix, material).toString());
+                attachComponents(valueItem);
             }
         }
     }
+
+    protected void attachComponents(@NotNull MetaItem<?>.MetaValueItem valueItem) {}
 
     public void registerOreDict() {
         for (short metaItem : metaItems.keySet()) {

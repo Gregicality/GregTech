@@ -37,6 +37,7 @@ public class MultiblockAbility<T> {
             "substation_output_energy");
 
     public static final MultiblockAbility<IRotorHolder> ROTOR_HOLDER = new MultiblockAbility<>("rotor_holder");
+    public static final MultiblockAbility<RotorHolder> ROTOR_HOLDER_2 = new MultiblockAbility<>("rotor_holder_2");
 
     public static final MultiblockAbility<IFluidTank> PUMP_FLUID_HATCH = new MultiblockAbility<>("pump_fluid_hatch");
 

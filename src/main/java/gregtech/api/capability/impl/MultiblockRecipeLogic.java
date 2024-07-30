@@ -165,18 +165,12 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
 
     @Override
     protected void trySearchNewRecipe() {
-        // do not run recipes when there are more than 5 maintenance problems
-        // Maintenance can apply to all multiblocks, so cast to a base multiblock class
-        MultiblockWithDisplayBase controller = (MultiblockWithDisplayBase) metaTileEntity;
-        if (ConfigHolder.machines.enableMaintenance && controller.hasMaintenanceMechanics() &&
-                controller.getNumMaintenanceProblems() > 5) {
+        if (!checkMaintenance()) {
             return;
         }
 
         // Distinct buses only apply to some multiblocks, so check the controller against a lower class
-        if (controller instanceof RecipeMapMultiblockController) {
-            RecipeMapMultiblockController distinctController = (RecipeMapMultiblockController) controller;
-
+        if (metaTileEntity instanceof RecipeMapMultiblockController distinctController) {
             if (distinctController.canBeDistinct() && distinctController.isDistinct() &&
                     getInputInventory().getSlots() > 0) {
                 trySearchNewRecipeDistinct();
@@ -185,6 +179,17 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
         }
 
         trySearchNewRecipeCombined();
+    }
+
+    protected boolean checkMaintenance() {
+        // do not run recipes when there are more than 5 maintenance problems
+        // Maintenance can apply to all multiblocks, so cast to a base multiblock class
+        MultiblockWithDisplayBase controller = (MultiblockWithDisplayBase) metaTileEntity;
+        if (ConfigHolder.machines.enableMaintenance && controller.hasMaintenanceMechanics() &&
+                controller.getNumMaintenanceProblems() > 5) {
+            return false;
+        }
+        return true;
     }
 
     /**

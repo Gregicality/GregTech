@@ -44,5 +44,10 @@ public final class FluidConstants {
      */
     public static final int CRYOGENIC_FLUID_THRESHOLD = 120;
 
+    /**
+     * Amount of steam per water
+     */
+    public static final int STEAM_PER_WATER = 160;
+
     private FluidConstants() {}
 }

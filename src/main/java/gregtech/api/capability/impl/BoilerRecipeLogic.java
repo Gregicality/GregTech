@@ -3,6 +3,7 @@ package gregtech.api.capability.impl;
 import gregtech.api.GTValues;
 import gregtech.api.capability.IMultiblockController;
 import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.fluids.FluidConstants;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.RecipeMaps;
@@ -35,7 +36,7 @@ import static gregtech.api.capability.GregtechDataCodes.BOILER_LAST_TICK_STEAM;
 
 public class BoilerRecipeLogic extends AbstractRecipeLogic implements ICategoryOverride {
 
-    private static final int STEAM_PER_WATER = 160;
+    private static final int STEAM_PER_WATER = FluidConstants.STEAM_PER_WATER;
 
     private static final int FLUID_DRAIN_MULTIPLIER = 100;
     private static final int FLUID_BURNTIME_TO_EU = 800 / FLUID_DRAIN_MULTIPLIER;

@@ -221,6 +221,15 @@ public class OrePrefix {
     public static final OrePrefix turbineBlade = new OrePrefix("turbineBlade", M * 10, null,
             MaterialIconType.turbineBlade, ENABLE_UNIFICATION, hasRotorProperty
                     .and(m -> m.hasFlags(GENERATE_BOLT_SCREW, GENERATE_PLATE) && !m.hasProperty(PropertyKey.GEM)));
+    // made of 4 Turbine Blades.
+    public static final OrePrefix turbineSmall = new OrePrefix("turbineSmall", M * 10 * 4, null,
+            MaterialIconType.turbineSmall, ENABLE_UNIFICATION, hasRotorPropertyAndFlags);
+    // made of 8 Turbine Blades.
+    public static final OrePrefix turbineNormal = new OrePrefix("turbineNormal", M * 10 * 8, null,
+            MaterialIconType.turbineNormal, ENABLE_UNIFICATION, hasRotorPropertyAndFlags);
+    // made of 12 Turbine Blades.
+    public static final OrePrefix turbineLarge = new OrePrefix("turbineLarge", M * 10 * 12, null,
+            MaterialIconType.turbineLarge, ENABLE_UNIFICATION, hasRotorPropertyAndFlags);
 
     public static final OrePrefix paneGlass = new OrePrefix("paneGlass", -1, MarkerMaterials.Color.Colorless, null,
             SELF_REFERENCING, null);
@@ -342,6 +351,8 @@ public class OrePrefix {
         public static final Predicate<Material> hasIngotProperty = mat -> mat.hasProperty(PropertyKey.INGOT);
         public static final Predicate<Material> hasBlastProperty = mat -> mat.hasProperty(PropertyKey.BLAST);
         public static final Predicate<Material> hasRotorProperty = mat -> mat.hasProperty(PropertyKey.ROTOR);
+        public static final Predicate<Material> hasRotorPropertyAndFlags = hasRotorProperty
+                .and(m -> m.hasFlags(GENERATE_BOLT_SCREW, GENERATE_PLATE) && !m.hasProperty(PropertyKey.GEM));
     }
 
     public static void init() {
@@ -359,6 +370,10 @@ public class OrePrefix {
         toolHeadDrill.maxStackSize = 16;
         toolHeadChainsaw.maxStackSize = 16;
         toolHeadWrench.maxStackSize = 16;
+
+        turbineSmall.maxStackSize = 1;
+        turbineNormal.maxStackSize = 1;
+        turbineLarge.maxStackSize = 1;
 
         craftingLens.setMarkerPrefix(true);
         dye.setMarkerPrefix(true);

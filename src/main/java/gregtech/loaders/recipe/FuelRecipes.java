@@ -107,6 +107,13 @@ public class FuelRecipes {
                 .EUt(V[LV])
                 .buildAndRegister();
 
+        RecipeMaps.STEAM_TURBINE_FUELS.recipeBuilder()
+                .fluidInputs(SuperheatedSteam.getFluid(32))
+                .fluidOutputs(Steam.getFluid(32))
+                .duration(1)
+                .EUt(V[LV])
+                .buildAndRegister();
+
         // gas turbine fuels
         RecipeMaps.GAS_TURBINE_FUELS.recipeBuilder()
                 .fluidInputs(NaturalGas.getFluid(8))

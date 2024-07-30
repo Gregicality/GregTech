@@ -292,6 +292,7 @@ public class Materials {
     public static Material Chromite;
     public static Material Cinnabar;
     public static Material Water;
+    public static Material SuperheatedSteam;
     public static Material Coal;
     public static Material Cobaltite;
     public static Material Cooperite;

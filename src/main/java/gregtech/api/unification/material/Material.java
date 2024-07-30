@@ -909,8 +909,14 @@ public class Material implements Comparable<Material> {
             return this;
         }
 
+        @Deprecated
         public Builder rotorStats(float speed, float damage, int durability) {
             properties.setProperty(PropertyKey.ROTOR, new RotorProperty(speed, damage, durability));
+            return this;
+        }
+
+        public Builder turbineRotor(@NotNull UnaryOperator<RotorProperty2.@NotNull Builder> b) {
+            properties.setProperty(PropertyKey.ROTOR_2, b.apply(new RotorProperty2.Builder()).build());
             return this;
         }
 
