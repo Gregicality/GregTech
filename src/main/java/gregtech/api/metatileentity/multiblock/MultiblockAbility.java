@@ -98,6 +98,6 @@ public class MultiblockAbility<T> {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof MultiblockAbility<?>other &&
-                this.name.equals(other.toString());
+                this.name.equals(other.name);
     }
 }

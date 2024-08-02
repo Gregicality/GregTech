@@ -281,10 +281,12 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     protected boolean checkPreviousRecipeDistinct(IItemHandlerModifiable previousBus) {
+        if (previousRecipe == null) return false;
+
         IItemHandlerModifiable items = gatherItems(previousBus, getInputTank());
         IMultipleTankHandler fluids = gatherFluids(previousBus, getInputTank());
 
-        return previousRecipe != null && previousRecipe.matches(false, items, fluids);
+        return previousRecipe.matches(false, items, fluids);
     }
 
     protected boolean prepareRecipeDistinct(Recipe recipe) {

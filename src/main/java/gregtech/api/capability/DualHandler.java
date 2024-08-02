@@ -2,6 +2,7 @@ package gregtech.api.capability;
 
 import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.metatileentity.MetaTileEntity;
+import gregtech.api.util.ItemStackHashStrategy;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -18,6 +19,11 @@ import java.util.List;
 
 public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler, INotifiableHandler {
 
+    private static final ItemStackHashStrategy strategy = ItemStackHashStrategy.builder()
+            .compareItem(true)
+            .compareDamage(true)
+            .compareTag(true)
+            .build();
     @NotNull
     IItemHandlerModifiable itemDelegate;
     @NotNull
@@ -66,14 +72,18 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        if (!simulate) onContentsChanged();
-        return itemDelegate.insertItem(slot, stack, simulate);
+        var remainder = itemDelegate.insertItem(slot, stack, simulate);
+        if (!simulate && !strategy.equals(remainder, stack))
+            onContentsChanged();
+        return remainder;
     }
 
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (!simulate) onContentsChanged();
-        return itemDelegate.extractItem(slot, amount, simulate);
+        var extracted = itemDelegate.extractItem(slot, amount, simulate);
+        if (!simulate && !extracted.isEmpty())
+            onContentsChanged();
+        return extracted;
     }
 
     @Override
@@ -83,8 +93,10 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
     @Override
     public void setStackInSlot(int slot, ItemStack stack) {
+        var oldStack = itemDelegate.getStackInSlot(slot);
         itemDelegate.setStackInSlot(slot, stack);
-        if (!stack.isEmpty()) onContentsChanged();
+        if (!strategy.equals(oldStack, stack))
+            onContentsChanged();
     }
 
     @Override
@@ -94,20 +106,23 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
     @Override
     public int fill(FluidStack resource, boolean doFill) {
-        if (doFill) onContentsChanged();
-        return fluidDelegate.fill(resource, doFill);
+        int filled = fluidDelegate.fill(resource, doFill);
+        if (doFill && filled > 0) onContentsChanged();
+        return filled;
     }
 
     @Override
     public FluidStack drain(FluidStack resource, boolean doDrain) {
-        if (doDrain) onContentsChanged();
-        return fluidDelegate.drain(resource, doDrain);
+        var drained = fluidDelegate.drain(resource, doDrain);
+        if (doDrain && drained != null) onContentsChanged();
+        return drained;
     }
 
     @Override
     public FluidStack drain(int maxDrain, boolean doDrain) {
-        if (doDrain) onContentsChanged();
-        return fluidDelegate.drain(maxDrain, doDrain);
+        var drained = fluidDelegate.drain(maxDrain, doDrain);
+        if (doDrain && drained != null) onContentsChanged();
+        return drained;
     }
 
     @Override
