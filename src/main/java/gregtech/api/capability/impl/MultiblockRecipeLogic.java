@@ -1,7 +1,6 @@
 package gregtech.api.capability.impl;
 
 import gregtech.api.GTValues;
-import gregtech.api.capability.IDistinctBusController;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.IMultiblockController;
 import gregtech.api.capability.IMultipleRecipeMaps;
@@ -242,33 +241,6 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     @Override
-    protected @Nullable Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs,
-                                          IMultipleTankHandler fluidInputs) {
-        RecipeMap<?> map = getRecipeMap();
-        if (map == null || !isRecipeMapValid(map)) {
-            return null;
-        }
-
-        IItemHandlerModifiable items = gatherItems(inputs, fluidInputs);
-        IMultipleTankHandler fluids = gatherFluids(inputs, fluidInputs);
-
-        return map.findRecipe(maxVoltage, items, fluids);
-    }
-
-    @Override
-    protected boolean recipeMatch(Recipe recipe, boolean shouldConsume) {
-        IItemHandler input = getInputInventory();
-        if (metaTileEntity instanceof IDistinctBusController distinct && distinct.isDistinct()) {
-            input = currentDistinctInputBus;
-        }
-
-        IItemHandlerModifiable items = gatherItems(input, getInputTank());
-        IMultipleTankHandler fluids = gatherFluids(input, getInputTank());
-
-        return recipe.matches(shouldConsume, items, fluids);
-    }
-
-    @Override
     public void invalidateInputs() {
         MultiblockWithDisplayBase controller = (MultiblockWithDisplayBase) metaTileEntity;
         RecipeMapMultiblockController distinctController = (RecipeMapMultiblockController) controller;
@@ -281,12 +253,7 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     protected boolean checkPreviousRecipeDistinct(IItemHandlerModifiable previousBus) {
-        if (previousRecipe == null) return false;
-
-        IItemHandlerModifiable items = gatherItems(previousBus, getInputTank());
-        IMultipleTankHandler fluids = gatherFluids(previousBus, getInputTank());
-
-        return previousRecipe.matches(false, items, fluids);
+        return previousRecipe != null && previousRecipe.matches(false, previousBus, getInputTank());
     }
 
     protected boolean prepareRecipeDistinct(Recipe recipe) {
