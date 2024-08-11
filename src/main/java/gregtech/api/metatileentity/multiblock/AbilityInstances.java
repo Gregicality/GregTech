@@ -1,5 +1,6 @@
 package gregtech.api.metatileentity.multiblock;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
@@ -8,6 +9,23 @@ import java.util.List;
 
 public class AbilityInstances extends AbstractList<Object> {
 
+    public static final AbilityInstances EMPTY = new AbilityInstances(null) {
+
+        @Override
+        public boolean isKey(MultiblockAbility<?> key) {
+            return false;
+        }
+
+        @Override
+        public boolean add(Object o) {
+            return false;
+        }
+
+        @Override
+        public Object get(int index) {
+            return null;
+        }
+    };
     private final MultiblockAbility<?> key;
     private final List<Object> instances = new ArrayList<>();
 
@@ -20,8 +38,17 @@ public class AbilityInstances extends AbstractList<Object> {
         return instances.get(index);
     }
 
+    public boolean isKey(MultiblockAbility<?> key) {
+        return this.key.equals(key);
+    }
+
     public <R> @Nullable R getAndCast(int index, MultiblockAbility<R> key) {
         return key.checkAndCast(get(index));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <R> @NotNull List<R> cast() {
+        return (List<R>) this;
     }
 
     @Override
