@@ -1,16 +1,19 @@
 package gregtech.api.metatileentity.multiblock;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
 
 public interface IMultiblockAbilityPart<T> extends IMultiblockPart {
 
-    MultiblockAbility<T> getAbility();
+    default @Nullable MultiblockAbility<T> getAbility() {
+        return null;
+    }
 
     default @NotNull List<MultiblockAbility<?>> getAbilities() {
-        return Collections.singletonList(getAbility());
+        return getAbility() == null ? Collections.emptyList() : Collections.singletonList(getAbility());
     }
 
     void registerAbilities(@NotNull AbilityInstances abilityInstances);
