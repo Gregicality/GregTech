@@ -358,9 +358,9 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
                         if (!checkAbilityPart(ability, ((MetaTileEntity) abilityPart).getPos()))
                             continue;
 
-                        AbilityInstances abilityInstancesList = abilities.computeIfAbsent(ability,
+                        AbilityInstances instances = abilities.computeIfAbsent(ability,
                                 AbilityInstances::new);
-                        abilityPart.registerAbilities(ability, abilityInstancesList);
+                        abilityPart.registerAbilities(instances);
                     }
                 }
             }

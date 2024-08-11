@@ -2,6 +2,7 @@ package gregtech.common.metatileentities.steam.multiblockpart;
 
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
 import gregtech.api.mui.GTGuiTheme;
@@ -56,10 +57,8 @@ public class MetaTileEntitySteamItemBus extends MetaTileEntityItemBus {
     }
 
     @Override
-    public void registerAbilities(
-                                  @NotNull MultiblockAbility<IItemHandlerModifiable> multiblockAbility,
-                                  @NotNull List<IItemHandlerModifiable> abilities) {
-        abilities.add(isExportHatch ? this.exportItems : this.importItems);
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.add(isExportHatch ? this.exportItems : this.importItems);
     }
 
     // Override base texture to have a bus with 4 slots, but ULV textures

@@ -14,6 +14,7 @@ import gregtech.api.capability.impl.NotifiableFluidTank;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
@@ -254,12 +255,11 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     }
 
     @Override
-    public void registerAbilities(@NotNull MultiblockAbility<IFluidTank> key,
-                                  @NotNull List<IFluidTank> abilities) {
-        if (key.equals(MultiblockAbility.EXPORT_FLUIDS)) {
-            abilities.add(this.fluidTank);
-        } else if (key.equals(MultiblockAbility.IMPORT_FLUIDS)) {
-            abilities.addAll(this.dualHandler.unwrap());
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        if (abilityInstances.isKey(MultiblockAbility.EXPORT_FLUIDS)) {
+            abilityInstances.add(this.fluidTank);
+        } else if (abilityInstances.isKey(MultiblockAbility.IMPORT_FLUIDS)) {
+            abilityInstances.addAll(this.dualHandler.unwrap());
         }
     }
 

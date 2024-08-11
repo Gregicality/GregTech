@@ -13,5 +13,5 @@ public interface IMultiblockAbilityPart<T> extends IMultiblockPart {
         return Collections.singletonList(getAbility());
     }
 
-    void registerAbilities(@NotNull MultiblockAbility<T> key, @NotNull List<T> abilities);
+    void registerAbilities(@NotNull AbilityInstances abilityInstances);
 }

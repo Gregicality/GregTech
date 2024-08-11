@@ -2,6 +2,7 @@ package gregtech.api.capability.impl;
 
 import gregtech.api.capability.IDistillationTower;
 import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.pattern.BlockPattern;
@@ -92,12 +93,12 @@ public class DistillationTowerLogicHandler {
             }
             MetaTileEntityMultiblockPart part = fluidExportParts.get(exportIndex);
             if (part.getPos().getY() == y) {
-                List<IFluidTank> hatchTanks = new ObjectArrayList<>();
+                AbilityInstances hatchTanks = new AbilityInstances(MultiblockAbility.EXPORT_FLUIDS);
                 // noinspection unchecked
                 ((IMultiblockAbilityPart<IFluidTank>) part)
-                        .registerAbilities(MultiblockAbility.EXPORT_FLUIDS, hatchTanks);
-                orderedHandlerList.add(new FluidTankList(false, hatchTanks));
-                tankList.addAll(hatchTanks);
+                        .registerAbilities(hatchTanks);
+                orderedHandlerList.add(new FluidTankList(false, hatchTanks.cast()));
+                tankList.addAll(hatchTanks.cast());
                 exportIndex++;
             } else if (part.getPos().getY() > y) {
                 orderedHandlerList.add(FakeTank.INSTANCE);
