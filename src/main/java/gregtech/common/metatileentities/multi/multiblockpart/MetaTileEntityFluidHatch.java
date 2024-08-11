@@ -60,6 +60,8 @@ import com.cleanroommc.modularui.widgets.slot.ModularSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiablePart
@@ -72,7 +74,6 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     protected final HatchFluidTank fluidTank;
     protected boolean workingEnabled;
     private GhostCircuitItemStackHandler circuitInventory;
-    private DualHandler dualHandler;
 
     // export hatch-only fields
     protected boolean locked;
@@ -87,7 +88,6 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         if (this.hasGhostCircuitInventory()) {
             this.circuitInventory = new GhostCircuitItemStackHandler(this);
             this.circuitInventory.addNotifiableMetaTileEntity(this);
-            this.dualHandler = new DualHandler(this.circuitInventory, this.importFluids, isExportHatch);
         }
     }
 
@@ -255,11 +255,19 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     }
 
     @Override
+    public @NotNull List<MultiblockAbility<?>> getAbilities() {
+        return isExportHatch ?
+                Collections.singletonList(MultiblockAbility.EXPORT_FLUIDS) :
+                Arrays.asList(MultiblockAbility.IMPORT_FLUIDS, MultiblockAbility.IMPORT_ITEMS);
+    }
+
+    @Override
     public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
-        if (abilityInstances.isKey(MultiblockAbility.EXPORT_FLUIDS)) {
+        if (abilityInstances.isKey(MultiblockAbility.EXPORT_FLUIDS) ||
+                abilityInstances.isKey(MultiblockAbility.IMPORT_FLUIDS)) {
             abilityInstances.add(this.fluidTank);
-        } else if (abilityInstances.isKey(MultiblockAbility.IMPORT_FLUIDS)) {
-            abilityInstances.addAll(this.dualHandler.unwrap());
+        } else if (abilityInstances.isKey(MultiblockAbility.IMPORT_ITEMS)) {
+            abilityInstances.add(this.circuitInventory);
         }
     }
 
