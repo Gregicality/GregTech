@@ -179,7 +179,7 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         this.notifiableEntities.remove(metaTileEntity);
     }
 
-    public class DualEntry implements IItemHandlerModifiable, IFluidTank, IFluidHandler, INotifiableHandler {
+    public static class DualEntry implements IItemHandlerModifiable, IFluidTank, IFluidHandler, INotifiableHandler {
 
         private static final FluidTankInfo NULL = new FluidTankInfo(null, 0);
 
@@ -234,7 +234,8 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         public int fill(FluidStack resource, boolean doFill) {
             if (fluidIndex == -1) return 0;
             int filled = getTank().fill(resource, doFill);
-            if (doFill && filled > 0) onContentsChanged();
+            if (doFill && filled > 0)
+                delegate.onContentsChanged();
             return filled;
         }
 
@@ -242,7 +243,8 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         public FluidStack drain(FluidStack resource, boolean doDrain) {
             if (fluidIndex == -1) return null;
             var drained = getTank().drain(resource, doDrain);
-            if (doDrain && drained != null) onContentsChanged();
+            if (doDrain && drained != null)
+                delegate.onContentsChanged();
             return drained;
         }
 
@@ -250,7 +252,8 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         public FluidStack drain(int maxDrain, boolean doDrain) {
             if (fluidIndex == -1) return null;
             var drained = getTank().drain(maxDrain, doDrain);
-            if (doDrain && drained != null) onContentsChanged();
+            if (doDrain && drained != null)
+                delegate.onContentsChanged();
             return drained;
         }
 
@@ -295,12 +298,12 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
         @Override
         public void addNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
-            DualHandler.this.addNotifiableMetaTileEntity(metaTileEntity);
+            this.delegate.addNotifiableMetaTileEntity(metaTileEntity);
         }
 
         @Override
         public void removeNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
-            DualHandler.this.removeNotifiableMetaTileEntity(metaTileEntity);
+            this.delegate.removeNotifiableMetaTileEntity(metaTileEntity);
         }
     }
 }
