@@ -58,6 +58,23 @@ public class AbilityInstances extends AbstractList<Object> {
     }
 
     @Override
+    public void add(int index, Object element) {
+        if (key.checkType(element))
+            instances.add(index, element);
+    }
+
+    @Override
+    public Object set(int index, Object element) {
+        if (!key.checkType(element)) return null;
+        return instances.set(index, element);
+    }
+
+    @Override
+    public Object remove(int index) {
+        return instances.remove(index);
+    }
+
+    @Override
     public int size() {
         return instances.size();
     }
