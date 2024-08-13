@@ -160,17 +160,20 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         return this.unwrapped;
     }
 
-    public void onContentsChanged() {
+    public void onContentsChanged(Object handler) {
         for (MetaTileEntity metaTileEntity : notifiableEntities) {
-            if (metaTileEntity != null && metaTileEntity.isValid()) {
-                addToNotifiedList(metaTileEntity, this, isExport);
-            }
+            addToNotifiedList(metaTileEntity, handler, isExport);
         }
+    }
+
+    public void onContentsChanged() {
+        onContentsChanged(this);
     }
 
     @Override
     public void addNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
-        if (metaTileEntity == null) return;
+        if (metaTileEntity == null || this.notifiableEntities.contains(metaTileEntity))
+            return;
         this.notifiableEntities.add(metaTileEntity);
     }
 
@@ -235,7 +238,7 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
             if (fluidIndex == -1) return 0;
             int filled = getTank().fill(resource, doFill);
             if (doFill && filled > 0)
-                delegate.onContentsChanged();
+                delegate.onContentsChanged(this);
             return filled;
         }
 
@@ -244,7 +247,7 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
             if (fluidIndex == -1) return null;
             var drained = getTank().drain(resource, doDrain);
             if (doDrain && drained != null)
-                delegate.onContentsChanged();
+                delegate.onContentsChanged(this);
             return drained;
         }
 
@@ -253,7 +256,7 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
             if (fluidIndex == -1) return null;
             var drained = getTank().drain(maxDrain, doDrain);
             if (doDrain && drained != null)
-                delegate.onContentsChanged();
+                delegate.onContentsChanged(this);
             return drained;
         }
 

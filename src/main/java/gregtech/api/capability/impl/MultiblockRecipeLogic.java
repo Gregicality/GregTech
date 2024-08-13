@@ -201,7 +201,6 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
         long maxVoltage = getMaxVoltage();
         Recipe currentRecipe;
         List<IItemHandlerModifiable> importInventory = getInputBuses();
-        IMultipleTankHandler importFluids = getInputTank();
 
         // Our caching implementation
         // This guarantees that if we get a recipe cache hit, our efficiency is no different from other machines
@@ -224,7 +223,7 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
                 continue;
             }
             // Look for a new recipe after a cache miss
-            currentRecipe = findRecipe(maxVoltage, bus, importFluids);
+            currentRecipe = findRecipe(maxVoltage, bus, checkExtraFluids(bus));
             // Cache the current recipe, if one is found
             if (currentRecipe != null && checkRecipe(currentRecipe)) {
                 this.previousRecipe = currentRecipe;
