@@ -17,6 +17,7 @@ import gregtech.api.util.GTUtility;
 import gregtech.common.ConfigHolder;
 
 import net.minecraft.util.Tuple;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -253,24 +254,26 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     protected boolean checkPreviousRecipeDistinct(IItemHandlerModifiable previousBus) {
-        return previousRecipe != null && previousRecipe.matches(false, previousBus, getInputTank());
+        return previousRecipe != null && previousRecipe.matches(false, previousBus, checkExtraFluids(previousBus));
     }
 
     protected boolean prepareRecipeDistinct(Recipe recipe) {
         recipe = Recipe.trimRecipeOutputs(recipe, getRecipeMap(), metaTileEntity.getItemOutputLimit(),
                 metaTileEntity.getFluidOutputLimit());
 
+        var extraFluids = checkExtraFluids(currentDistinctInputBus);
+
         recipe = findParallelRecipe(
                 recipe,
                 currentDistinctInputBus,
-                getInputTank(),
+                extraFluids,
                 getOutputInventory(),
                 getOutputTank(),
                 getMaxParallelVoltage(),
                 getParallelLimit());
 
         if (recipe != null) {
-            recipe = setupAndConsumeRecipeInputs(recipe, currentDistinctInputBus);
+            recipe = setupAndConsumeRecipeInputs(recipe, currentDistinctInputBus, extraFluids);
             if (recipe != null) {
                 setupRecipe(recipe);
                 return true;
@@ -278,6 +281,14 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
         }
 
         return false;
+    }
+
+    protected IMultipleTankHandler checkExtraFluids(IItemHandler items) {
+        List<IFluidTank> tanks = new ArrayList<>(getInputTank().getFluidTanks());
+        if (items instanceof IMultipleTankHandler multipleTankHandler) {
+            tanks.addAll(multipleTankHandler.getFluidTanks());
+        }
+        return new FluidTankList(getInputTank().allowSameFluidFill(), tanks);
     }
 
     @Override
