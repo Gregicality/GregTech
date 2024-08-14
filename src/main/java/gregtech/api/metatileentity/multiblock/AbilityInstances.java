@@ -57,8 +57,8 @@ public class AbilityInstances extends AbstractList<Object> {
     @Override
     public boolean add(Object o) {
         if (o instanceof Collection<?>collection) {
-            GTLog.logger.warn(new IllegalArgumentException(
-                    "Passed in a collection of elements to \"add()\"! Please use \"addAll()\" instead."));
+            GTLog.logger.warn("Passed in a collection of elements to \"add()\"! Please use \"addAll()\" instead.",
+                    new IllegalArgumentException());
             return addAll(collection);
         }
         int s = size();
