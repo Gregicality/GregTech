@@ -249,11 +249,6 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
     }
 
     @Override
-    public MultiblockAbility<IFluidTank> getAbility() {
-        return isExportHatch ? MultiblockAbility.EXPORT_FLUIDS : MultiblockAbility.IMPORT_FLUIDS;
-    }
-
-    @Override
     public @NotNull List<MultiblockAbility<?>> getAbilities() {
         return isExportHatch ?
                 Collections.singletonList(MultiblockAbility.EXPORT_FLUIDS) :
