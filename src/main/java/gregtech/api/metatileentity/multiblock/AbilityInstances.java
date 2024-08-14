@@ -74,13 +74,17 @@ public class AbilityInstances extends AbstractList<Object> {
 
     @Override
     public void add(int index, Object element) {
-        if (key.checkType(element))
-            instances.add(index, element);
+        if (!key.checkType(element))
+            throw new IllegalArgumentException(
+                    String.format("element's class \"%s\" is not of type \"%s\"", element.getClass(), this.key.getType()));
+        instances.add(index, element);
     }
 
     @Override
     public Object set(int index, Object element) {
-        if (!key.checkType(element)) return null;
+        if (!key.checkType(element))
+            throw new IllegalArgumentException(
+                    String.format("element's class \"%s\" is not of type \"%s\"", element.getClass(), this.key.getType()));
         return instances.set(index, element);
     }
 

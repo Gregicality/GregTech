@@ -124,6 +124,10 @@ public class MultiblockAbility<T> {
         return clazz.isAssignableFrom(o.getClass());
     }
 
+    public String getType() {
+        return this.clazz.toString();
+    }
+
     public @Nullable T checkAndCast(Object o) {
         if (checkType(o))
             return clazz.cast(o);
