@@ -57,10 +57,6 @@ public class AbilityInstances extends AbstractList<Object> {
         return (List<R>) this;
     }
 
-    /**
-     * @param o element to try and add to this list of instances
-     * @return
-     */
     @Override
     public boolean add(Object o) {
         int s = size();
