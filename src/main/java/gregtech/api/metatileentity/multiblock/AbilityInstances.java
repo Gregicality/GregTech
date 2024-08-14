@@ -1,10 +1,13 @@
 package gregtech.api.metatileentity.multiblock;
 
+import gregtech.api.util.GTLog;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class AbilityInstances extends AbstractList<Object> {
@@ -53,8 +56,14 @@ public class AbilityInstances extends AbstractList<Object> {
 
     @Override
     public boolean add(Object o) {
-        if (!key.checkType(o)) return false;
-        return instances.add(o);
+        if (o instanceof Collection<?>collection) {
+            GTLog.logger.warn(new IllegalArgumentException(
+                    "Passed in a collection of elements to \"add()\"! Please use \"addAll()\" instead."));
+            return addAll(collection);
+        }
+        int s = size();
+        add(s, o);
+        return s != size();
     }
 
     @Override
