@@ -1,13 +1,10 @@
 package gregtech.api.metatileentity.multiblock;
 
-import gregtech.api.util.GTLog;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class AbilityInstances extends AbstractList<Object> {
@@ -20,8 +17,13 @@ public class AbilityInstances extends AbstractList<Object> {
         }
 
         @Override
-        public boolean add(Object o) {
-            return false;
+        public void add(int index, Object element) {
+            // do nothing
+        }
+
+        @Override
+        public Object set(int index, Object element) {
+            return null;
         }
 
         @Override
@@ -29,6 +31,7 @@ public class AbilityInstances extends AbstractList<Object> {
             return null;
         }
     };
+
     private final MultiblockAbility<?> key;
     private final List<Object> instances = new ArrayList<>();
 
@@ -54,14 +57,21 @@ public class AbilityInstances extends AbstractList<Object> {
         return (List<R>) this;
     }
 
+    /**
+     * @param o element to try and add to this list of instances
+     * @return
+     */
     @Override
     public boolean add(Object o) {
-        if (o instanceof Collection<?>collection) {
-            GTLog.logger.warn("Passed in a collection of elements to \"add()\"! Please use \"addAll()\" instead.",
-                    new IllegalArgumentException());
-            return addAll(collection);
-        }
         int s = size();
+        // if what's added isn't what the key expects,
+        // and it's an iterable, try to add all of its elements instead
+        if (!this.key.checkType(o) && o instanceof Iterable<?>iterable) {
+            for (var e : iterable)
+                add(size(), e);
+            return s != size();
+        }
+        // otherwise add as normal
         add(s, o);
         return s != size();
     }
