@@ -76,7 +76,7 @@ public class DistillationTowerLogicHandler {
         // noinspection SimplifyStreamApiCallChains
         List<MetaTileEntityMultiblockPart> fluidExportParts = tower.getMultiblockParts().stream()
                 .filter(iMultiblockPart -> iMultiblockPart instanceof IMultiblockAbilityPart<?>abilityPart &&
-                        abilityPart.getAbility() == MultiblockAbility.EXPORT_FLUIDS &&
+                        abilityPart.getAbilities().contains(MultiblockAbility.EXPORT_FLUIDS) &&
                         abilityPart instanceof MetaTileEntityMultiblockPart)
                 .map(iMultiblockPart -> (MetaTileEntityMultiblockPart) iMultiblockPart)
                 .collect(Collectors.toList());

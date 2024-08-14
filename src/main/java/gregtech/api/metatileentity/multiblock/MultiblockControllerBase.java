@@ -231,11 +231,17 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
     }
 
     public static TraceabilityPredicate abilities(MultiblockAbility<?>... allowedAbilities) {
-        return tilePredicate((state, tile) -> tile instanceof IMultiblockAbilityPart<?> &&
-                ArrayUtils.contains(allowedAbilities, ((IMultiblockAbilityPart<?>) tile).getAbility()),
-                getCandidates(Arrays.stream(allowedAbilities)
-                        .flatMap(ability -> MultiblockAbility.REGISTRY.get(ability).stream())
-                        .toArray(MetaTileEntity[]::new)));
+        return tilePredicate((state, tile) -> {
+            if (tile instanceof IMultiblockAbilityPart<?>abilityPart) {
+                for (var ability : abilityPart.getAbilities()) {
+                    if (ArrayUtils.contains(allowedAbilities, ability))
+                        return true;
+                }
+            }
+            return false;
+        }, getCandidates(Arrays.stream(allowedAbilities)
+                .flatMap(ability -> MultiblockAbility.REGISTRY.get(ability).stream())
+                .toArray(MetaTileEntity[]::new)));
     }
 
     public static TraceabilityPredicate states(IBlockState... allowedStates) {
