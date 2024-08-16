@@ -241,6 +241,12 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     @Override
+    protected @Nullable Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs,
+                                          IMultipleTankHandler fluidInputs) {
+        return super.findRecipe(maxVoltage, inputs, checkExtraFluids(inputs));
+    }
+
+    @Override
     public void invalidateInputs() {
         MultiblockWithDisplayBase controller = (MultiblockWithDisplayBase) metaTileEntity;
         RecipeMapMultiblockController distinctController = (RecipeMapMultiblockController) controller;
@@ -284,9 +290,20 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
 
     protected IMultipleTankHandler checkExtraFluids(IItemHandler items) {
         List<IFluidTank> tanks = new ArrayList<>(getInputTank().getFluidTanks());
-        if (items instanceof IMultipleTankHandler multipleTankHandler) {
+        if (items instanceof ItemHandlerList list) {
+            for (var handler : list.getBackingHandlers()) {
+                if (handler instanceof IFluidTank tank) {
+                    tanks.add(tank);
+                } else if (handler instanceof IMultipleTankHandler multipleTankHandler) {
+                    tanks.addAll(multipleTankHandler.getFluidTanks());
+                }
+            }
+        } else if (items instanceof IFluidTank tank) {
+            tanks.add(tank);
+        } else if (items instanceof IMultipleTankHandler multipleTankHandler) {
             tanks.addAll(multipleTankHandler.getFluidTanks());
         }
+
         return new FluidTankList(getInputTank().allowSameFluidFill(), tanks);
     }
 
