@@ -2,7 +2,6 @@ package gregtech.api.capability;
 
 import gregtech.api.metatileentity.MetaTileEntity;
 
-import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandler;
 
 /**
@@ -35,12 +34,10 @@ public interface INotifiableHandler {
     void removeNotifiableMetaTileEntity(MetaTileEntity metaTileEntity);
 
     default int size() {
-        if (this instanceof IFluidTank)
-            return 1;
-        else if (this instanceof IItemHandler handler)
+        if (this instanceof IItemHandler handler)
             return handler.getSlots();
         else if (this instanceof IMultipleTankHandler tankHandler)
             return tankHandler.getTanks();
-        return 0;
+        return 1;
     }
 }
