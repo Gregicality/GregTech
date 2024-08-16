@@ -24,6 +24,11 @@ public class AbilityInstances extends AbstractList<Object> {
         }
 
         @Override
+        protected boolean canAdd(Object o) {
+            return false;
+        }
+
+        @Override
         public void add(int index, Object element) {
             // do nothing
         }
@@ -77,7 +82,7 @@ public class AbilityInstances extends AbstractList<Object> {
         int s = size();
         // if what's added isn't what the key expects,
         // and it's an iterable, try to add all of its elements instead
-        if (!this.key.checkType(o) && o instanceof Iterable<?>iterable) {
+        if (!canAdd(o) && o instanceof Iterable<?>iterable) {
             for (var e : iterable)
                 add(size(), e);
             return s != size();
@@ -85,6 +90,10 @@ public class AbilityInstances extends AbstractList<Object> {
         // otherwise add as normal
         add(s, o);
         return s != size();
+    }
+
+    protected boolean canAdd(Object o) {
+        return this.key.checkType(o);
     }
 
     @Override
