@@ -139,8 +139,9 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         this.energyContainer = new EnergyContainerList(Lists.newArrayList());
     }
 
-    protected IMultipleTankHandler createFluidList(MultiblockAbility<IItemHandlerModifiable> items, MultiblockAbility<IFluidTank> fluids) {
-        List<IFluidTank> tanks = getAbilitiesModifiable(fluids);
+    protected IMultipleTankHandler createFluidList(MultiblockAbility<IItemHandlerModifiable> items,
+                                                   MultiblockAbility<IFluidTank> fluids) {
+        List<IFluidTank> tanks = new ArrayList<>(getAbilities(fluids));
         for (var handler : getAbilities(items)) {
             if (handler instanceof IFluidTank tank) {
                 tanks.add(tank);

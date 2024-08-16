@@ -17,7 +17,6 @@ import gregtech.api.util.GTUtility;
 import gregtech.common.ConfigHolder;
 
 import net.minecraft.util.Tuple;
-import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
