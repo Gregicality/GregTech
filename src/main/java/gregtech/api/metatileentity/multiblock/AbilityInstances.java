@@ -102,7 +102,8 @@ public class AbilityInstances extends AbstractList<Object> {
             throw new IllegalArgumentException(
                     String.format("element's class \"%s\" is not of type \"%s\"", element.getClass(),
                             this.key.getType()));
-        instances.add(index, element);
+        if (!instances.contains(element))
+            instances.add(index, element);
     }
 
     /**
@@ -118,6 +119,9 @@ public class AbilityInstances extends AbstractList<Object> {
             throw new IllegalArgumentException(
                     String.format("element's class \"%s\" is not of type \"%s\"", element.getClass(),
                             this.key.getType()));
+        if (instances.contains(element))
+            return null;
+
         return instances.set(index, element);
     }
 
