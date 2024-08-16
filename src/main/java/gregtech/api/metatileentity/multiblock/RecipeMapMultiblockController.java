@@ -141,7 +141,8 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
 
     protected IMultipleTankHandler createFluidList(MultiblockAbility<IItemHandlerModifiable> items,
                                                    MultiblockAbility<IFluidTank> fluids) {
-        List<IFluidTank> tanks = new ArrayList<>(getAbilities(fluids));
+        var tanks = new AbilityInstances(fluids);
+        tanks.addAll(getAbilities(fluids));
         for (var handler : getAbilities(items)) {
             if (handler instanceof IFluidTank tank) {
                 tanks.add(tank);
@@ -150,7 +151,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
             }
         }
 
-        return new FluidTankList(allowSameFluidFillForOutputs(), tanks);
+        return new FluidTankList(allowSameFluidFillForOutputs(), tanks.cast());
     }
 
     protected boolean allowSameFluidFillForOutputs() {
