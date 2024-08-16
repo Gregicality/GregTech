@@ -26,6 +26,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import codechicken.lib.render.CCRenderState;
@@ -120,11 +121,9 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
 
     protected void initializeAbilities() {
         this.inputInventory = new ItemHandlerList(getAbilities(MultiblockAbility.IMPORT_ITEMS));
-        this.inputFluidInventory = new FluidTankList(allowSameFluidFillForOutputs(),
-                getAbilities(MultiblockAbility.IMPORT_FLUIDS));
+        this.inputFluidInventory = createFluidList(MultiblockAbility.IMPORT_ITEMS, MultiblockAbility.IMPORT_FLUIDS);
         this.outputInventory = new ItemHandlerList(getAbilities(MultiblockAbility.EXPORT_ITEMS));
-        this.outputFluidInventory = new FluidTankList(allowSameFluidFillForOutputs(),
-                getAbilities(MultiblockAbility.EXPORT_FLUIDS));
+        this.outputFluidInventory = createFluidList(MultiblockAbility.EXPORT_ITEMS, MultiblockAbility.EXPORT_FLUIDS);
 
         List<IEnergyContainer> inputEnergy = new ArrayList<>(getAbilities(MultiblockAbility.INPUT_ENERGY));
         inputEnergy.addAll(getAbilities(MultiblockAbility.SUBSTATION_INPUT_ENERGY));
@@ -138,6 +137,19 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         this.outputInventory = new GTItemStackHandler(this, 0);
         this.outputFluidInventory = new FluidTankList(true);
         this.energyContainer = new EnergyContainerList(Lists.newArrayList());
+    }
+
+    protected IMultipleTankHandler createFluidList(MultiblockAbility<IItemHandlerModifiable> items, MultiblockAbility<IFluidTank> fluids) {
+        List<IFluidTank> tanks = getAbilitiesModifiable(fluids);
+        for (var handler : getAbilities(items)) {
+            if (handler instanceof IFluidTank tank) {
+                tanks.add(tank);
+            } else if (handler instanceof IMultipleTankHandler multipleTankHandler) {
+                tanks.addAll(multipleTankHandler.getFluidTanks());
+            }
+        }
+
+        return new FluidTankList(allowSameFluidFillForOutputs(), tanks);
     }
 
     protected boolean allowSameFluidFillForOutputs() {

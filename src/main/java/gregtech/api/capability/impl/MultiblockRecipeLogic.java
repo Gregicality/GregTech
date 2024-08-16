@@ -223,7 +223,7 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
                 continue;
             }
             // Look for a new recipe after a cache miss
-            currentRecipe = findRecipe(maxVoltage, bus, checkExtraFluids(bus));
+            currentRecipe = findRecipe(maxVoltage, bus, getInputTank());
             // Cache the current recipe, if one is found
             if (currentRecipe != null && checkRecipe(currentRecipe)) {
                 this.previousRecipe = currentRecipe;
@@ -241,12 +241,6 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     @Override
-    protected @Nullable Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs,
-                                          IMultipleTankHandler fluidInputs) {
-        return super.findRecipe(maxVoltage, inputs, checkExtraFluids(inputs));
-    }
-
-    @Override
     public void invalidateInputs() {
         MultiblockWithDisplayBase controller = (MultiblockWithDisplayBase) metaTileEntity;
         RecipeMapMultiblockController distinctController = (RecipeMapMultiblockController) controller;
@@ -259,26 +253,24 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
     }
 
     protected boolean checkPreviousRecipeDistinct(IItemHandlerModifiable previousBus) {
-        return previousRecipe != null && previousRecipe.matches(false, previousBus, checkExtraFluids(previousBus));
+        return previousRecipe != null && previousRecipe.matches(false, previousBus, getInputTank());
     }
 
     protected boolean prepareRecipeDistinct(Recipe recipe) {
         recipe = Recipe.trimRecipeOutputs(recipe, getRecipeMap(), metaTileEntity.getItemOutputLimit(),
                 metaTileEntity.getFluidOutputLimit());
 
-        var extraFluids = checkExtraFluids(currentDistinctInputBus);
-
         recipe = findParallelRecipe(
                 recipe,
                 currentDistinctInputBus,
-                extraFluids,
+                getInputTank(),
                 getOutputInventory(),
                 getOutputTank(),
                 getMaxParallelVoltage(),
                 getParallelLimit());
 
         if (recipe != null) {
-            recipe = setupAndConsumeRecipeInputs(recipe, currentDistinctInputBus, extraFluids);
+            recipe = setupAndConsumeRecipeInputs(recipe, currentDistinctInputBus, getInputTank());
             if (recipe != null) {
                 setupRecipe(recipe);
                 return true;
@@ -286,25 +278,6 @@ public class MultiblockRecipeLogic extends AbstractRecipeLogic {
         }
 
         return false;
-    }
-
-    protected IMultipleTankHandler checkExtraFluids(IItemHandler items) {
-        List<IFluidTank> tanks = new ArrayList<>(getInputTank().getFluidTanks());
-        if (items instanceof ItemHandlerList list) {
-            for (var handler : list.getBackingHandlers()) {
-                if (handler instanceof IFluidTank tank) {
-                    tanks.add(tank);
-                } else if (handler instanceof IMultipleTankHandler multipleTankHandler) {
-                    tanks.addAll(multipleTankHandler.getFluidTanks());
-                }
-            }
-        } else if (items instanceof IFluidTank tank) {
-            tanks.add(tank);
-        } else if (items instanceof IMultipleTankHandler multipleTankHandler) {
-            tanks.addAll(multipleTankHandler.getFluidTanks());
-        }
-
-        return new FluidTankList(getInputTank().allowSameFluidFill(), tanks);
     }
 
     @Override
