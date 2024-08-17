@@ -61,7 +61,7 @@ public abstract class MetaTileEntityMultiblockNotifiablePart extends MetaTileEnt
             FluidTankList fluidTankList = getFluidHandlers();
             if (fluidTankList != null) {
                 for (IFluidTank fluidTank : fluidTankList) {
-                    if (fluidTank instanceof IMultipleTankHandler.MultiFluidTankEntry entry) {
+                    if (fluidTank instanceof IMultipleTankHandler.ITankEntry entry) {
                         fluidTank = entry.getDelegate();
                     }
                     if (fluidTank instanceof INotifiableHandler) {

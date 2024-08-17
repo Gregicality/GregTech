@@ -433,7 +433,7 @@ public class GTUtility {
      *         modifications in list will reflect on fluid handler and wise-versa
      */
     public static List<FluidStack> fluidHandlerToList(IMultipleTankHandler fluidInputs) {
-        List<IMultipleTankHandler.MultiFluidTankEntry> backedList = fluidInputs.getFluidTanks();
+        List<IMultipleTankHandler.ITankEntry> backedList = fluidInputs.getFluidTanks();
         return new AbstractList<FluidStack>() {
 
             @Override

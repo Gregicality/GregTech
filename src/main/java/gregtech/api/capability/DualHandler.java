@@ -6,9 +6,7 @@ import gregtech.api.util.ItemStackHashStrategy;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -29,7 +27,7 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
     @NotNull
     IMultipleTankHandler fluidDelegate;
 
-    private final List<DualEntry> unwrapped;
+    private final List<ITankEntry> unwrapped;
 
     List<MetaTileEntity> notifiableEntities = new ArrayList<>();
     private final boolean isExport;
@@ -40,15 +38,10 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         this.itemDelegate = itemDelegate;
         this.fluidDelegate = fluidDelegate;
         this.isExport = isExport;
-        int items = itemDelegate.getSlots();
-        int fluids = fluidDelegate.getTanks();
-        int max = Math.max(items, fluids);
 
-        List<DualEntry> list = new ArrayList<>(max);
-        for (int i = 0; i < max; i++) {
-            list.add(new DualEntry(this,
-                    i < items ? i : -1,
-                    i < fluids ? i : -1));
+        List<ITankEntry> list = new ArrayList<>();
+        for (var tank : this.fluidDelegate) {
+            list.add(new DualEntry(this, tank));
         }
         this.unwrapped = list;
     }
@@ -137,8 +130,8 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
     }
 
     @Override
-    public @NotNull List<MultiFluidTankEntry> getFluidTanks() {
-        return this.fluidDelegate.getFluidTanks();
+    public @NotNull List<ITankEntry> getFluidTanks() {
+        return this.unwrapped;
     }
 
     @Override
@@ -147,17 +140,13 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
     }
 
     @Override
-    public @NotNull MultiFluidTankEntry getTankAt(int index) {
-        return this.fluidDelegate.getTankAt(index);
+    public @NotNull ITankEntry getTankAt(int index) {
+        return this.unwrapped.get(index);
     }
 
     @Override
     public boolean allowSameFluidFill() {
         return this.fluidDelegate.allowSameFluidFill();
-    }
-
-    public List<DualEntry> unwrap() {
-        return this.unwrapped;
     }
 
     public void onContentsChanged(Object handler) {
@@ -182,60 +171,35 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         this.notifiableEntities.remove(metaTileEntity);
     }
 
-    public static class DualEntry implements IItemHandlerModifiable, IFluidTank, IFluidHandler, INotifiableHandler {
-
-        private static final FluidTankInfo NULL = new FluidTankInfo(null, 0);
+    public static class DualEntry implements ITankEntry, INotifiableHandler {
 
         private final DualHandler delegate;
-        private final int itemIndex;
-        private final int fluidIndex;
-        private final IFluidTankProperties[] props;
 
-        public DualEntry(DualHandler delegate, int itemIndex, int fluidIndex) {
+        @NotNull
+        private final ITankEntry tank;
+
+        public DualEntry(DualHandler delegate, ITankEntry tank) {
             this.delegate = delegate;
-            this.itemIndex = itemIndex;
-            this.fluidIndex = fluidIndex;
-            this.props = this.fluidIndex == -1 ?
-                    new IFluidTankProperties[0] :
-                    getTank().getTankProperties();
+            this.tank = tank;
         }
 
-        public DualHandler getDelegate() {
+        @Override
+        public @NotNull IMultipleTankHandler getParent() {
             return this.delegate;
         }
 
         @Override
-        public FluidStack getFluid() {
-            if (fluidIndex == -1) return null;
-            return getTank().getFluid();
-        }
-
-        @Override
-        public int getFluidAmount() {
-            if (fluidIndex == -1) return 0;
-            return getTank().getFluidAmount();
-        }
-
-        @Override
-        public int getCapacity() {
-            if (fluidIndex == -1) return 0;
-            return getTank().getCapacity();
-        }
-
-        @Override
-        public FluidTankInfo getInfo() {
-            if (fluidIndex == -1) return NULL;
-            return getTank().getInfo();
+        public @NotNull IFluidTank getDelegate() {
+            return this.tank;
         }
 
         @Override
         public IFluidTankProperties[] getTankProperties() {
-            return this.props;
+            return this.getTank().getTankProperties();
         }
 
         @Override
         public int fill(FluidStack resource, boolean doFill) {
-            if (fluidIndex == -1) return 0;
             int filled = getTank().fill(resource, doFill);
             if (doFill && filled > 0)
                 delegate.onContentsChanged(this);
@@ -244,7 +208,6 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
         @Override
         public FluidStack drain(FluidStack resource, boolean doDrain) {
-            if (fluidIndex == -1) return null;
             var drained = getTank().drain(resource, doDrain);
             if (doDrain && drained != null)
                 delegate.onContentsChanged(this);
@@ -253,50 +216,14 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
         @Override
         public FluidStack drain(int maxDrain, boolean doDrain) {
-            if (fluidIndex == -1) return null;
             var drained = getTank().drain(maxDrain, doDrain);
             if (doDrain && drained != null)
                 delegate.onContentsChanged(this);
             return drained;
         }
 
-        private MultiFluidTankEntry getTank() {
-            return this.delegate.getTankAt(this.fluidIndex);
-        }
-
-        @Override
-        public int getSlots() {
-            return itemIndex == -1 ? 0 : 1;
-        }
-
-        @Override
-        public ItemStack getStackInSlot(int slot) {
-            if (itemIndex == -1) return ItemStack.EMPTY;
-            return this.delegate.getStackInSlot(this.itemIndex);
-        }
-
-        @Override
-        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            if (itemIndex == -1) return stack;
-            return this.delegate.insertItem(this.itemIndex, stack, simulate);
-        }
-
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (itemIndex == -1) return ItemStack.EMPTY;
-            return this.delegate.extractItem(this.itemIndex, amount, simulate);
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            if (itemIndex == -1) return 0;
-            return this.delegate.getSlotLimit(this.itemIndex);
-        }
-
-        @Override
-        public void setStackInSlot(int slot, ItemStack stack) {
-            if (itemIndex == -1) return;
-            this.delegate.setStackInSlot(this.itemIndex, stack);
+        private @NotNull ITankEntry getTank() {
+            return this.tank;
         }
 
         @Override

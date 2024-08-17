@@ -1,5 +1,7 @@
 package gregtech.api.capability.impl;
 
+import gregtech.api.capability.IFilter;
+import gregtech.api.capability.IFilteredFluidContainer;
 import gregtech.api.capability.IMultipleTankHandler;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -8,6 +10,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +23,7 @@ import java.util.List;
 
 public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBTTagCompound> {
 
-    private final MultiFluidTankEntry[] fluidTanks;
+    private final ITankEntry[] fluidTanks;
     private final boolean allowSameFluidFill;
 
     public FluidTankList(boolean allowSameFluidFill, IFluidTank... fluidTanks) {
@@ -39,9 +42,9 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
 
     public FluidTankList(boolean allowSameFluidFill, @NotNull IMultipleTankHandler parent,
                          IFluidTank... additionalTanks) {
-        ArrayList<MultiFluidTankEntry> list = new ArrayList<>(parent.getFluidTanks());
+        ArrayList<ITankEntry> list = new ArrayList<>(parent.getFluidTanks());
         for (IFluidTank tank : additionalTanks) list.add(wrapIntoEntry(tank));
-        this.fluidTanks = list.toArray(new MultiFluidTankEntry[0]);
+        this.fluidTanks = list.toArray(new ITankEntry[0]);
         this.allowSameFluidFill = allowSameFluidFill;
     }
 
@@ -51,7 +54,7 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
 
     @NotNull
     @Override
-    public List<MultiFluidTankEntry> getFluidTanks() {
+    public List<ITankEntry> getFluidTanks() {
         return Collections.unmodifiableList(Arrays.asList(fluidTanks));
     }
 
@@ -62,7 +65,7 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
 
     @NotNull
     @Override
-    public MultiFluidTankEntry getTankAt(int index) {
+    public ITankEntry getTankAt(int index) {
         return fluidTanks[index];
     }
 
@@ -70,7 +73,7 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
     @Override
     public IFluidTankProperties[] getTankProperties() {
         ArrayList<IFluidTankProperties> propertiesList = new ArrayList<>();
-        for (MultiFluidTankEntry fluidTank : fluidTanks) {
+        for (ITankEntry fluidTank : fluidTanks) {
             Collections.addAll(propertiesList, fluidTank.getTankProperties());
         }
         return propertiesList.toArray(new IFluidTankProperties[0]);
@@ -91,11 +94,11 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
         // flag value indicating whether the fluid was stored in 'distinct' slot at least once
         boolean distinctSlotVisited = false;
 
-        MultiFluidTankEntry[] fluidTanks = this.fluidTanks.clone();
+        ITankEntry[] fluidTanks = this.fluidTanks.clone();
         Arrays.sort(fluidTanks, IMultipleTankHandler.ENTRY_COMPARATOR);
 
         // search for tanks with same fluid type first
-        for (MultiFluidTankEntry tank : fluidTanks) {
+        for (ITankEntry tank : fluidTanks) {
             // if the fluid to insert matches the tank, insert the fluid
             if (resource.isFluidEqual(tank.getFluid())) {
                 int inserted = tank.fill(resource, doFill);
@@ -118,7 +121,7 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
             }
         }
         // if we still have fluid to insert, loop through empty tanks until we find one that can accept the fluid
-        for (MultiFluidTankEntry tank : fluidTanks) {
+        for (ITankEntry tank : fluidTanks) {
             // if the tank uses distinct fluid fill (allowSameFluidFill disabled) and another distinct tank had
             // received the fluid, skip this tank
             boolean usesDistinctFluidFill = tank.allowSameFluidFill();
@@ -207,7 +210,7 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
         NBTTagCompound fluidInventory = new NBTTagCompound();
         NBTTagList tanks = new NBTTagList();
         for (int i = 0; i < this.getTanks(); i++) {
-            tanks.appendTag(this.fluidTanks[i].trySerialize());
+            tanks.appendTag(this.fluidTanks[i].serializeNBT());
         }
         fluidInventory.setTag("Tanks", tanks);
         return fluidInventory;
@@ -217,7 +220,7 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
     public void deserializeNBT(NBTTagCompound nbt) {
         NBTTagList tanks = nbt.getTagList("Tanks", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < Math.min(fluidTanks.length, tanks.tagCount()); i++) {
-            this.fluidTanks[i].tryDeserialize(tanks.getCompoundTagAt(i));
+            this.fluidTanks[i].deserializeNBT(tanks.getCompoundTagAt(i));
         }
     }
 
@@ -242,5 +245,128 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
         }
         if (lineBreak) stb.append('\n');
         return stb.append(']').toString();
+    }
+
+    /**
+     * Entry of multi fluid tanks. Retains reference to original {@link IMultipleTankHandler} for accessing
+     * information such as {@link IMultipleTankHandler#allowSameFluidFill()}.
+     */
+    private static final class MultiFluidTankEntry implements ITankEntry {
+
+        private final IMultipleTankHandler tank;
+        private final IFluidTank delegate;
+        private final IFluidTankProperties[] fallback;
+
+        public MultiFluidTankEntry(@NotNull IMultipleTankHandler tank, @NotNull IFluidTank delegate) {
+            this.tank = tank;
+            this.delegate = delegate;
+            this.fallback = new IFluidTankProperties[] {
+                    new FallbackTankProperty()
+            };
+        }
+
+        @NotNull
+        @Override
+        public IMultipleTankHandler getParent() {
+            return tank;
+        }
+
+        @NotNull
+        @Override
+        public IFluidTank getDelegate() {
+            return delegate;
+        }
+
+        public boolean allowSameFluidFill() {
+            return tank.allowSameFluidFill();
+        }
+
+        @Nullable
+        @Override
+        public IFilter<FluidStack> getFilter() {
+            return this.delegate instanceof IFilteredFluidContainer filtered ? filtered.getFilter() : null;
+        }
+
+        @NotNull
+        public IFluidTankProperties[] getTankProperties() {
+            return delegate instanceof IFluidHandler fluidHandler ?
+                    fluidHandler.getTankProperties() : fallback;
+        }
+
+        @Override
+        public int fill(FluidStack resource, boolean doFill) {
+            return delegate.fill(resource, doFill);
+        }
+
+        @Nullable
+        @Override
+        public FluidStack drain(FluidStack resource, boolean doDrain) {
+            if (resource == null || resource.amount <= 0) {
+                return null;
+            }
+            if (delegate instanceof IFluidHandler fluidHandler) {
+                return fluidHandler.drain(resource, doDrain);
+            }
+            // just imitate the logic
+            FluidStack fluid = delegate.getFluid();
+            return fluid != null && fluid.isFluidEqual(resource) ? drain(resource.amount, doDrain) : null;
+        }
+
+        @Nullable
+        @Override
+        public FluidStack drain(int maxDrain, boolean doDrain) {
+            return delegate.drain(maxDrain, doDrain);
+        }
+
+        @Override
+        public int hashCode() {
+            return delegate.hashCode();
+        }
+
+        @Override
+        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+        public boolean equals(Object obj) {
+            return this == obj || delegate.equals(obj);
+        }
+
+        @Override
+        public String toString() {
+            return delegate.toString();
+        }
+
+        private final class FallbackTankProperty implements IFluidTankProperties {
+
+            @Nullable
+            @Override
+            public FluidStack getContents() {
+                return delegate.getFluid();
+            }
+
+            @Override
+            public int getCapacity() {
+                return delegate.getCapacity();
+            }
+
+            @Override
+            public boolean canFill() {
+                return true;
+            }
+
+            @Override
+            public boolean canDrain() {
+                return true;
+            }
+
+            @Override
+            public boolean canFillFluidType(FluidStack fluidStack) {
+                IFilter<FluidStack> filter = getFilter();
+                return filter == null || filter.test(fluidStack);
+            }
+
+            @Override
+            public boolean canDrainFluidType(FluidStack fluidStack) {
+                return true;
+            }
+        }
     }
 }
