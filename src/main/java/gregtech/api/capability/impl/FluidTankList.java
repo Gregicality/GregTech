@@ -1,7 +1,6 @@
 package gregtech.api.capability.impl;
 
 import gregtech.api.capability.IFilter;
-import gregtech.api.capability.IFilteredFluidContainer;
 import gregtech.api.capability.IMultipleTankHandler;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -275,16 +274,6 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
         @Override
         public IFluidTank getDelegate() {
             return delegate;
-        }
-
-        public boolean allowSameFluidFill() {
-            return tank.allowSameFluidFill();
-        }
-
-        @Nullable
-        @Override
-        public IFilter<FluidStack> getFilter() {
-            return this.delegate instanceof IFilteredFluidContainer filtered ? filtered.getFilter() : null;
         }
 
         @NotNull
