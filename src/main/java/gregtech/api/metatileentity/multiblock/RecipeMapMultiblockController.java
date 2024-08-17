@@ -48,6 +48,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
     protected IItemHandlerModifiable outputInventory;
     protected IMultipleTankHandler inputFluidInventory;
     protected IMultipleTankHandler outputFluidInventory;
+    protected IMultipleTankHandler extendedFluidInputs;
     protected IEnergyContainer energyContainer;
 
     private boolean isDistinct = false;
@@ -75,7 +76,10 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
     }
 
     public IMultipleTankHandler getInputFluidInventory() {
-        return inputFluidInventory;
+        // if distinct, return the normal input fluid inventory,
+        // as recipe logic handles gathering extra fluids
+        // if not distinct, return all the fluids instead
+        return isDistinct() ? inputFluidInventory : extendedFluidInputs;
     }
 
     public IMultipleTankHandler getOutputFluidInventory() {
@@ -121,9 +125,12 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
 
     protected void initializeAbilities() {
         this.inputInventory = new ItemHandlerList(getAbilities(MultiblockAbility.IMPORT_ITEMS));
-        this.inputFluidInventory = createFluidList(MultiblockAbility.IMPORT_ITEMS, MultiblockAbility.IMPORT_FLUIDS);
+        this.inputFluidInventory = new FluidTankList(allowSameFluidFillForOutputs(),
+                getAbilities(MultiblockAbility.IMPORT_FLUIDS));
+        this.extendedFluidInputs = extendedImportFluidList(this.inputFluidInventory);
         this.outputInventory = new ItemHandlerList(getAbilities(MultiblockAbility.EXPORT_ITEMS));
-        this.outputFluidInventory = createFluidList(MultiblockAbility.EXPORT_ITEMS, MultiblockAbility.EXPORT_FLUIDS);
+        this.outputFluidInventory = new FluidTankList(allowSameFluidFillForOutputs(),
+                getAbilities(MultiblockAbility.EXPORT_FLUIDS));
 
         List<IEnergyContainer> inputEnergy = new ArrayList<>(getAbilities(MultiblockAbility.INPUT_ENERGY));
         inputEnergy.addAll(getAbilities(MultiblockAbility.SUBSTATION_INPUT_ENERGY));
@@ -139,11 +146,9 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         this.energyContainer = new EnergyContainerList(Lists.newArrayList());
     }
 
-    protected IMultipleTankHandler createFluidList(MultiblockAbility<IItemHandlerModifiable> items,
-                                                   MultiblockAbility<IFluidTank> fluids) {
-        var tanks = new AbilityInstances(fluids);
-        tanks.addAll(getAbilities(fluids));
-        for (var handler : getAbilities(items)) {
+    protected IMultipleTankHandler extendedImportFluidList(IMultipleTankHandler fluids) {
+        List<IFluidTank> tanks = new ArrayList<>(fluids.getFluidTanks());
+        for (var handler : getAbilities(MultiblockAbility.IMPORT_ITEMS)) {
             if (handler instanceof IFluidTank tank) {
                 tanks.add(tank);
             } else if (handler instanceof IMultipleTankHandler multipleTankHandler) {
@@ -151,7 +156,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
             }
         }
 
-        return new FluidTankList(allowSameFluidFillForOutputs(), tanks.cast());
+        return new FluidTankList(allowSameFluidFillForOutputs(), tanks);
     }
 
     protected boolean allowSameFluidFillForOutputs() {
