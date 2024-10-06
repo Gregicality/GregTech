@@ -214,6 +214,8 @@ public class GTGuiTextures {
 
     public static final UITexture MENU_OVERLAY = fullImage("textures/gui/overlay/menu_overlay.png");
 
+    public static final UITexture TERMINAL_FRAME = fullImage("textures/gui/terminal/terminal_frame.png");
+
     // todo bronze/steel/primitive fluid slots?
 
     // SLOT OVERLAYS
