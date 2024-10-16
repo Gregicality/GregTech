@@ -5,7 +5,6 @@ import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.IHPCAComponentHatch;
 import gregtech.api.capability.IHPCAComputationProvider;
 import gregtech.api.capability.IHPCACoolantProvider;
-import gregtech.api.gui.ModularUI;
 import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
