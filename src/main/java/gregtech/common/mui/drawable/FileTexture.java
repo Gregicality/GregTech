@@ -1,4 +1,4 @@
-package gregtech.common.mui.widget;
+package gregtech.common.mui.drawable;
 
 import gregtech.api.util.GTLog;
 

@@ -5891,229 +5891,26 @@ gregtech.creative.energy.source=Source
 gregtech.creative.activity.on=Active
 gregtech.creative.activity.off=Not active
 
-gregtech.terminal.app_name.items=Item Guides
-gregtech.terminal.app_name.machines=Machine Guides
-gregtech.terminal.app_name.multiblocks=Multiblock Guides
-gregtech.terminal.app_name.tutorials=Tutorials
-gregtech.terminal.app_name.settings=System Settings
-gregtech.terminal.app_name.guide_editor=Guide Editor
-gregtech.terminal.app_name.recipe_chart=Recipe Chart
-gregtech.terminal.app_name.ore_prospector=Ore Prospector
-gregtech.terminal.app_name.fluid_prospector=Fluid Prospector
-gregtech.terminal.app_name.pong=Pong
-gregtech.terminal.app_name.minesweeper=Minesweeper
-gregtech.terminal.app_name.maze=Theseus's Escape
-gregtech.terminal.app_name.console=GT Console
-gregtech.terminal.app_name.battery=Battery Manager
-gregtech.terminal.app_name.hardware=Hardware Manager
-gregtech.terminal.app_name.store=App Store
-gregtech.terminal.app_name.multiblock_ar=Multiblock Helper
-gregtech.terminal.app_name.world_prospector=World Prospector
-gregtech.terminal.app_name.vtank_viewer=Virtual Tank Viewer
-gregtech.terminal.app_name.cape_selector=Cape Selector
-gregtech.terminal.app_name.teleport=Teleporter
+# new terminal
+terminal.app.gregtech.home.name=Home
+terminal.app.gregtech.settings.name=Theme Settings
+terminal.app.gregtech.test.name=test app
 
+terminal.settings.background=Background
+terminal.settings.background_select=Select Background
+terminal.settings.color=Set color %s
+terminal.settings.reset_color=Reset to default color
 
-terminal.app_name.description=No description.
-terminal.app_name.tier=Tier %d
-terminal.app_name.maximize.unsupported=This App does not support maximize.
-terminal.items.description=A guide book about items.
-terminal.machines.description=A guide book about gt machines.
-terminal.multiblocks.description=A guide book about multi-blocks.
-terminal.tutorials.description=Introduces all kinds of things, CT integration, tips, tutorials and more.
-terminal.pong.description=A classic pong game, if you're really that bored of waiting for that tungstensteel.
-terminal.minesweeper.description=A classic minesweeper game, if you're in class.
-terminal.maze.description=A GTOS exclusive game finding you racing through an endless labyrinth to survive the Minotaur!
-terminal.cape_selector.description=An app that allows you to equip GT capes that you've unlocked through advancements.
-terminal.teleport.description=Open portals to any coordinate in any dimension. Be careful not to teleport into a wall!
-
-texture.modify_gui_texture.missing=Missing Texture
-texture.url_texture.fail=Load Failed
-
-terminal.hw.battery=Battery
-terminal.hw.device=Device
-
-terminal.os.shutdown_confirm=Confirm shutdown? (Press ESC again to see ok)
-terminal.os.hw_demand=Missing mounting hardware:
-
-terminal.system_call.null=NULL
-terminal.system_call.call_menu=Call Menu
-terminal.system_call.full_screen=Full Screen
-terminal.system_call.minimize_focus_app=Back to Desktop
-terminal.system_call.close_focus_app=Close App
-terminal.system_call.shutdown=Shutdown
-terminal.system_call.open_app=Open App
-
-terminal.menu.close=Close App
-terminal.menu.minimize=Minimize App
-terminal.menu.maximize=Full Screen/Recover
-
-terminal.component.new_page=New Page
-terminal.component.page_name=Page Name
-terminal.component.load_file=Load File
-terminal.component.load_file.error=An error occurred while loading the file.
-terminal.component.save_file=Save File
-terminal.component.save_file.error=An error occurred while saving the file.
-terminal.component.confirm=Are you sure?
-terminal.component.error=ERROR
-terminal.component.warning=WARNING
+# old terminal
+# currently indirectly used in alarm
 terminal.component.searching=searching
-terminal.component.reload=reload resource
 
-terminal.dialog.notice=NOTICE
-terminal.dialog.error_path=error file path:
-terminal.dialog.no_file_selected=No file selected.
-terminal.dialog.folder=Open Folder
-
-terminal.guide_editor.description=An interactive guide page editor that allows you to create guide pages easily.
-terminal.guide_editor.up=Up
-terminal.guide_editor.down=Down
-terminal.guide_editor.remove=Remove
-terminal.guide_editor.add_stream=Add to stream
-terminal.guide_editor.add_fixed=Add to fixed
-terminal.guide_editor.update=Update
-terminal.guide_editor.add_slot=Add Slot
-terminal.guide_editor.default=Default Value
-terminal.guide_editor.page_config=Page Config
-terminal.guide_editor.widgets_box=Widgets Box
-terminal.guide_editor.widget_config=Widget Config
-terminal.guide_editor.error_type=Item types do not match and will still be saved, but will not be seen in app.
-
-terminal.settings.description=The system settings for GTOS.
-terminal.settings.theme=Theme
-terminal.settings.theme.color=Theme Color Settings
-terminal.settings.theme.wallpaper=Wallpaper Settings
-terminal.settings.theme.wallpaper.resource=resource
-terminal.settings.theme.wallpaper.url=url
-terminal.settings.theme.wallpaper.color=color
-terminal.settings.theme.wallpaper.file=file
-terminal.settings.theme.select=Select
-terminal.settings.theme.image=Image File
-terminal.settings.home=Home Button
-terminal.settings.home.double=Double
-terminal.settings.home.action=Click Action
-terminal.settings.home.args=Args
-terminal.settings.home.click=click
-terminal.settings.home.double_click=double Click
-terminal.settings.os=Os settings
-terminal.settings.os.double_check=Double Check
-terminal.settings.os.double_check.desc=Should Double Check when shutdown.
-
-
-terminal.recipe_chart.description=A tool for analyzing recipe chains, with which you can easily build a recipe graph and even calculate the ingredients needed like JEC.
-terminal.recipe_chart.limit=Page limit.
-terminal.recipe_chart.delete=Delete Page
-terminal.recipe_chart.add_slot=Add Root Slot
-terminal.recipe_chart.demand=Demand
-terminal.recipe_chart.calculator=Calculator
-terminal.recipe_chart.add=Set the item from inventory
-terminal.recipe_chart.drag=Drag ingredients here.
-terminal.recipe_chart.visible=Visible
-terminal.recipe_chart.jei=JEI Focus
-terminal.recipe_chart.tier=Tier:
-terminal.recipe_chart.ratio=Weight
-terminal.recipe_chart.tier.0=cache of 5 pages
-terminal.recipe_chart.tier.1=cache of 6 pages
-terminal.recipe_chart.tier.2=cache of 7 pages
-terminal.recipe_chart.tier.3=cache of 8 pages
-
-terminal.prospector.vis_mode=Switch color mode
+# currently used in prospector
 terminal.prospector.list=All Resources
 terminal.prospector.ore=Ore Data
 terminal.prospector.fluid=Fluid Deposit Data
 terminal.prospector.fluid.info=%s %s - %s%%
 terminal.prospector.waypoint.add=[Double §7Left click§r] to add waypoint
-
-terminal.ore_prospector.description=Hate the scanner toy? Don't want to run around looking for ores? Come and look at it.
-terminal.ore_prospector.tier.0=radius size 1
-terminal.ore_prospector.tier.1=radius size 2
-terminal.ore_prospector.tier.2=radius size 3
-terminal.ore_prospector.tier.3=radius size 4
-terminal.ore_prospector.tier.4=radius size 5
-terminal.ore_prospector.tier.5=radius size 6
-terminal.ore_prospector.tier.6=radius size 7
-
-terminal.fluid_prospector.description=You know, there's gold in bedrocks.
-terminal.fluid_prospector.tier.0=radius size 1
-terminal.fluid_prospector.tier.1=radius size 2
-terminal.fluid_prospector.tier.2=radius size 3
-terminal.fluid_prospector.tier.3=radius size 4
-terminal.fluid_prospector.tier.4=radius size 5
-terminal.fluid_prospector.tier.5=radius size 6
-terminal.fluid_prospector.tier.6=radius size 7
-
-terminal.console.description=A tool to help you free your inventory, it's time to say goodbye to wrench, screwdriver, hammer, and crowbar.
-terminal.console.notice=Please shift-right-click a machine when opening the terminal.
-terminal.console.front=Set as front
-terminal.console.items=set as items output
-terminal.console.fluids=set as fluids output
-terminal.console.auto_output=allow auto output
-terminal.console.input=allow input from output
-terminal.console.cover_rs=signal: %s
-terminal.console.cover_gui=Gui
-terminal.console.gui=Open machine gui
-terminal.console.maintenance=Fix all problems
-terminal.console.venting=set as venting
-terminal.console.controllable=set working enable
-
-terminal.hardware.description=Hardware Manager, masterpieces of elegance and precision. How can a tablet be without hardware?
-terminal.hardware.select=Mounting hardware
-terminal.hardware.remove=Remove hardware
-terminal.hardware.remove.full=There are no empty slots in inventory
-terminal.hardware.tip.remove=§4right-click remove the hardware
-
-terminal.battery.description=Battery manager, visually analyze your app's energy consumption.
-terminal.battery.hover=%s: Usage %d eu/s
-terminal.battery.low_energy=Low power! Plz recharge the terminal.
-
-terminal.store.description=App store, check out what you got? Install and upgrade the app.
-terminal.store.match=Detected required item in inventory, install/upgrade App?
-terminal.store.miss=Requires %s (%d).
-terminal.store.close=Close
-
-terminal.ar.open=Open AR
-
-terminal.multiblock_ar.description=Remember the §cFreedom Wrench§r?  Unfortunately, it it's gone. It doesn't matter, we have a new technology now. This app can also help you build your multi-block machine.
-terminal.multiblock_ar.tier.0=AR Camera
-terminal.multiblock_ar.tier.1=3D Builder
-terminal.multiblock_ar.unlock=Unlock this mode after the upgrade
-terminal.multiblock_ar.builder.hover=3D Builder
-terminal.multiblock_ar.builder.auto=Automatic Build
-terminal.multiblock_ar.builder.place=Place block
-terminal.multiblock_ar.builder.debug=Debug
-
-terminal.world_prospector.description="I wish I had X-ray vision."\n"Sir, I'm sorry, but we don't sell superpowers. You should trust the science."
-terminal.world_prospector.tier.0=Radius 15m (1 slot)
-terminal.world_prospector.tier.1=Radius 30m (2 slot)
-terminal.world_prospector.tier.2=Radius 60m (4 slot)
-terminal.world_prospector.radius=Radius %sm
-terminal.world_prospector.reference=Select a reference
-terminal.world_prospector.color=Select box color
-
-terminal.vtank_viewer.description=Never lose any fluids to changing ender link frequencies again! Here's a scrollable list of every virtual tank that you have access to in your world.
-terminal.vtank_viewer.title=Virtual Tank Viewer
-terminal.vtank_viewer.refresh=Refresh tank index
-
-terminal.teleporter.dimension=Dimension:
-terminal.teleporter.spawn_portal=Engage
-
-terminal.maze.title=Theseus's Escape
-terminal.maze.play=Play
-terminal.maze.continue=Continue
-terminal.maze.pause=Game Paused
-terminal.maze.death.1=Oh no! You were eaten by the Minotaur!
-terminal.maze.death.2=You got through %s mazes before losing.
-terminal.maze.death.3=Try again?
-terminal.maze.retry=Retry
-
-terminal.minesweeper.time=%s seconds elapsed
-terminal.minesweeper.lose=You lost. Game will restart in %s seconds.
-terminal.minesweeper.win.1=You won in %s seconds!
-terminal.minesweeper.win.2=Game will restart in %s
-
-terminal.cape_selector.empty=It looks like you haven't unlocked any capes yet!
-terminal.cape_selector.select=Click on an unlocked cape to select it!
-terminal.cape_selector.tip=You can get these from high-level advancements.
 
 metaitem.cover.digital.title.mode=Mode:
 metaitem.cover.digital.title.spin=Spin:

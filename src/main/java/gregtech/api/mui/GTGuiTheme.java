@@ -59,6 +59,11 @@ public class GTGuiTheme {
             .itemSlot(GTGuiTextures.IDs.PRIMITIVE_SLOT)
             .build();
 
+    public static final GTGuiTheme TERMINAL = templateBuilder("gregtech_terminal")
+            .parent("gregtech_standard")
+            .textColor(0xFFFDFDFD)
+            .build();
+
     private final String themeId;
 
     private final List<Consumer<JsonBuilder>> elementBuilder;

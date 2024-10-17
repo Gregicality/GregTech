@@ -21,6 +21,7 @@ import gregtech.api.mui.GTGuis;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.properties.impl.TemperatureProperty;
+import gregtech.api.terminal2.Terminal2;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.event.MaterialEvent;
@@ -287,6 +288,8 @@ public class CoreModule implements IGregTechModule {
 
         DungeonLootLoader.init();
         MetaBlocks.registerWalkingSpeedBonus();
+
+        Terminal2.init();
     }
 
     @Override
