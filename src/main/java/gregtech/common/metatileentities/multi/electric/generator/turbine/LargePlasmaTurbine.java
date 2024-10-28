@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class LargePlasmaTurbine extends AbstractLargeTurbine {
 
     public LargePlasmaTurbine(ResourceLocation metaTileEntityId) {
-        super(metaTileEntityId, RecipeMaps.PLASMA_GENERATOR_FUELS, GTValues.IV, TurbineType.PLASMA); //TODO tier
+        super(metaTileEntityId, RecipeMaps.PLASMA_GENERATOR_FUELS, GTValues.IV, TurbineType.PLASMA); // TODO tier
         this.recipeMapWorkable = new PlasmaTurbineLogic(this);
     }
 

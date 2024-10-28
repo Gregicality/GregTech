@@ -9,19 +9,19 @@ public interface TurbineRotor {
     int color();
 
     /**
-     * @return the efficiency of the turbine
+     * @return the energy efficiency of the turbine
      */
     int baseEfficiency();
 
     /**
-     * @return the optimal flow of the turbine
+     * @return the optimal energy flow of the turbine in EU/t
      */
-    int optimalFlow();
+    long optimalFlow();
 
     /**
-     * @return the overflow multiplier of the turbine
+     * @return the overflow efficiency of the turbine
      */
-    int overflowMultiplier();
+    int overflowEfficiency();
 
     /**
      * @return the flow multiplier for the turbine

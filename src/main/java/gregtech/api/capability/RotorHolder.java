@@ -1,7 +1,6 @@
 package gregtech.api.capability;
 
 import gregtech.api.items.metaitem.stats.TurbineRotor;
-
 import gregtech.common.metatileentities.multi.electric.generator.turbine.RotorFit;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,8 @@ public interface RotorHolder {
     /**
      * @return the turbine rotor contained
      */
-    @Nullable TurbineRotor rotor();
+    @Nullable
+    TurbineRotor rotor();
 
     /**
      * @return if the rotor is obstructed

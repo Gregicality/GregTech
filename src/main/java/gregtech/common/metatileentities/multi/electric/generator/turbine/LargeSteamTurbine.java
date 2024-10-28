@@ -20,7 +20,7 @@ public class LargeSteamTurbine extends AbstractLargeTurbine {
     private final boolean isHighPressure;
 
     public LargeSteamTurbine(ResourceLocation metaTileEntityId, boolean isHighPressure) {
-        super(metaTileEntityId, RecipeMaps.STEAM_TURBINE_FUELS, GTValues.IV, TurbineType.STEAM); //TODO tier
+        super(metaTileEntityId, RecipeMaps.STEAM_TURBINE_FUELS, GTValues.IV, TurbineType.STEAM); // TODO tier
         this.isHighPressure = isHighPressure;
         this.recipeMapWorkable = new SteamTurbineLogic(this, isHighPressure);
     }

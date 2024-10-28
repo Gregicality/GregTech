@@ -1,22 +1,20 @@
 package gregtech.common.metatileentities.multi.electric.generator.turbine;
 
-import gregtech.api.GTValues;
-import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.RotorHolder;
 import gregtech.api.capability.impl.MultiblockFuelRecipeLogic;
 import gregtech.api.items.metaitem.stats.TurbineRotor;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.recipes.Recipe;
+import gregtech.api.recipes.RecipeMap;
 import gregtech.api.util.GTUtility;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.ItemStackHandler;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 
@@ -24,16 +22,22 @@ public abstract class LargeTurbineRecipeLogic extends MultiblockFuelRecipeLogic 
 
     protected final AbstractLargeTurbine turbine;
 
-    protected int currentOptimalFlow;
-    protected int storedFluid;
+    private final FittingAdjustmentValues fittingAdjustmentValues = new FittingAdjustmentValues();
+
+    /**
+     * Optimal fuel flow rate in mB/t
+     */
+    protected int optimalFuelRate;
     protected int totalFluidConsumed;
     protected long lastEUt;
+
+    private @Nullable FluidStack storedFluid;
+    private boolean isSpinningDown;
 
     public LargeTurbineRecipeLogic(AbstractLargeTurbine tileEntity) {
         super(tileEntity);
         this.turbine = tileEntity;
     }
-
 
     @Override
     protected void updateRecipeProgress() {
@@ -48,6 +52,32 @@ public abstract class LargeTurbineRecipeLogic extends MultiblockFuelRecipeLogic 
     }
 
     @Override
+    protected boolean shouldSearchForRecipes() {
+        // always keep going as long as the turbine is spinning down
+        if (isSpinningDown) {
+            return true;
+        }
+        return super.shouldSearchForRecipes();
+    }
+
+    @Override
+    protected void completeRecipe() {
+        super.completeRecipe();
+        this.optimalFuelRate = 0;
+        this.totalFluidConsumed = 0;
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        this.optimalFuelRate = 0;
+        this.totalFluidConsumed = 0;
+        this.lastEUt = 0;
+        this.isSpinningDown = false;
+        this.storedFluid = null;
+    }
+
+    @Override
     protected void trySearchNewRecipe() {
         if (!checkMaintenance()) {
             return;
@@ -58,46 +88,47 @@ public abstract class LargeTurbineRecipeLogic extends MultiblockFuelRecipeLogic 
         TurbineRotor rotor = rotorHolder.rotor();
         if (rotor == null) {
             invalidate();
-            this.currentOptimalFlow = 0;
-            this.totalFluidConsumed = 0;
-            this.lastEUt = 0;
             return;
         }
 
         int baseEfficiency = rotor.baseEfficiency();
-        if (baseEfficiency <= 0) {
-            return;
-        }
+        assert rotor.baseEfficiency() > 0;
 
-        int optimalFlow = rotor.optimalFlow();
-        if (optimalFlow <= 0) {
-            return;
-        }
+        long optimalEnergyFlow = rotor.optimalFlow();
+        assert rotor.optimalFlow() > 0;
 
         long recipePower;
-        Recipe recipe = findRecipe(GTValues.V[GTValues.MAX], new ItemStackHandler(0), getInputTank());
+        Recipe recipe = findRecipe(Long.MAX_VALUE, getInputInventory(), getInputTank());
         if (recipe == null) {
             recipePower = 0;
-            itemOutputs = NonNullList.create();
-            fluidOutputs = Collections.emptyList();
+            setEmptyOutputs();
+            this.invalidInputsForRecipes = true;
         } else {
             float flowMultiplier = rotor.flowMultiplier(turbine.turbineType());
-            if (flowMultiplier == 0.0F) {
-                return;
-            }
+            assert flowMultiplier > 0;
+            optimalEnergyFlow = (int) (optimalEnergyFlow * flowMultiplier);
 
-            recipePower = getRecipePower(recipe, rotorHolder.rotorFitting(), optimalFlow, baseEfficiency, rotor.overflowMultiplier(), flowMultiplier);
+            recipePower = computeRecipePower(recipe, rotorHolder.rotorFitting(), optimalEnergyFlow, baseEfficiency,
+                    rotor.overflowEfficiency());
+        }
+
+        if (recipePower <= 0) {
+            setEmptyOutputs();
         }
 
         long eut = computePowerOutput(recipePower);
-
         if (eut <= 0) {
+            this.isSpinningDown = false;
             rotorHolder.setSpinning(false);
             return;
         }
 
         if (turbine.getOffsetTimer() % 20 == 0) {
             rotorHolder.damageRotor(getRotorDamage(rotorHolder.rotorFitting()));
+            if (rotorHolder.rotor() == null) {
+                invalidate();
+                return;
+            }
         }
 
         this.progressTime = 1;
@@ -112,73 +143,97 @@ public abstract class LargeTurbineRecipeLogic extends MultiblockFuelRecipeLogic 
         }
     }
 
-    protected long getRecipePower(@NotNull Recipe recipe, @NotNull RotorFit rotorFit, int optimalFlow,
-                                  int baseEfficiency, int overflowMultiplier, float flowMultiplier) {
+    /**
+     * @param recipe             the recipe to run
+     * @param rotorFit           the fitting of the rotor
+     * @param optimalEnergyFlow  the optimal flow of the rotor in EU/t
+     * @param baseEfficiency     the efficiency of the rotor
+     * @param overflowEfficiency the rotor's overflow efficiency
+     * @return the power in EU/t for the recipe
+     */
+    private long computeRecipePower(@NotNull Recipe recipe, @NotNull RotorFit rotorFit, long optimalEnergyFlow,
+                                    int baseEfficiency, int overflowEfficiency) {
         var inputs = recipe.getFluidInputs();
         if (inputs.isEmpty()) {
             return 0;
         }
 
         FluidStack fuel = inputs.get(0).getInputFluidStack();
+        if (fuel == null) {
+            return 0;
+        }
+
         assert fuel.amount != 0;
         if (fuel.getFluid() == null || !isFuelValid(fuel.getFluid())) {
             return 0;
         }
 
-        int[] values = {optimalFlow, baseEfficiency};
-        adjustPower(rotorFit, values);
-        optimalFlow = values[0];
-        baseEfficiency = values[1];
-
-        IMultipleTankHandler inputTank = getInputTank();
-
-        long recipeEU;
-        if (usesRecipeEnergy()) {
-            recipeEU = recipe.getDuration() * recipe.getEUt() / fuel.amount;
-            if (optimalFlow < recipeEU) {
-                // turbine is too weak and/or fuel is too energy dense so will consume 1mB
-                this.currentOptimalFlow = 1;
-
-                // consume the fuel and output the optimal flow
-                FluidStack drained = inputTank.drain(new FluidStack(fuel, 1), true);
-                if (drained == null) {
-                    return 0;
-                }
-
-                this.storedFluid += drained.amount;
-                return optimalFlow;
-            }
-        } else {
-            recipeEU = 1;
+        if (storedFluid == null || !storedFluid.isFluidEqual(fuel)) {
+            storedFluid = new FluidStack(fuel, 0);
         }
+        assert storedFluid != null;
 
-        this.currentOptimalFlow = GTUtility.safeCastLongToInt((long) (optimalFlow * flowMultiplier / recipeEU));
+        fittingAdjustmentValues.optimalEnergyFlow = optimalEnergyFlow;
+        fittingAdjustmentValues.baseEfficiency = baseEfficiency;
+        applyRotorFitting(rotorFit, fittingAdjustmentValues);
+        optimalEnergyFlow = fittingAdjustmentValues.optimalEnergyFlow;
+        baseEfficiency = fittingAdjustmentValues.baseEfficiency;
 
-        // Allowed to use beyond the base optimal flow rate, depending on the value of overflowMultiplier.
-        // The maximum EU/t possible depends on the overflowMultiplier, and the formula used makes the flow rate for
-        // that maximum per value of overflowMultiplier into a percentage of optimal flow rate
-        int remainingFlow = GTUtility.safeCastLongToInt((long) (currentOptimalFlow * (optimalFlowMultiplier() * overflowMultiplier + flowFloor())));
-        this.totalFluidConsumed = 0;
-        this.storedFluid = 0;
+        // EU/mB
+        long energyDensity = computeEnergyDensity(recipe, fuel, optimalEnergyFlow);
 
-        if (inputTank.getTanks() == 0) {
+        // EU/t / EU/mB = mB/t
+        this.optimalFuelRate = GTUtility.safeCastLongToInt(optimalEnergyFlow / energyDensity);
+        assert optimalFuelRate > 0;
+
+        // Allowed to use beyond the base optimal flow rate depending on overflowEfficiency
+        float overflowFactor = overflowMultiplier() * overflowEfficiency + flowFloor();
+        int maxFuel = GTUtility.safeCastLongToInt((long) (optimalFuelRate * overflowFactor));
+        if (maxFuel <= 0) {
             return 0;
         }
 
-        if (!consumeRecipeInputs(fuel, remainingFlow)) {
+        if (!consumeRecipeInputs(fuel, maxFuel)) {
             return 0;
         }
-
         assert totalFluidConsumed > 0;
+
         setRecipeOutputs(recipe);
-        long totalEU = calculateOutputEUt(recipeEU);
-        if (totalFluidConsumed != currentOptimalFlow) {
-            totalEU = (long) (totalEU * overflowEfficiency(totalFluidConsumed, currentOptimalFlow, overflowMultiplier));
+        assert itemOutputs != null;
+        assert fluidOutputs != null;
+
+        long totalEU = calculateOutputEUt(energyDensity);
+        if (totalFluidConsumed != optimalFuelRate) {
+            totalEU = (long) (totalEU * unoptimalEfficiency(overflowEfficiency));
         }
 
         totalEU = Math.max(1, totalEU * baseEfficiency / 10_000);
+        return Math.min(totalEU, getMaxVoltage()); // voids extra power
+    }
 
-        return Math.min(totalEU, getMaxVoltage());
+    /**
+     * Computes the energy density of the fuel
+     *
+     * @param recipe            the recipe being run
+     * @param fuel              the fuel
+     * @param optimalEnergyFlow the optimal energy flow rate in EU/t
+     * @return the energy density of the fuel in EU/mB
+     */
+    private long computeEnergyDensity(@NotNull Recipe recipe, @NotNull FluidStack fuel, long optimalEnergyFlow) {
+        if (!usesRecipeEnergy()) {
+            return 1;
+        }
+
+        // t * EU/t / mB = EU/mB
+        long energyDensity = recipe.getDuration() * recipe.getEUt() / fuel.amount;
+        if (optimalEnergyFlow >= energyDensity) {
+            return energyDensity;
+        }
+
+        // turbine is too weak and/or fuel is too energy dense so will just use 1mB/t
+        this.optimalFuelRate = 1;
+
+        return optimalEnergyFlow;
     }
 
     /**
@@ -190,12 +245,19 @@ public abstract class LargeTurbineRecipeLogic extends MultiblockFuelRecipeLogic 
 
     private long computePowerOutput(long recipePower) {
         long delta = recipePower - this.lastEUt;
+        this.isSpinningDown = delta < 0;
+
+        long absDelta = Math.abs(delta);
         // how much power can change by each tick: max(10, 1% total power)
-        long maxDelta = Math.max(10L, Math.abs(delta) / 100L);
+        long maxDelta = Math.max(10L, absDelta / 100L);
 
         long eut;
-        if (Math.abs(delta) > maxDelta) {
-            eut = this.lastEUt + (maxDelta * (delta > 0 ? 1 : -1));
+        if (absDelta > maxDelta) {
+            if (isSpinningDown) {
+                eut = this.lastEUt - maxDelta;
+            } else {
+                eut = this.lastEUt + maxDelta;
+            }
         } else {
             eut = recipePower;
         }
@@ -212,52 +274,72 @@ public abstract class LargeTurbineRecipeLogic extends MultiblockFuelRecipeLogic 
     protected abstract boolean isFuelValid(@NotNull Fluid fuel);
 
     /**
-     * @param fuel          the fuel to consume
-     * @param remainingFlow the remaining flow to consume
-     * @return              if consumption was successful
+     * @param fuel   the fuel to consume
+     * @param amount the amount to consume
+     * @return if consumption was successful
      */
-    protected boolean consumeRecipeInputs(@NotNull FluidStack fuel, int remainingFlow) {
-        var inputTank = getInputTank();
-        FluidStack drainStack = new FluidStack(fuel, 1); //shared fluid stack object to reduce allocations
-        for (IMultipleTankHandler.MultiFluidTankEntry handler : inputTank) {
-            FluidStack stack = handler.getFluid();
-            if (stack == null || !fuel.isFluidEqual(stack)) {
-                continue;
-            }
+    protected boolean consumeRecipeInputs(@NotNull FluidStack fuel, int amount) {
+        assert storedFluid != null;
+        int toDrain = Math.min(amount, storedFluid.amount);
+        this.storedFluid.amount -= toDrain;
+        amount -= toDrain;
+        this.totalFluidConsumed += toDrain;
 
-            // consume up to the maximum amount of flow
-            int flow = Math.min(stack.amount, remainingFlow);
-            drainStack.amount = flow;
-            FluidStack drained = inputTank.drain(drainStack, true);
-            if (drained == null) {
-                continue;
-            }
-            this.storedFluid += drained.amount;
-
-            // remaining flow yet to be consumed
-            remainingFlow -= flow;
-
-            // total flow consumed
-            totalFluidConsumed += flow;
+        assert storedFluid.amount >= 0;
+        assert amount >= 0;
+        if (amount == 0) {
+            return true;
         }
+
+        FluidStack drained = getInputTank().drain(new FluidStack(fuel, amount), true);
+        if (drained == null || drained.amount == 0) {
+            return false;
+        }
+
+        assert drained.amount <= amount;
+        this.totalFluidConsumed += drained.amount;
+
         return true;
     }
 
     /**
      * @param recipe the recipe to use
      */
-    protected abstract void setRecipeOutputs(@NotNull Recipe recipe);
+    protected void setRecipeOutputs(@NotNull Recipe recipe) {
+        RecipeMap<?> recipeMap = getRecipeMap();
+        assert recipeMap != null;
+        if (recipe.getFluidOutputs().isEmpty() && recipe.getChancedFluidOutputs().getChancedEntries().isEmpty()) {
+            this.fluidOutputs = Collections.emptyList();
+        } else {
+            this.fluidOutputs = recipe.getResultFluidOutputs(GTUtility.getTierByVoltage(recipe.getEUt()),
+                    getOverclockTier(), recipeMap);
+            assert !recipe.getFluidInputs().isEmpty();
+            int inputAmount = recipe.getFluidInputs().get(0).getAmount();
+            for (FluidStack stack : fluidOutputs) {
+                stack.amount = stack.amount * totalFluidConsumed / inputAmount;
+            }
+        }
+        this.itemOutputs = Collections.emptyList();
+    }
+
+    /**
+     * Set the outputs to empty
+     */
+    protected void setEmptyOutputs() {
+        this.itemOutputs = Collections.emptyList();
+        this.fluidOutputs = Collections.emptyList();
+    }
 
     /**
      * @param rotorFit the fitting of the rotor
      * @param values   an array of [optimalFlow, baseEfficiency] to adjust
      */
-    protected abstract void adjustPower(@NotNull RotorFit rotorFit, int @NotNull [] values);
+    protected abstract void applyRotorFitting(@NotNull RotorFit rotorFit, @NotNull FittingAdjustmentValues values);
 
     /**
-     * @return the multiplier for rotor optimal flow
+     * @return the multiplier for fuel overflow
      */
-    protected abstract float optimalFlowMultiplier();
+    protected abstract float overflowMultiplier();
 
     /**
      * @return the floor value for remaining flow
@@ -265,22 +347,19 @@ public abstract class LargeTurbineRecipeLogic extends MultiblockFuelRecipeLogic 
     protected abstract float flowFloor();
 
     /**
-     * Changes how quickly the turbine loses efficiency after flow goes beyond the optimal value
-     * At the default value of 1, any flow will generate less EU/t than optimal flow, regardless of the amount of fuel used
-     * The bigger this number is, the slower efficiency loss happens as flow moves beyond the optimal value
+     * Changes the energy efficiency when the fuel consumed is not optimal
+     * <p>
      *
-     * @param totalFluidConsumed the total amount of flow
-     * @param currentOptimalFlow the currently used optimal flow
-     * @param overflowMultiplier the multiplier for overflow
+     * @param overflowEfficiency the efficiency for overflow
      * @return the efficiency of the overflow on [0, 1]
      */
-    protected abstract float overflowEfficiency(int totalFluidConsumed, int currentOptimalFlow, int overflowMultiplier);
+    protected abstract float unoptimalEfficiency(int overflowEfficiency);
 
     /**
-     * @param totalRecipeEU the total EU the base recipe is worth
+     * @param energyDensity the EU per mB of the base recipe
      * @return the output EU/t
      */
-    protected abstract long calculateOutputEUt(long totalRecipeEU);
+    protected abstract long calculateOutputEUt(long energyDensity);
 
     /**
      * @return the amount of damage to apply to the rotor
@@ -310,25 +389,40 @@ public abstract class LargeTurbineRecipeLogic extends MultiblockFuelRecipeLogic 
                 }
             }
         }
+
+        // pausing stops the rotor, so energy generation should reset
+        if (!workingEnabled) {
+            this.lastEUt = 0;
+            this.recipeEUt = 0;
+        }
         super.setWorkingEnabled(workingEnabled);
     }
 
     @Override
     public @NotNull NBTTagCompound serializeNBT() {
         NBTTagCompound tag = super.serializeNBT();
-        tag.setInteger("currentOptimalFlow", currentOptimalFlow);
-        tag.setInteger("storedFluid", storedFluid);
+        tag.setInteger("optimalFuelRate", optimalFuelRate);
         tag.setInteger("totalFluidConsumed", totalFluidConsumed);
         tag.setLong("lastEUt", lastEUt);
+        if (storedFluid != null) {
+            tag.setTag("storedFluid", storedFluid.writeToNBT(new NBTTagCompound()));
+        }
+
         return tag;
     }
 
     @Override
     public void deserializeNBT(@NotNull NBTTagCompound compound) {
         super.deserializeNBT(compound);
-        currentOptimalFlow = compound.getInteger("currentOptimalFlow");
-        storedFluid = compound.getInteger("storedFluid");
-        totalFluidConsumed = compound.getInteger("totalFluidConsumed");
-        lastEUt = compound.getLong("lastEUt");
+        this.optimalFuelRate = compound.getInteger("optimalFuelRate");
+        this.totalFluidConsumed = compound.getInteger("totalFluidConsumed");
+        this.lastEUt = compound.getLong("lastEUt");
+        this.storedFluid = FluidStack.loadFluidStackFromNBT(compound.getCompoundTag("storedFluid"));
+    }
+
+    protected static class FittingAdjustmentValues {
+
+        public long optimalEnergyFlow;
+        public int baseEfficiency;
     }
 }

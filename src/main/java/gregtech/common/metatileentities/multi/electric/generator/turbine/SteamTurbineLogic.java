@@ -2,12 +2,10 @@ package gregtech.common.metatileentities.multi.electric.generator.turbine;
 
 import gregtech.api.GTValues;
 import gregtech.api.fluids.FluidConstants;
-
 import gregtech.api.recipes.Recipe;
 import gregtech.api.unification.material.Materials;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.Fluid;
 
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +27,7 @@ public class SteamTurbineLogic extends LargeTurbineRecipeLogic {
     }
 
     @Override
-    protected long calculateOutputEUt(long totalRecipeEU) {
+    protected long calculateOutputEUt(long energyDensity) {
         return totalFluidConsumed / 2;
     }
 
@@ -64,48 +62,54 @@ public class SteamTurbineLogic extends LargeTurbineRecipeLogic {
             excessWater %= FluidConstants.STEAM_PER_WATER;
             this.fluidOutputs = Collections.singletonList(Materials.DistilledWater.getFluid(water));
         }
-        this.itemOutputs = NonNullList.create();
+        this.itemOutputs = Collections.emptyList();
     }
 
     @Override
-    protected void adjustPower(@NotNull RotorFit rotorFit, int @NotNull [] values) {
+    protected void applyRotorFitting(@NotNull RotorFit rotorFit, @NotNull FittingAdjustmentValues values) {
         switch (rotorFit) {
             case LOOSE -> {}
             case TIGHT -> {
-                int optimalFlow = values[0] * 4;
-                int baseEfficiency = values[1];
+                long optimalFlow = values.optimalEnergyFlow * 4;
+                int baseEfficiency = values.baseEfficiency;
                 if (baseEfficiency >= 26000.0F) {
-                    values[0] = (int) (optimalFlow * Math.pow(1.1F, (baseEfficiency - 8000.0F) / 500.0F));
-                    values[1] = (int) (baseEfficiency * 0.6F);
+                    values.optimalEnergyFlow = (int) (optimalFlow *
+                            Math.pow(1.1F, (baseEfficiency - 8000.0F) / 500.0F));
+                    values.baseEfficiency = (int) (baseEfficiency * 0.6F);
                 } else if (baseEfficiency >= 22000.0F) {
-                    values[0] = (int) (optimalFlow * Math.pow(1.1F, (baseEfficiency - 7000.0F) / 500.0F));
-                    values[1] = (int) (baseEfficiency * 0.65F);
+                    values.optimalEnergyFlow = (int) (optimalFlow *
+                            Math.pow(1.1F, (baseEfficiency - 7000.0F) / 500.0F));
+                    values.baseEfficiency = (int) (baseEfficiency * 0.65F);
                 } else if (baseEfficiency >= 18000.0F) {
-                    values[0] = (int) (optimalFlow * Math.pow(1.1F, (baseEfficiency - 6000.0F) / 500.0F));
-                    values[1] = (int) (baseEfficiency * 0.7F);
+                    values.optimalEnergyFlow = (int) (optimalFlow *
+                            Math.pow(1.1F, (baseEfficiency - 6000.0F) / 500.0F));
+                    values.baseEfficiency = (int) (baseEfficiency * 0.7F);
                 } else if (baseEfficiency >= 14000.0F) {
-                    values[0] = (int) (optimalFlow * Math.pow(1.1F, (baseEfficiency - 5000.0F) / 500.0F));
-                    values[1] = (int) (baseEfficiency * 0.75F);
+                    values.optimalEnergyFlow = (int) (optimalFlow *
+                            Math.pow(1.1F, (baseEfficiency - 5000.0F) / 500.0F));
+                    values.baseEfficiency = (int) (baseEfficiency * 0.75F);
                 } else if (baseEfficiency >= 10000.0F) {
-                    values[0] = (int) (optimalFlow * Math.pow(1.1F, (baseEfficiency - 4000.0F) / 500.0F));
-                    values[1] = (int) (baseEfficiency * 0.80F);
+                    values.optimalEnergyFlow = (int) (optimalFlow *
+                            Math.pow(1.1F, (baseEfficiency - 4000.0F) / 500.0F));
+                    values.baseEfficiency = (int) (baseEfficiency * 0.80F);
                 } else if (baseEfficiency >= 6000.0F) {
-                    values[0] = (int) (optimalFlow * Math.pow(1.1F, (baseEfficiency - 3000.0F) / 500.0F));
-                    values[1] = (int) (baseEfficiency * 0.85F);
+                    values.optimalEnergyFlow = (int) (optimalFlow *
+                            Math.pow(1.1F, (baseEfficiency - 3000.0F) / 500.0F));
+                    values.baseEfficiency = (int) (baseEfficiency * 0.85F);
                 } else {
-                    values[0] = optimalFlow;
-                    values[1] = (int) (baseEfficiency * 0.9F);
+                    values.optimalEnergyFlow = optimalFlow;
+                    values.baseEfficiency = (int) (baseEfficiency * 0.9F);
                 }
 
-                if (values[1] % 100 != 0) {
-                    values[1] -= baseEfficiency % 100;
+                if (values.baseEfficiency % 100 != 0) {
+                    values.baseEfficiency -= baseEfficiency % 100;
                 }
             }
         }
     }
 
     @Override
-    protected float optimalFlowMultiplier() {
+    protected float overflowMultiplier() {
         return 0.5F;
     }
 
@@ -115,11 +119,11 @@ public class SteamTurbineLogic extends LargeTurbineRecipeLogic {
     }
 
     @Override
-    protected float overflowEfficiency(int totalFluidConsumed, int currentOptimalFlow, int overflowMultiplier) {
-        int delta = Math.abs(totalFluidConsumed - currentOptimalFlow);
-        float divisor = currentOptimalFlow;
-        if (totalFluidConsumed > currentOptimalFlow) {
-            divisor *= overflowMultiplier + (isHighPressure ? 2 : 1);
+    protected float unoptimalEfficiency(int overflowEfficiency) {
+        int delta = Math.abs(totalFluidConsumed - optimalFuelRate);
+        float divisor = optimalFuelRate;
+        if (totalFluidConsumed > optimalFuelRate) {
+            divisor *= overflowEfficiency + (isHighPressure ? 2 : 1);
         }
         return 1.0F - delta / divisor;
     }

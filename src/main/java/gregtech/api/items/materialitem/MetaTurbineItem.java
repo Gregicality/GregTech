@@ -1,7 +1,5 @@
 package gregtech.api.items.materialitem;
 
-import com.github.bsideup.jabel.Desugar;
-
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.items.metaitem.stats.IItemDurabilityManager;
 import gregtech.api.items.metaitem.stats.TurbineRotor;
@@ -10,20 +8,16 @@ import gregtech.api.unification.material.properties.PropertyKey;
 import gregtech.api.unification.material.properties.RotorProperty2;
 import gregtech.api.unification.material.registry.MaterialRegistry;
 import gregtech.api.unification.ore.OrePrefix;
-
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.GradientUtil;
-
 import gregtech.common.metatileentities.multi.electric.generator.turbine.TurbineType;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-
 import net.minecraft.item.ItemStack;
-
 import net.minecraft.nbt.NBTTagCompound;
 
+import com.github.bsideup.jabel.Desugar;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -138,7 +132,8 @@ public class MetaTurbineItem extends MetaPrefixItem {
 
     @Desugar
     private record TurbineRotorImpl(Material material, RotorProperty2 property, float optimalFlowMultiplier,
-                                    float efficiencyMultiplier) implements TurbineRotor {
+                                    float efficiencyMultiplier)
+            implements TurbineRotor {
 
         private TurbineRotorImpl(@NotNull Material material, @NotNull RotorProperty2 property,
                                  float optimalFlowMultiplier, float efficiencyMultiplier) {
@@ -159,13 +154,13 @@ public class MetaTurbineItem extends MetaPrefixItem {
         }
 
         @Override
-        public int optimalFlow() {
-            return (int) (property.optimalFlow() * optimalFlowMultiplier);
+        public long optimalFlow() {
+            return (long) (property.optimalFlow() * optimalFlowMultiplier);
         }
 
         @Override
-        public int overflowMultiplier() {
-            return property.overflowMultiplier();
+        public int overflowEfficiency() {
+            return property.overflowEfficiency();
         }
 
         @Override

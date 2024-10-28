@@ -1,5 +1,6 @@
 package gregtech.common.metatileentities.multi.electric.generator.turbine;
 
+import gregtech.api.capability.RotorHolder;
 import gregtech.api.metatileentity.multiblock.FuelMultiblockController;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.pattern.BlockPattern;
@@ -8,6 +9,7 @@ import gregtech.api.recipes.RecipeMap;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -42,10 +44,23 @@ public abstract class AbstractLargeTurbine extends FuelMultiblockController {
 
     protected abstract @NotNull IBlockState getGearboxState();
 
+    @Override
+    public void invalidateStructure() {
+        for (RotorHolder holder : getAbilities(MultiblockAbility.ROTOR_HOLDER_2)) {
+            holder.setSpinning(false);
+        }
+        super.invalidateStructure();
+    }
+
     /**
      * @return the turbine type id of the turbine
      */
     public @NotNull TurbineType turbineType() {
         return turbineType;
+    }
+
+    @Override
+    public SoundEvent getSound() {
+        return null;
     }
 }

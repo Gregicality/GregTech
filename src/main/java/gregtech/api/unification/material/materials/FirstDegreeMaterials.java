@@ -1092,7 +1092,7 @@ public class FirstDegreeMaterials {
 
         SuperheatedSteam = new Material.Builder(389, gregtechId("superheated_steam"))
                 .gas(new FluidBuilder().temperature(600).customStill())
-                .color(0xC4C4C4) //TODO color
+                .color(0xC4C4C4) // TODO color
                 .flags(DISABLE_DECOMPOSITION)
                 .components(Hydrogen, 2, Oxygen, 1)
                 .build();

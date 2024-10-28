@@ -1,11 +1,5 @@
 package gregtech.common.metatileentities.multi.multiblockpart;
 
-import codechicken.lib.raytracer.CuboidRayTraceResult;
-
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.pipeline.IVertexOperation;
-import codechicken.lib.vec.Matrix4;
-
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.RotorHolder;
 import gregtech.api.capability.impl.NotifiableItemStackHandler;
@@ -18,9 +12,9 @@ import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
-
+import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
+import gregtech.api.recipes.RecipeMap;
 import gregtech.api.util.RelativeDirection;
-
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.metatileentities.multi.electric.generator.turbine.RotorFit;
 import gregtech.core.advancement.AdvancementTriggers;
@@ -29,25 +23,33 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import codechicken.lib.raytracer.CuboidRayTraceResult;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.pipeline.IVertexOperation;
+import codechicken.lib.vec.Matrix4;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class RotorHolder2 extends MetaTileEntityMultiblockNotifiablePart implements RotorHolder,
-                                                                                    IMultiblockAbilityPart<RotorHolder> {
+                          IMultiblockAbilityPart<RotorHolder> {
+
     private final InventoryRotorHolder inventory;
     /**
      * Only exists on the server
@@ -93,7 +95,8 @@ public class RotorHolder2 extends MetaTileEntityMultiblockNotifiablePart impleme
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World player, @NotNull List<String> tooltip, boolean advanced) {
+    public void addInformation(ItemStack stack, @Nullable World player, @NotNull List<String> tooltip,
+                               boolean advanced) {
         super.addInformation(stack, player, tooltip, advanced);
         tooltip.add(I18n.format("gregtech.machine.rotor_holder.tooltip1"));
         tooltip.add(I18n.format("gregtech.machine.rotor_holder.tooltip2"));
@@ -123,6 +126,20 @@ public class RotorHolder2 extends MetaTileEntityMultiblockNotifiablePart impleme
         }
     }
 
+    @SideOnly(Side.CLIENT)
+    @Override
+    public SoundEvent getSound() {
+        MultiblockControllerBase controller = getController();
+        if (controller != null) {
+            RecipeMap<?> recipeMap = controller.getRecipeMap();
+            if (recipeMap != null) {
+                return recipeMap.getSound();
+            }
+        }
+
+        return super.getSound();
+    }
+
     @Override
     public MultiblockAbility<RotorHolder> getAbility() {
         return MultiblockAbility.ROTOR_HOLDER_2;
@@ -139,7 +156,10 @@ public class RotorHolder2 extends MetaTileEntityMultiblockNotifiablePart impleme
     }
 
     private void setRotorColor(int color) {
-        this.rotorColor = color;
+        if (rotorColor != color) {
+            this.rotorColor = color;
+            writeCustomData(GregtechDataCodes.UPDATE_ROTOR_COLOR, buf -> buf.writeInt(color));
+        }
     }
 
     @Override
@@ -165,6 +185,11 @@ public class RotorHolder2 extends MetaTileEntityMultiblockNotifiablePart impleme
     }
 
     @Override
+    public boolean isActive() {
+        return isRotorSpinning;
+    }
+
+    @Override
     public @NotNull RotorFit rotorFitting() {
         return this.rotorFit;
     }
@@ -177,9 +202,9 @@ public class RotorHolder2 extends MetaTileEntityMultiblockNotifiablePart impleme
         }
 
         if (item.damage(inventory.getRotorStack(), amount)) {
-            this.rotor = null;
-            this.rotorColor = -1;
             inventory.setStackInSlot(0, ItemStack.EMPTY);
+            setSpinning(false);
+            getWorld().playSound(null, getPos(), SoundEvents.ENTITY_ITEM_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
             return true;
         }
         return false;
@@ -231,7 +256,7 @@ public class RotorHolder2 extends MetaTileEntityMultiblockNotifiablePart impleme
         if (player.isCreative()) return false;
 
         if (!getWorld().isRemote && isRotorSpinning) {
-            float damageApplied = Math.min(1, rotor.overflowMultiplier() * 4);
+            float damageApplied = Math.min(1, rotor.overflowEfficiency() * 4);
             player.attackEntityFrom(DamageSources.getTurbineDamage(), damageApplied);
             AdvancementTriggers.ROTOR_HOLDER_DEATH.trigger((EntityPlayerMP) player);
             return true;
@@ -240,7 +265,7 @@ public class RotorHolder2 extends MetaTileEntityMultiblockNotifiablePart impleme
     }
 
     @Override
-    public void clearMachineInventory(NonNullList<ItemStack> itemBuffer) {
+    public void clearMachineInventory(@NotNull List<@NotNull ItemStack> itemBuffer) {
         super.clearMachineInventory(itemBuffer);
         clearInventory(itemBuffer, inventory);
     }
@@ -288,6 +313,9 @@ public class RotorHolder2 extends MetaTileEntityMultiblockNotifiablePart impleme
             this.frontFaceFree = buf.readBoolean();
         } else if (dataId == GregtechDataCodes.IS_ROTOR_LOOPING) {
             this.isRotorSpinning = buf.readBoolean();
+            scheduleRenderUpdate();
+        } else if (dataId == GregtechDataCodes.UPDATE_ROTOR_COLOR) {
+            this.rotorColor = buf.readInt();
             scheduleRenderUpdate();
         }
     }
