@@ -69,6 +69,15 @@ public interface CoverWithUI extends Cover, IUIHolder, IGuiHolder<SidedPosGuiDat
         return null;
     }
 
+    default ModularPanel getSmallGUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
+        return buildUI(guiData, guiSyncManager);
+    }
+
+    default boolean shouldShowSmallUI() {
+        // Check buildUI is not null?
+        return usesMui2();
+    }
+
     @Override
     default boolean isValid() {
         return getCoverableView().isValid();

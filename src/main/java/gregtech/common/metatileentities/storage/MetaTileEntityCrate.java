@@ -1,13 +1,16 @@
 package gregtech.common.metatileentities.storage;
 
+import gregtech.api.cover.CoverWithUI;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.items.toolitem.ToolClasses;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.unification.material.Material;
 import gregtech.api.util.GTUtility;
+import gregtech.api.util.Size;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.items.MetaItems;
 
@@ -32,11 +35,14 @@ import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.drawable.ItemDrawable;
 import com.cleanroommc.modularui.factory.PosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.SyncHandlers;
+import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.ItemSlot;
+import com.cleanroommc.modularui.widgets.layout.Column;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -152,7 +158,7 @@ public class MetaTileEntityCrate extends MetaTileEntity {
                         .slotGroup("item_inv")));
             }
         }
-        return GTGuis.createPanel(this, rowSize * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows)
+        ModularPanel panel = GTGuis.createPanel(this, rowSize * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows)
                 .child(IKey.lang(getMetaFullName()).asWidget().pos(5, 5))
                 .bindPlayerInventory()
                 .child(new Grid()
@@ -160,6 +166,40 @@ public class MetaTileEntityCrate extends MetaTileEntity {
                         .minElementMargin(0, 0)
                         .minColWidth(18).minRowHeight(18)
                         .matrix(widgets));
+        if (hasAnyCover()) {
+            createCoverWidgets(panel);
+        }
+
+        return panel;
+    }
+
+    private void createCoverWidgets(ModularPanel mainPanel) {
+        Column leftCoverColumn = new Column();
+        Column rightCoverColumn = new Column();
+        int numCovers = 0;
+        Size widgetSize = new Size(20, 20);
+
+        // int parentHeight = coverGrid.getParentArea().height;
+        // int parentWidth = coverGrid.getParentArea().width;
+        for (EnumFacing side : EnumFacing.VALUES) {
+            if (hasCover(side) && getCoverAtSide(side) instanceof CoverWithUI cover) {
+                if (cover.shouldShowSmallUI()) {
+                    numCovers++;
+                    // Use the left side for the first three covers
+                    if (numCovers < 3) {
+                        leftCoverColumn.child(new ButtonWidget<>().topRel(20 * numCovers + 5).size(20, 20)
+                                .background(GTGuiTextures.SLOT)
+                                .overlay(new ItemDrawable(cover.getPickItem()).asIcon()));
+                    } else {
+                        rightCoverColumn.child(new ButtonWidget<>().topRel(20 * numCovers + 5).size(20, 20)
+                                .background(GTGuiTextures.SLOT)
+                                .overlay(new ItemDrawable(cover.getPickItem()).asIcon()));
+                    }
+                }
+            }
+        }
+        mainPanel.child(leftCoverColumn).leftRel(1);
+        mainPanel.child(rightCoverColumn).rightRel(1);
     }
 
     @Override
