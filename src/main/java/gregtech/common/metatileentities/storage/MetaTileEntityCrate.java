@@ -42,6 +42,7 @@ import com.cleanroommc.modularui.factory.PosGuiData;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.utils.Alignment;
+import com.cleanroommc.modularui.value.sync.PanelSyncHandler;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.SyncHandlers;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
@@ -194,6 +195,7 @@ public class MetaTileEntityCrate extends MetaTileEntity {
                 .height(24 * 3);
 
         int numCovers = 0;
+        List<PanelSyncHandler> coverPanels = new ArrayList<>();
         for (EnumFacing side : EnumFacing.VALUES) {
             if (getCoverAtSide(side) instanceof CoverWithUI cover) {
                 if (!cover.shouldShowSmallUI()) continue;
@@ -204,9 +206,13 @@ public class MetaTileEntityCrate extends MetaTileEntity {
                 // todo better key for this?
                 var panel = manager.panel("cover at side: " + side.getName(), mainPanel,
                         (syncManager, syncHandler) -> cover.getSmallGUI(sideData, syncManager));
+                coverPanels.add(panel);
 
                 IGuiAction.MousePressed handlePanel = i -> {
                     if (!panel.isPanelOpen()) {
+                        coverPanels.forEach(h -> {
+                            if (h.isPanelOpen()) h.closePanel();
+                        });
                         panel.openPanel();
                     } else {
                         panel.closePanel();
