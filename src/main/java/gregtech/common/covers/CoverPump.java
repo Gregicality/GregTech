@@ -9,7 +9,6 @@ import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.mui.GTGuiTextures;
-import gregtech.api.mui.GTGuis;
 import gregtech.api.util.GTTransferUtils;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.renderer.texture.cube.SimpleSidedCubeRenderer;
@@ -189,18 +188,8 @@ public class CoverPump extends CoverBase implements CoverWithUI, ITickable, ICon
         return true;
     }
 
-    @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        var panel = GTGuis.createPanel(this, 176, 192);
-
+    public @NotNull ParentWidget<?> createUI(ModularPanel mainPanel, PanelSyncManager syncManager) {
         getFluidFilterContainer().setMaxTransferSize(getMaxTransferRate());
-
-        return panel.child(CoverWithUI.createTitleRow(getPickItem()))
-                .child(createUI(guiData, guiSyncManager))
-                .bindPlayerInventory();
-    }
-
-    public ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
         var manualIOmode = new EnumSyncValue<>(ManualImportExportMode.class,
                 this::getManualImportExportMode, this::setManualImportExportMode);
 

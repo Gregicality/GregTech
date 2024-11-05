@@ -72,12 +72,12 @@ public class CoverFluidVoiding extends CoverPump {
     }
 
     @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        return super.buildUI(guiData, guiSyncManager).height(192 - 22);
+    public int getHeight() {
+        return super.getHeight() - 22;
     }
 
     @Override
-    public ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
+    public @NotNull ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
         var isWorking = new BooleanSyncValue(this::isWorkingEnabled, this::setWorkingEnabled);
 
         return super.createUI(data, syncManager)
