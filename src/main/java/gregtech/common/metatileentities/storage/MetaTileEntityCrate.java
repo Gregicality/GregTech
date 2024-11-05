@@ -33,18 +33,22 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.widget.IGuiAction;
 import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.api.widget.Interactable;
+import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.drawable.ItemDrawable;
 import com.cleanroommc.modularui.factory.PosGuiData;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.SyncHandlers;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.ItemSlot;
 import com.cleanroommc.modularui.widgets.layout.Column;
 import com.cleanroommc.modularui.widgets.layout.Grid;
+import com.cleanroommc.modularui.widgets.layout.Row;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -159,73 +163,80 @@ public class MetaTileEntityCrate extends MetaTileEntity {
                         .slotGroup("item_inv")));
             }
         }
-        ModularPanel panel = GTGuis.createPanel(this, rowSize * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows)
-                .child(IKey.lang(getMetaFullName()).asWidget().pos(5, 5))
+        var panel = GTGuis.createPanel(this, rowSize * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows);
+
+        return panel.child(IKey.lang(getMetaFullName()).asWidget().pos(5, 5))
                 .bindPlayerInventory()
+                .childIf(hasAnyCover(), createCoverWidgets(guiData, guiSyncManager, panel))
                 .child(new Grid()
                         .top(18).left(7).right(7).height(rows * 18)
                         .minElementMargin(0, 0)
                         .minColWidth(18).minRowHeight(18)
                         .matrix(widgets));
-        if (hasAnyCover()) {
-            createCoverWidgets(panel, guiData, guiSyncManager);
-        }
-
-        return panel;
     }
 
-    private void createCoverWidgets(ModularPanel mainPanel, PosGuiData guiData, PanelSyncManager guiSyncManager) {
-        Column leftCoverColumn = new Column();
-        Column rightCoverColumn = new Column();
+    private Row createCoverWidgets(PosGuiData data, PanelSyncManager manager, ModularPanel mainPanel) {
+        Column leftCoverColumn = new Column()
+                .background(GuiTextures.MC_BACKGROUND)
+                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
+                .padding(4)
+                .coverChildrenWidth()
+                .topRel(0.25f)
+                .left(-20)
+                .height(24 * 3);
+        Column rightCoverColumn = new Column()
+                .background(GuiTextures.MC_BACKGROUND)
+                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
+                .padding(4)
+                .coverChildrenWidth()
+                .topRel(0.25f)
+                .right(-20)
+                .height(24 * 3);
+
         int numCovers = 0;
-
         for (EnumFacing side : EnumFacing.VALUES) {
-            if (hasCover(side) && getCoverAtSide(side) instanceof CoverWithUI cover) {
-                if (cover.shouldShowSmallUI()) {
-                    numCovers++;
-                    SidedPosGuiData sideData = new SidedPosGuiData(guiData.getPlayer(), guiData.getX(),
-                            guiData.getY(), guiData.getZ(), side);
+            if (getCoverAtSide(side) instanceof CoverWithUI cover) {
+                if (!cover.shouldShowSmallUI()) continue;
 
-                    // guiSyncManager.panel("cover_" + numCovers, mainPanel, );
-                    /*
-                     * PanelSyncHandler coverSyncHandler = new PanelSyncHandler(mainPanel,
-                     * (syncManager, syncHandler) -> cover.getSmallGUI(sideData, syncManager));
-                     *
-                     * guiSyncManager.syncValue("cover_" + numCovers, coverSyncHandler);
-                     */
+                SidedPosGuiData sideData = new SidedPosGuiData(data.getPlayer(), data.getX(),
+                        data.getY(), data.getZ(), side);
 
-                    // Use the left side for the first three covers
-                    if (numCovers <= 3) {
-                        // guiSyncManager.panel("cover_" + numCovers, mainPanel, );
+                // todo better key for this?
+                var panel = manager.panel("cover at side: " + side.getName(), mainPanel,
+                        (syncManager, syncHandler) -> cover.getSmallGUI(sideData, syncManager));
 
-                        leftCoverColumn.child(new ButtonWidget<>().top(20 * numCovers + 5).size(20, 20)
-                                .background(GTGuiTextures.SLOT).onMousePressed(i -> {
-
-                                    ModularPanel coverPanel = cover.getSmallGUI(sideData, guiSyncManager);
-                                    if (!coverPanel.isOpen()) {
-                                        coverPanel.onOpen(mainPanel.getScreen());
-                                    }
-                                    /*
-                                     * if (coverSyncHandler.isPanelOpen()) {
-                                     * coverSyncHandler.closePanel();
-                                     * } else {
-                                     * coverSyncHandler.openPanel();
-                                     * }
-                                     */
-                                    Interactable.playButtonClickSound();
-                                    return true;
-                                })
-                                .overlay(new ItemDrawable(cover.getPickItem()).asIcon()));
+                IGuiAction.MousePressed handlePanel = i -> {
+                    if (!panel.isPanelOpen()) {
+                        panel.openPanel();
                     } else {
-                        rightCoverColumn.child(new ButtonWidget<>().top(20 * numCovers + 5).size(20, 20)
-                                .background(GTGuiTextures.SLOT)
-                                .overlay(new ItemDrawable(cover.getPickItem()).asIcon()));
+                        panel.closePanel();
                     }
+                    Interactable.playButtonClickSound();
+                    return true;
+                };
+
+                // Use the left side for the first three covers
+                if (numCovers++ < 3) {
+                    leftCoverColumn.child(new ButtonWidget<>()
+                            .size(20, 20)
+                            .marginBottom(2)
+                            .background(GTGuiTextures.SLOT)
+                            .onMousePressed(handlePanel)
+                            .overlay(new ItemDrawable(cover.getPickItem()).asIcon()));
+                } else {
+                    rightCoverColumn.child(new ButtonWidget<>()
+                            .size(20, 20)
+                            .marginBottom(2)
+                            .background(GTGuiTextures.SLOT)
+                            .onMousePressed(handlePanel)
+                            .overlay(new ItemDrawable(cover.getPickItem()).asIcon()));
                 }
             }
         }
-        mainPanel.child(leftCoverColumn.left(-20));
-        mainPanel.child(rightCoverColumn.right(mainPanel.getDefaultWidth()));
+        return new Row()
+                .expanded()
+                .child(leftCoverColumn)
+                .child(rightCoverColumn);
     }
 
     @Override

@@ -4,6 +4,7 @@ import gregtech.api.gui.IUIHolder;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuiTheme;
+import gregtech.api.mui.GTGuis;
 import gregtech.api.mui.GregTechGuiScreen;
 import gregtech.api.mui.factory.CoverGuiFactory;
 
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import com.cleanroommc.modularui.api.IGuiHolder;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.ItemDrawable;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
@@ -32,6 +34,8 @@ import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.ToggleButton;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface CoverWithUI extends Cover, IUIHolder, IGuiHolder<SidedPosGuiData> {
 
@@ -66,11 +70,20 @@ public interface CoverWithUI extends Cover, IUIHolder, IGuiHolder<SidedPosGuiDat
 
     @Override
     default ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        return null;
+        var w = constructWidgets(guiData, guiSyncManager);
+        return GTGuis.createPanel(getPickItem(), 100, 100)
+                .childIf(w != null, w);
     }
 
-    default ModularPanel getSmallGUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        return buildUI(guiData, guiSyncManager);
+    default @NotNull ModularPanel getSmallGUI(@NotNull SidedPosGuiData guiData,
+                                              @NotNull PanelSyncManager guiSyncManager) {
+        var w = constructWidgets(guiData, guiSyncManager);
+        return GTGuis.createPopupPanel(getPickItem().getTranslationKey(), 100, 100)
+                .childIf(w != null, w);
+    }
+
+    default @Nullable IWidget constructWidgets(SidedPosGuiData data, PanelSyncManager manager) {
+        return null;
     }
 
     default boolean shouldShowSmallUI() {
