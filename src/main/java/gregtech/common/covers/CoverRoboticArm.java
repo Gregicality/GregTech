@@ -192,12 +192,12 @@ public class CoverRoboticArm extends CoverConveyor {
     }
 
     @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        return super.buildUI(guiData, guiSyncManager).height(192 + 36 + 18 + 2);
+    public int getHeight() {
+        return 192 + 36 + 18 + 2;
     }
 
     @Override
-    protected ParentWidget<Flow> createUI(GuiData data, PanelSyncManager guiSyncManager) {
+    public @NotNull ParentWidget<Flow> createUI(GuiData data, PanelSyncManager guiSyncManager) {
         EnumSyncValue<TransferMode> transferMode = new EnumSyncValue<>(TransferMode.class, this::getTransferMode,
                 this::setTransferMode);
         guiSyncManager.syncValue("transfer_mode", transferMode);

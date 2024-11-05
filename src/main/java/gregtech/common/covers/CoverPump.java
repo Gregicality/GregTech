@@ -200,7 +200,7 @@ public class CoverPump extends CoverBase implements CoverWithUI, ITickable, ICon
                 .bindPlayerInventory();
     }
 
-    protected ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
+    public ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
         var manualIOmode = new EnumSyncValue<>(ManualImportExportMode.class,
                 this::getManualImportExportMode, this::setManualImportExportMode);
 

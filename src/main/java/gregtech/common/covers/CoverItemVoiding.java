@@ -73,12 +73,12 @@ public class CoverItemVoiding extends CoverConveyor {
     }
 
     @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        return super.buildUI(guiData, guiSyncManager).height(192 - 22);
+    public int getHeight() {
+        return 192 - 22;
     }
 
     @Override
-    protected ParentWidget<Flow> createUI(GuiData data, PanelSyncManager guiSyncManager) {
+    public @NotNull ParentWidget<Flow> createUI(GuiData data, PanelSyncManager guiSyncManager) {
         var isWorking = new BooleanSyncValue(this::isWorkingEnabled, this::setWorkingEnabled);
 
         return super.createUI(data, guiSyncManager)

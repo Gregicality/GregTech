@@ -248,7 +248,7 @@ public class CoverFluidRegulator extends CoverPump {
     }
 
     @Override
-    protected ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
+    public ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
         var transferMode = new EnumSyncValue<>(TransferMode.class, this::getTransferMode, this::setTransferMode);
         transferMode.updateCacheFromSource(true);
         syncManager.syncValue("transfer_mode", transferMode);

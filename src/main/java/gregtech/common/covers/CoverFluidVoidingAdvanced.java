@@ -106,7 +106,7 @@ public class CoverFluidVoidingAdvanced extends CoverFluidVoiding {
     }
 
     @Override
-    protected ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
+    public ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
         var voidingMode = new EnumSyncValue<>(VoidingMode.class, this::getVoidingMode, this::setVoidingMode);
         syncManager.syncValue("voiding_mode", voidingMode);
 

@@ -9,7 +9,6 @@ import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.mui.GTGuiTextures;
-import gregtech.api.mui.GTGuis;
 import gregtech.api.util.GTTransferUtils;
 import gregtech.api.util.ItemStackHashStrategy;
 import gregtech.client.renderer.texture.Textures;
@@ -504,18 +503,14 @@ public class CoverConveyor extends CoverBase implements CoverWithUI, ITickable, 
     }
 
     @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        var panel = GTGuis.createPanel(this, 176, 192 + 18);
-
-        getItemFilterContainer().setMaxTransferSize(getMaxStackSize());
-
-        return panel.child(CoverWithUI.createTitleRow(getPickItem()))
-                .child(createUI(guiData, guiSyncManager))
-                .bindPlayerInventory();
+    public int getHeight() {
+        return 192 + 18;
     }
 
-    protected ParentWidget<Flow> createUI(GuiData data, PanelSyncManager guiSyncManager) {
-        var column = Flow.column().top(24).margin(7, 0)
+    public @NotNull ParentWidget<Column> createUI(ModularPanel mainPanel, PanelSyncManager guiSyncManager) {
+        getItemFilterContainer().setMaxTransferSize(getMaxStackSize());
+
+        var column = new Column().top(24).margin(7, 0)
                 .widthRel(1f).coverChildrenHeight();
 
         EnumSyncValue<ManualImportExportMode> manualIOmode = new EnumSyncValue<>(ManualImportExportMode.class,

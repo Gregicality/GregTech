@@ -70,19 +70,29 @@ public interface CoverWithUI extends Cover, IUIHolder, IGuiHolder<SidedPosGuiDat
 
     @Override
     default ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        var w = constructWidgets(guiData, guiSyncManager);
-        return GTGuis.createPanel(getPickItem(), 100, 100)
-                .childIf(w != null, w);
+        var panel = GTGuis.createPanel(getPickItem(), getWidth(), getHeight());
+        var w = createUI(panel, guiSyncManager);
+        return panel.childIf(w != null, w)
+                .bindPlayerInventory();
+    }
+
+    default int getWidth() {
+        return 176;
+    }
+
+    default int getHeight() {
+        return 192;
     }
 
     default @NotNull ModularPanel getSmallGUI(@NotNull SidedPosGuiData guiData,
                                               @NotNull PanelSyncManager guiSyncManager) {
-        var w = constructWidgets(guiData, guiSyncManager);
-        return GTGuis.createPopupPanel(getPickItem().getTranslationKey(), 100, 100)
-                .childIf(w != null, w);
+        var panel = GTGuis.createPopupPanel(getPickItem().getTranslationKey(), getWidth(), getHeight());
+        var w = createUI(panel, guiSyncManager);
+        return panel.childIf(w != null, w)
+                .coverChildrenHeight();
     }
 
-    default @Nullable IWidget constructWidgets(SidedPosGuiData data, PanelSyncManager manager) {
+    default @Nullable IWidget createUI(ModularPanel mainPanel, PanelSyncManager manager) {
         return null;
     }
 
