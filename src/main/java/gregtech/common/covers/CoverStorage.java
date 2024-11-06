@@ -32,6 +32,7 @@ import com.cleanroommc.modularui.widgets.ItemSlot;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,24 +89,24 @@ public class CoverStorage extends CoverBase implements CoverWithUI {
     }
 
     @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        guiSyncManager.registerSlotGroup("item_inv", this.storageHandler.getSlots());
+    public int getHeight() {
+        return MAX_HEIGHT;
+    }
+
+    @Override
+    public @Nullable IWidget createUI(ModularPanel mainPanel, PanelSyncManager manager) {
+        manager.registerSlotGroup("item_inv", this.storageHandler.getSlots());
 
         int rowSize = this.storageHandler.getSlots();
-        List<List<IWidget>> widgets = new ArrayList<>();
-        widgets.add(new ArrayList<>());
+        List<IWidget> widgets = new ArrayList<>();
         for (int i = 0; i < rowSize; i++) {
-            widgets.get(0)
-                    .add(new ItemSlot().slot(SyncHandlers.itemSlot(this.storageHandler, i).slotGroup("item_inv")));
+            widgets.add(new ItemSlot().slot(SyncHandlers.itemSlot(this.storageHandler, i).slotGroup("item_inv")));
         }
-        return GTGuis.createPanel(this, MAX_WIDTH, MAX_HEIGHT)
-                .child(IKey.lang("cover.storage.title").asWidget().pos(5, 5))
-                .bindPlayerInventory()
-                .child(new Grid()
-                        .top((MAX_HEIGHT - SLOT_SIZE * 5) / 2).left(7).right(7).height(18)
-                        .minElementMargin(0, 0)
-                        .minColWidth(18).minRowHeight(18)
-                        .matrix(widgets));
+        return new Grid()
+                .top((MAX_HEIGHT - SLOT_SIZE * 5) / 2).left(7).right(7).height(18)
+                .minElementMargin(0, 0)
+                .minColWidth(18).minRowHeight(18)
+                .mapTo(rowSize, widgets, (index, value) -> value);
     }
 
     /**

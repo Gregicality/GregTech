@@ -95,6 +95,7 @@ public interface CoverWithUI extends Cover, IUIHolder, IGuiHolder<SidedPosGuiDat
                 .coverChildrenHeight();
     }
 
+    // todo remove main panel once mui2 rc2+ is merged
     default @Nullable IWidget createUI(ModularPanel mainPanel, PanelSyncManager manager) {
         return null;
     }
