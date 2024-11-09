@@ -28,7 +28,7 @@ public class SteamTurbineLogic extends LargeTurbineRecipeLogic {
 
     @Override
     protected long calculateOutputEUt(long energyDensity) {
-        return totalFluidConsumed / 2;
+        return isHighPressure ? totalFluidConsumed : totalFluidConsumed / 2;
     }
 
     @Override

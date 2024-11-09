@@ -187,7 +187,7 @@ public abstract class LargeTurbineRecipeLogic extends MultiblockFuelRecipeLogic 
         assert optimalFuelRate > 0;
 
         // Allowed to use beyond the base optimal flow rate depending on overflowEfficiency
-        float overflowFactor = overflowMultiplier() * overflowEfficiency + flowFloor();
+        float overflowFactor = overflowMultiplier() * (overflowEfficiency / 10_000.0F + flowFloor());
         int maxFuel = GTUtility.safeCastLongToInt((long) (optimalFuelRate * overflowFactor));
         if (maxFuel <= 0) {
             return 0;
