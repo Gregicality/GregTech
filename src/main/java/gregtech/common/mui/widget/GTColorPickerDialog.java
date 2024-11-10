@@ -22,10 +22,12 @@ import com.cleanroommc.modularui.widgets.layout.Column;
 import com.cleanroommc.modularui.widgets.layout.Row;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 // TODO remove this class when MUI2 page buttons stop having inverted backgrounds and MUI2 color picker obeys theming
-// for its page buttons
+// for its page buttons, and the weird resizing bugs are fixed
 public class GTColorPickerDialog extends Dialog<Integer> {
 
     private static final IDrawable handleBackground = new Rectangle().setColor(Color.WHITE.main);
@@ -41,6 +43,8 @@ public class GTColorPickerDialog extends Dialog<Integer> {
     private final Rectangle sliderBackgroundA = new Rectangle();
     private final Rectangle sliderBackgroundS = new Rectangle();
     private final Rectangle sliderBackgroundV = new Rectangle();
+
+    private final List<SliderWidget> sliders = new ArrayList<>();
 
     public GTColorPickerDialog(Consumer<Integer> resultConsumer, int startColor, boolean controlAlpha) {
         this("color_picker", resultConsumer, startColor, controlAlpha);
@@ -172,13 +176,24 @@ public class GTColorPickerDialog extends Dialog<Integer> {
                 .childIf(alphaSlider != null, alphaSlider);
     }
 
-    private static SliderWidget createSlider(IDrawable background) {
-        return new SliderWidget()
+    private SliderWidget createSlider(IDrawable background) {
+        var result = new SliderWidget()
                 .expanded()
                 .heightRel(1f)
                 .background(background.asIcon().size(0, 4))
                 .sliderTexture(handleBackground)
                 .sliderSize(2, 8);
+        sliders.add(result);
+        return result;
+    }
+
+    @Override
+    public void onResized() {
+        super.onResized();
+        // HACK: work around this not getting called by MUI2 in some situations
+        for (var slider : sliders) {
+            slider.onResized();
+        }
     }
 
     private String validateRawColor(String raw) {

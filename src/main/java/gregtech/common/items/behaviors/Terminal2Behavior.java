@@ -8,7 +8,7 @@ import gregtech.api.mui.GTGuis;
 import gregtech.api.mui.factory.MetaItemGuiFactory;
 import gregtech.api.terminal2.Terminal2;
 import gregtech.api.terminal2.Terminal2Theme;
-import gregtech.common.terminal2.HomeApp;
+import gregtech.common.mui.widget.IDPagedWidget;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -25,7 +25,7 @@ import com.cleanroommc.modularui.factory.HandGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
-import com.cleanroommc.modularui.widgets.PagedWidget;
+import com.cleanroommc.modularui.widgets.layout.Grid;
 
 public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
 
@@ -46,13 +46,28 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
     @Override
     public ModularPanel buildUI(HandGuiData guiData, PanelSyncManager guiSyncManager) {
         ModularPanel panel = GTGuis.createPanel(guiData.getUsedItemStack(), 364, 248);
-        PagedWidget<?> appPages = new PagedWidget<>();
-        ((HomeApp) Terminal2.appMap.get(Terminal2.HOME_ID)).setPageWidget(appPages);
-        for (ResourceLocation appID : Terminal2.idList) {
-            appPages.addPage(Terminal2.appMap.get(appID).buildWidgets(guiData, guiSyncManager, panel));
+        IDPagedWidget<?> appPages = new IDPagedWidget<>();
+        for (var app : Terminal2.appMap.entrySet()) {
+            appPages.addPage(app.getKey(), app.getValue().buildWidgets(guiData, guiSyncManager, panel));
         }
-        appPages.setPage(Terminal2.idList.indexOf(Terminal2.HOME_ID));
         appPages.size(340, 240).pos(4, 4);
+
+        Grid appGrid = new Grid()
+                .size(340, 240)
+                .nextRow();
+
+        for (ResourceLocation appID : Terminal2.appMap.keySet()) {
+            if (appID == Terminal2.HOME_ID) continue;
+
+            appGrid.child(new ButtonWidget<>()
+                    .overlay(Terminal2.appMap.get(appID).getIcon())
+                    .addTooltipLine(IKey.lang("terminal.app." + appID.getNamespace() + "." + appID.getPath() + ".name"))
+                    .onMousePressed(i -> {
+                        appPages.setPage(appID);
+                        return true;
+                    }));
+        }
+        appPages.addPage(Terminal2.HOME_ID, appGrid).setDefaultPage(Terminal2.HOME_ID);
 
         return panel.background(GTGuiTextures.TERMINAL_FRAME)
                 .child(new DynamicDrawable(Terminal2Theme::getBackgroundDrawable).asWidget()
@@ -69,7 +84,7 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
                         .left(346)
                         .topRelAnchor(0.5F, 0.5F)
                         .onMousePressed(i -> {
-                            appPages.setPage(Terminal2.idList.indexOf(Terminal2.HOME_ID));
+                            appPages.setPage(Terminal2.HOME_ID);
                             return true;
                         }));
     }

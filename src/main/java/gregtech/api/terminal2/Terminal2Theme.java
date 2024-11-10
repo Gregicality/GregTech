@@ -113,11 +113,7 @@ public class Terminal2Theme {
     }
 
     public static void setColor(String color, int i) {
-        try {
-            ((Rectangle) Terminal2Theme.class.getField(color).get(null)).setColor(i);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException("Failed to set color " + color + " to " + i, e);
-        }
+        getColorRect(color).setColor(i);
     }
 
     public static void resetToDefaultColor(String color) {
