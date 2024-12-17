@@ -13,12 +13,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Terminal2 {
 
-    public static final Map<ResourceLocation, ITerminalApp> appMap = new HashMap<>();
+    public static final Map<ResourceLocation, ITerminalApp> appMap = new LinkedHashMap<>();
     public static final ResourceLocation HOME_ID = GTUtility.gregtechId("home");
 
     @SideOnly(Side.CLIENT)
@@ -31,7 +31,9 @@ public class Terminal2 {
             Terminal2Theme.init();
         }
         registerApp(GTUtility.gregtechId("settings"), new SettingsApp());
-        registerApp(GTUtility.gregtechId("test"), new TestApp());
+        for (int i = 0; i < 18; i++) {
+            registerApp(GTUtility.gregtechId("test" + i), new TestApp(i));
+        }
     }
 
     public static void registerApp(ResourceLocation id, ITerminalApp app) {

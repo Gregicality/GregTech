@@ -10,8 +10,14 @@ import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 
 public class TestApp implements ITerminalApp {
 
+    private final int n;
+
+    public TestApp(int n) {
+        this.n = n;
+    }
+
     @Override
     public IWidget buildWidgets(HandGuiData guiData, PanelSyncManager guiSyncManager, ModularPanel panel) {
-        return IKey.str("test app").color(0xFFFFFF).shadow(true).asWidget();
+        return IKey.str("test app " + n).color(0xFFFFFF).shadow(true).asWidget();
     }
 }

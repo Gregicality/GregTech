@@ -53,7 +53,9 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
         appPages.size(340, 240).pos(4, 4);
 
         Grid appGrid = new Grid()
-                .size(340, 240)
+                .pos(44, 22)
+                .size(340 - 44 * 2, 240 - 22 * 2)
+                .margin(6)
                 .nextRow();
 
         for (ResourceLocation appID : Terminal2.appMap.keySet()) {
@@ -61,11 +63,18 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
 
             appGrid.child(new ButtonWidget<>()
                     .overlay(Terminal2.appMap.get(appID).getIcon())
+                    .background(Terminal2Theme.COLOR_BACKGROUND_2.getCircle())
+                    .hoverBackground(Terminal2Theme.COLOR_BACKGROUND_2.getCircle())
+                    .size(24, 24)
                     .addTooltipLine(IKey.lang("terminal.app." + appID.getNamespace() + "." + appID.getPath() + ".name"))
                     .onMousePressed(i -> {
                         appPages.setPage(appID);
                         return true;
                     }));
+
+            if (appGrid.getChildren().size() % 7 == 0) {
+                appGrid.nextRow();
+            }
         }
         appPages.addPage(Terminal2.HOME_ID, appGrid).setDefaultPage(Terminal2.HOME_ID);
 
