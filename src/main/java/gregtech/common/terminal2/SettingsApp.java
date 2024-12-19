@@ -3,6 +3,7 @@ package gregtech.common.terminal2;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.terminal2.ITerminalApp;
 import gregtech.api.terminal2.Terminal2Theme;
+import gregtech.common.mui.widget.ColorableVScrollData;
 import gregtech.common.mui.widget.GTColorPickerDialog;
 
 import com.cleanroommc.modularui.api.IPanelHandler;
@@ -17,7 +18,7 @@ import com.cleanroommc.modularui.value.sync.PanelSyncHandler;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widget.ScrollWidget;
-import com.cleanroommc.modularui.widget.scroll.VerticalScrollData;
+import com.cleanroommc.modularui.widget.scroll.HorizontalScrollData;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.ListWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
@@ -95,11 +96,12 @@ public class SettingsApp implements ITerminalApp {
                             })));
         }
 
-        var scroll = new ScrollWidget<>(new VerticalScrollData())
+        var scroll = new ScrollWidget<>(new ColorableVScrollData())
                 .child(column)
                 .sizeRel(1.0F);
 
         scroll.getScrollArea().getScrollY().setScrollSize(rows * 24);
+        Terminal2Theme.COLOR_FOREGROUND_BRIGHT.bindScrollFG(scroll);
 
         return new ParentWidget<>()
                 .sizeRel(0.98F)
@@ -134,7 +136,12 @@ public class SettingsApp implements ITerminalApp {
                         Terminal2Theme.saveConfig();
                         return true;
                     }))
+                    // convince it to accept the colorable scroll data by giving it one with a different axis first
+                    .scrollDirection(new HorizontalScrollData())
+                    .scrollDirection(new ColorableVScrollData())
                     .size(150, 90).pos(9, 16);
+
+            Terminal2Theme.COLOR_FOREGROUND_BRIGHT.bindScrollFG(list);
 
             return GTGuis.createPopupPanel("terminal_background_select", 168, 112)
                     .child(IKey.lang("terminal.settings.background_select").asWidget()

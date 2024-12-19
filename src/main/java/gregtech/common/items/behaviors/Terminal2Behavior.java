@@ -64,7 +64,8 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
             appGrid.child(new ButtonWidget<>()
                     .overlay(Terminal2.appMap.get(appID).getIcon())
                     .background(Terminal2Theme.COLOR_BACKGROUND_2.getCircle())
-                    .hoverBackground(Terminal2Theme.COLOR_BACKGROUND_2.getCircle())
+                    .hoverBackground(Terminal2Theme.COLOR_BACKGROUND_2.getCircle(),
+                            Terminal2Theme.COLOR_BRIGHT_2.getRing())
                     .size(24, 24)
                     .addTooltipLine(IKey.lang("terminal.app." + appID.getNamespace() + "." + appID.getPath() + ".name"))
                     .onMousePressed(i -> {

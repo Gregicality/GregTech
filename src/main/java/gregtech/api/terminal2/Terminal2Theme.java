@@ -2,8 +2,8 @@ package gregtech.api.terminal2;
 
 import gregtech.api.util.FileUtility;
 import gregtech.api.util.GTUtility;
+import gregtech.common.mui.drawable.BoundRectangle;
 import gregtech.common.mui.drawable.FileTexture;
-import gregtech.common.mui.drawable.RectangleWithCircle;
 
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.drawable.UITexture;
@@ -35,32 +35,32 @@ public class Terminal2Theme {
     public static final List<String> colors = Arrays.stream(Terminal2Theme.class.getFields())
             .map(Field::getName).filter(name -> name.startsWith("COLOR_")).collect(Collectors.toList());
 
-    public static RectangleWithCircle COLOR_BRIGHT_1 = new RectangleWithCircle()
+    public static BoundRectangle COLOR_BRIGHT_1 = new BoundRectangle()
             .setColor(new Color(144, 243, 116).getRGB());
-    public static RectangleWithCircle COLOR_BRIGHT_2 = new RectangleWithCircle()
+    public static BoundRectangle COLOR_BRIGHT_2 = new BoundRectangle()
             .setColor(new Color(243, 208, 116).getRGB());
-    public static RectangleWithCircle COLOR_BRIGHT_3 = new RectangleWithCircle()
+    public static BoundRectangle COLOR_BRIGHT_3 = new BoundRectangle()
             .setColor(new Color(231, 95, 95).getRGB());
-    public static RectangleWithCircle COLOR_BRIGHT_4 = new RectangleWithCircle()
+    public static BoundRectangle COLOR_BRIGHT_4 = new BoundRectangle()
             .setColor(new Color(230, 230, 230).getRGB());
 
-    public static RectangleWithCircle COLOR_DARK_1 = new RectangleWithCircle()
+    public static BoundRectangle COLOR_DARK_1 = new BoundRectangle()
             .setColor(new Color(0, 115, 255).getRGB());
-    public static RectangleWithCircle COLOR_DARK_2 = new RectangleWithCircle()
+    public static BoundRectangle COLOR_DARK_2 = new BoundRectangle()
             .setColor(new Color(113, 27, 217).getRGB());
-    public static RectangleWithCircle COLOR_DARK_3 = new RectangleWithCircle().setColor(new Color(30, 80, 30).getRGB());
-    public static RectangleWithCircle COLOR_DARK_4 = new RectangleWithCircle().setColor(new Color(30, 30, 30).getRGB());
+    public static BoundRectangle COLOR_DARK_3 = new BoundRectangle().setColor(new Color(30, 80, 30).getRGB());
+    public static BoundRectangle COLOR_DARK_4 = new BoundRectangle().setColor(new Color(30, 30, 30).getRGB());
 
-    public static RectangleWithCircle COLOR_FOREGROUND_BRIGHT = new RectangleWithCircle()
+    public static BoundRectangle COLOR_FOREGROUND_BRIGHT = new BoundRectangle()
             .setColor(new Color(148, 226, 193).getRGB());
-    public static RectangleWithCircle COLOR_FOREGROUND_DARK = new RectangleWithCircle()
+    public static BoundRectangle COLOR_FOREGROUND_DARK = new BoundRectangle()
             .setColor(new Color(175, 0, 0, 131).getRGB());
 
-    public static RectangleWithCircle COLOR_BACKGROUND_1 = new RectangleWithCircle()
+    public static BoundRectangle COLOR_BACKGROUND_1 = new BoundRectangle()
             .setColor(new Color(0, 0, 0, 80).getRGB());
-    public static RectangleWithCircle COLOR_BACKGROUND_2 = new RectangleWithCircle()
+    public static BoundRectangle COLOR_BACKGROUND_2 = new BoundRectangle()
             .setColor(new Color(0, 0, 0, 160).getRGB());
-    public static RectangleWithCircle COLOR_BACKGROUND_3 = new RectangleWithCircle()
+    public static BoundRectangle COLOR_BACKGROUND_3 = new BoundRectangle()
             .setColor(new Color(246, 120, 120, 160).getRGB());
 
     public static void init() {
@@ -115,9 +115,9 @@ public class Terminal2Theme {
         }
     }
 
-    public static RectangleWithCircle getColorRect(String color) {
+    public static BoundRectangle getColorRect(String color) {
         try {
-            return (RectangleWithCircle) Terminal2Theme.class.getField(color).get(null);
+            return (BoundRectangle) Terminal2Theme.class.getField(color).get(null);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException("Failed to get color rect " + color, e);
         }
