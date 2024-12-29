@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Terminal2 {
-
+    public static final int SCREEN_WIDTH = 340, SCREEN_HEIGHT = 240;
     public static final Map<ResourceLocation, ITerminalApp> appMap = new LinkedHashMap<>();
     public static final ResourceLocation HOME_ID = GTUtility.gregtechId("home");
 

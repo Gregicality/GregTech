@@ -59,11 +59,11 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
         for (var app : Terminal2.appMap.entrySet()) {
             appPages.addPage(app.getKey(), app.getValue().buildWidgets(guiData, guiSyncManager, panel));
         }
-        appPages.size(340, 240).pos(4, 4);
+        appPages.size(Terminal2.SCREEN_WIDTH, Terminal2.SCREEN_HEIGHT).pos(4, 4);
 
         Grid appGrid = new Grid()
                 .pos(44, 22)
-                .size(340 - 44 * 2, 240 - 22 * 2)
+                .size(Terminal2.SCREEN_WIDTH - 44 * 2, Terminal2.SCREEN_HEIGHT - 22 * 2)
                 .margin(6)
                 .nextRow();
 
@@ -90,7 +90,7 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
 
         return panel.background(GTGuiTextures.TERMINAL_FRAME)
                 .child(new DynamicDrawable(Terminal2Theme::getBackgroundDrawable).asWidget()
-                        .size(340, 240)
+                        .size(Terminal2.SCREEN_WIDTH, Terminal2.SCREEN_HEIGHT)
                         .pos(4, 4))
                 .child(appPages)
                 .child(new ButtonWidget<>()
