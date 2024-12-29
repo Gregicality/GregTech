@@ -130,4 +130,10 @@ public class Terminal2Theme {
     public static void resetToDefaultColor(String color) {
         setColor(color, defaultColors.get(color));
     }
+
+    public static void gcBoundRects() {
+        for (String color : colors) {
+            getColorRect(color).gc();
+        }
+    }
 }

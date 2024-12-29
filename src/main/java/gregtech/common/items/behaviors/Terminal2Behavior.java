@@ -46,7 +46,16 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
     @Override
     public ModularPanel buildUI(HandGuiData guiData, PanelSyncManager guiSyncManager) {
         ModularPanel panel = GTGuis.createPanel(guiData.getUsedItemStack(), 364, 248);
-        IDPagedWidget<?> appPages = new IDPagedWidget<>();
+
+        // to avoid tying the terminal bound rect gc logic to IDPagedWidget itself
+        @SuppressWarnings("rawtypes")
+        IDPagedWidget<?> appPages = new IDPagedWidget() {
+            @Override
+            public void dispose() {
+                super.dispose();
+                Terminal2Theme.gcBoundRects();
+            }
+        };
         for (var app : Terminal2.appMap.entrySet()) {
             appPages.addPage(app.getKey(), app.getValue().buildWidgets(guiData, guiSyncManager, panel));
         }

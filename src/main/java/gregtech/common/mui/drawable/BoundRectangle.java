@@ -69,4 +69,8 @@ public class BoundRectangle extends Rectangle {
     public BoundRectangle bindScrollBG(ScrollWidget<?> widget) {
         return bind(widget.getScrollArea()::setScrollBarBackgroundColor, () -> !widget.isValid());
     }
+
+    public void gc() {
+        colorSetters.removeIf((e) -> e.getRight().getAsBoolean());
+    }
 }
