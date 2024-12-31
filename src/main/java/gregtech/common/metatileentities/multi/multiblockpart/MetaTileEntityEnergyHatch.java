@@ -35,7 +35,6 @@ import codechicken.lib.vec.Matrix4;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.lang.ref.WeakReference;
 import java.util.List;
 

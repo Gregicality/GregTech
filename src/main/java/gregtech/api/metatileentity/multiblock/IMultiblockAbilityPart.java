@@ -27,5 +27,12 @@ public interface IMultiblockAbilityPart<T> extends IMultiblockPart {
         return getAbility() == null ? Collections.emptyList() : Collections.singletonList(getAbility());
     }
 
+    /**
+     * Register abilities to the multiblock here
+     * <br />
+     * Check {@link AbilityInstances#isKey(MultiblockAbility)} if you return a list of abilities
+     * 
+     * @param abilityInstances list to register abilities to
+     */
     void registerAbilities(@NotNull AbilityInstances abilityInstances);
 }
