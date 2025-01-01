@@ -110,7 +110,7 @@ public class AbilityInstances extends AbstractList<Object> {
     }
 
     /**
-     * Replaces the element at the index. Will throw and exception if the element is not what the key expects.
+     * Replaces the element at the index. Will throw an exception if the element is not what the key expects.
      * 
      * @param index   index of the element to replace
      * @param element element to be stored at the specified position
