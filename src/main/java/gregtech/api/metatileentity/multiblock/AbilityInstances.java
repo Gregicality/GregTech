@@ -1,5 +1,7 @@
 package gregtech.api.metatileentity.multiblock;
 
+import gregtech.api.util.GTLog;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,7 +102,8 @@ public class AbilityInstances extends AbstractList<Object> {
     public void add(int index, Object element) {
         if (!key.checkType(element))
             throw new IllegalArgumentException(
-                    String.format("element's class \"%s\" is not of type \"%s\"", element.getClass(),
+                    String.format("element \"%s\" does not extend/implement \"%s\"",
+                            element.getClass().getSimpleName(),
                             this.key.getType()));
         if (!instances.contains(element))
             instances.add(index, element);
@@ -117,10 +120,16 @@ public class AbilityInstances extends AbstractList<Object> {
     public Object set(int index, Object element) {
         if (!key.checkType(element))
             throw new IllegalArgumentException(
-                    String.format("element's class \"%s\" is not of type \"%s\"", element.getClass(),
+                    String.format("element \"%s\" does not extend/implement \"%s\"",
+                            element.getClass().getSimpleName(),
                             this.key.getType()));
-        if (instances.contains(element))
+
+        int existing = instances.indexOf(element);
+        if (existing != -1) {
+            GTLog.logger.warn("attempted to set \"{}\" at index {} when we already have it at {}",
+                    element.getClass().getSimpleName(), index, existing);
             return null;
+        }
 
         return instances.set(index, element);
     }

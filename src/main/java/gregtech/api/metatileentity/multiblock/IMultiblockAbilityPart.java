@@ -30,7 +30,8 @@ public interface IMultiblockAbilityPart<T> extends IMultiblockPart {
     /**
      * Register abilities to the multiblock here
      * <br />
-     * Check {@link AbilityInstances#isKey(MultiblockAbility) AbiliteInstances.isKey()} if you override {@link IMultiblockAbilityPart#getAbilities()}
+     * Check {@link AbilityInstances#isKey(MultiblockAbility) AbiliteInstances.isKey()} if you override
+     * {@link IMultiblockAbilityPart#getAbilities()}
      * 
      * @param abilityInstances list to register abilities to
      */

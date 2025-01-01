@@ -125,7 +125,7 @@ public class MultiblockAbility<T> {
     }
 
     public String getType() {
-        return this.clazz.toString();
+        return this.clazz.getSimpleName();
     }
 
     public @Nullable T checkAndCast(Object o) {
