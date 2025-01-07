@@ -36,8 +36,8 @@ public class CapesRegistry {
 
     private static final Map<UUID, List<ResourceLocation>> UNLOCKED_CAPES = new HashMap<>();
     private static final Map<UUID, ResourceLocation> WORN_CAPES = new HashMap<>();
-    private static final Map<Advancement, ResourceLocation> CAPE_ADVANCEMENTS = new HashMap<>();
-    private static final Set<ResourceLocation> FREE_CAPES = new HashSet<>();
+    private static final Map<Advancement, ResourceLocation> CAPE_ADVANCEMENTS = new LinkedHashMap<>();
+    private static final Set<ResourceLocation> FREE_CAPES = new LinkedHashSet<>();
 
     public static void registerDevCapes() {
         unlockCape(UUID.fromString("a24a9108-23d2-43fc-8db7-43f809d017db"), Textures.GREGTECH_CAPE_TEXTURE); // ALongStringOfNumbers
@@ -248,6 +248,17 @@ public class CapesRegistry {
             player.sendMessage(new TextComponentTranslation("gregtech.chat.cape"));
             save();
         }
+    }
+
+    /**
+     * @return A list of all registered capes, with advancement capes sorted before free capes.
+     *         This currently does not count capes that are manually unlocked by other mods.
+     */
+    public static List<ResourceLocation> allCapes() {
+        List<ResourceLocation> result = new ArrayList<>();
+        result.addAll(CAPE_ADVANCEMENTS.values());
+        result.addAll(FREE_CAPES);
+        return result;
     }
 
     public static void clearMaps() {

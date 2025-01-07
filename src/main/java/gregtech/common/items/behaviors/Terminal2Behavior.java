@@ -50,10 +50,14 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
         // to avoid tying the terminal bound rect gc logic to IDPagedWidget itself
         @SuppressWarnings("rawtypes")
         IDPagedWidget<?> appPages = new IDPagedWidget() {
+
             @Override
             public void dispose() {
                 super.dispose();
                 Terminal2Theme.gcBoundRects();
+                for (var app : Terminal2.appMap.values()) {
+                    app.dispose();
+                }
             }
         };
         for (var app : Terminal2.appMap.entrySet()) {

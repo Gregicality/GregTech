@@ -14,4 +14,6 @@ public interface ITerminalApp {
     default IDrawable getIcon() {
         return GuiTextures.IMAGE;
     }
+
+    default void dispose() {}
 }

@@ -5894,6 +5894,7 @@ gregtech.creative.activity.off=Not active
 # new terminal
 terminal.app.gregtech.home.name=Home
 terminal.app.gregtech.settings.name=Theme Settings
+terminal.app.gregtech.capes.name=Cape Selector
 terminal.app.gregtech.test.name=test app
 
 terminal.settings.background=Background

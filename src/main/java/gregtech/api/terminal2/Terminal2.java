@@ -3,6 +3,7 @@ package gregtech.api.terminal2;
 import gregtech.api.util.FileUtility;
 import gregtech.api.util.GTUtility;
 import gregtech.common.ConfigHolder;
+import gregtech.common.terminal2.CapeSelectorApp;
 import gregtech.common.terminal2.SettingsApp;
 import gregtech.common.terminal2.TestApp;
 
@@ -17,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Terminal2 {
+
     public static final int SCREEN_WIDTH = 340, SCREEN_HEIGHT = 240;
     public static final Map<ResourceLocation, ITerminalApp> appMap = new LinkedHashMap<>();
     public static final ResourceLocation HOME_ID = GTUtility.gregtechId("home");
@@ -31,6 +33,7 @@ public class Terminal2 {
             Terminal2Theme.init();
         }
         registerApp(GTUtility.gregtechId("settings"), new SettingsApp());
+        registerApp(GTUtility.gregtechId("capes"), new CapeSelectorApp());
         for (int i = 0; i < 18; i++) {
             registerApp(GTUtility.gregtechId("test" + i), new TestApp(i));
         }
