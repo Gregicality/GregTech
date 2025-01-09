@@ -19,6 +19,7 @@ import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
 import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuis;
+import gregtech.api.mui.widget.GhostCircuitSlotWidget;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 import gregtech.common.metatileentities.MetaTileEntities;
@@ -293,27 +294,10 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
                 .childIf(isExportHatch, new ToggleButton()
                         .pos(7, 63)
                         .overlay(GTGuiTextures.BUTTON_LOCK)
-                        // todo doing things this way causes flickering if it fails
-                        // due to sync value cache
                         .value(new BooleanSyncValue(this::isLocked, b -> fluidSyncHandler.lockFluid(b, false)))
                         .addTooltip(true, IKey.lang("gregtech.gui.fluid_lock.tooltip.enabled"))
                         .addTooltip(false, IKey.lang("gregtech.gui.fluid_lock.tooltip.disabled")))
-//        if (this.circuitInventory != null) {
-//            SlotWidget circuitSlot = new GhostCircuitSlotWidget(circuitInventory, 0, 124, 62)
-//                    .setBackgroundTexture(GuiTextures.SLOT, GuiTextures.INT_CIRCUIT_OVERLAY);
-//            builder.widget(circuitSlot.setConsumer(slotWidget -> {
-//                String configString;
-//                if (circuitInventory == null ||
-//                        circuitInventory.getCircuitValue() == GhostCircuitItemStackHandler.NO_CONFIG) {
-//                    configString = new TextComponentTranslation("gregtech.gui.configurator_slot.no_value")
-//                            .getFormattedText();
-//                } else {
-//                    configString = String.valueOf(circuitInventory.getCircuitValue());
-//                }
-//
-//                slotWidget.setTooltipText("gregtech.gui.configurator_slot.tooltip", configString);
-//            }));
-//        }
+
                 // import specific
                 .childIf(!isExportHatch, GTGuiTextures.TANK_ICON.asWidget()
                         .pos(91, 36)
@@ -323,6 +307,10 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
                         .background(GTGuiTextures.SLOT, GTGuiTextures.OUT_SLOT_OVERLAY)
                         .slot(new ModularSlot(exportItems, 0)
                                 .accessibility(false, true)))
+                .childIf(!isExportHatch, new GhostCircuitSlotWidget()
+                        .slot(circuitInventory, 0)
+                        .background(GTGuiTextures.SLOT, GTGuiTextures.INT_CIRCUIT_OVERLAY)
+                        .pos(124, 62))
 
                 // common ui
                 .child(new RichTextWidget()
