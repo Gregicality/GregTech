@@ -1387,7 +1387,7 @@ cover.generic.ender.delete_entry=Delete Entry
 
 cover.generic.advanced_detector.latched=Latched
 cover.generic.advanced_detector.continuous=Continuous
-cover.generic.advanced_detector.latch_tooltip=Change the redstone behavior of this Cover. /n§eContinuous§7 - Default; values less than the minimum output 0; values higher than the maximum output 15; values between min and max output between 0 and 15 /n§eLatched§7 - output 15 until above max, then output 0 until below min
+cover.generic.advanced_detector.latch_tooltip=Change the redstone behavior of this Cover. \n§eContinuous§7 - Default; values less than the minimum output 0; values higher than the maximum output 15; values between min and max output between 0 and 15 \n§eLatched§7 - output 15 until above max, then output 0 until below min
 cover.generic.advanced_detector.invert_label=Redstone Output:
 cover.generic.advanced_detector.latch_label=Behavior:
 cover.generic.advanced_detector.invert_tooltip=Toggle to invert the redstone logic
@@ -1395,7 +1395,7 @@ cover.generic.advanced_detector.invert_tooltip=Toggle to invert the redstone log
 cover.advanced_energy_detector.label=Advanced Energy Detector
 cover.advanced_energy_detector.min=Minimum:
 cover.advanced_energy_detector.max=Maximum:
-cover.advanced_energy_detector.invert_tooltip=Toggle to invert the redstone logic/nBy default, redstone is emitted when less than the minimum EU, and stops emitting when greater than the max EU
+cover.advanced_energy_detector.invert_tooltip=Toggle to invert the redstone logic\nBy default, redstone is emitted when less than the minimum EU, and stops emitting when greater than the max EU
 cover.advanced_energy_detector.normal=Normal
 cover.advanced_energy_detector.inverted=Inverted
 cover.advanced_energy_detector.modes_tooltip=Change between using discrete EU values or percentages for comparing min/max against an attached energy storage.

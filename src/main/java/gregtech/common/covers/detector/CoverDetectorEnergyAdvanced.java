@@ -5,8 +5,8 @@ import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
-import gregtech.api.gui.Widget;
 import gregtech.api.gui.widgets.*;
+import gregtech.api.mui.GTGuis;
 import gregtech.api.util.RedstoneUtil;
 import gregtech.client.renderer.texture.Textures;
 
@@ -18,12 +18,23 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 
 import codechicken.lib.raytracer.CuboidRayTraceResult;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.drawable.DynamicDrawable;
+import com.cleanroommc.modularui.factory.SidedPosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.value.sync.StringSyncValue;
+import com.cleanroommc.modularui.widgets.ToggleButton;
+import com.cleanroommc.modularui.widgets.layout.Flow;
+import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.jetbrains.annotations.NotNull;
 
 public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements CoverWithUI {
@@ -37,7 +48,6 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
     public long maxValue = DEFAULT_MAX_EU;
     private int outputAmount = 0;
     private boolean usePercent = false;
-    private WidgetGroup widgetsToUpdate;
 
     public CoverDetectorEnergyAdvanced(@NotNull CoverDefinition definition, @NotNull CoverableView coverableView,
                                        @NotNull EnumFacing attachedSide) {
@@ -82,6 +92,78 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
     }
 
     @Override
+    public boolean usesMui2() {
+        return true;
+    }
+
+    @Override
+    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager syncManager) {
+        var min = new StringSyncValue(this::getMinValue, this::setMinValue);
+        var max = new StringSyncValue(this::getMaxValue, this::setMaxValue);
+
+        return GTGuis.defaultPanel(this)
+                .child(CoverWithUI.createTitleRow(getPickItem()))
+                .child(Flow.column()
+                        .top(28)
+                        .left(10).right(10)
+                        .coverChildrenHeight()
+                        .child(Flow.row()
+                                .widthRel(1f)
+                                .coverChildrenHeight()
+                                .marginBottom(5)
+                                .child(IKey.lang("cover.advanced_energy_detector.min").asWidget())
+                                .child(new TextFieldWidget()
+                                        .right(0)
+                                        .size(90, 18)
+                                        .onUpdateListener(this::updateWidget)
+                                        .value(min)))
+                        .child(Flow.row()
+                                .widthRel(1f)
+                                .coverChildrenHeight()
+                                .marginBottom(5)
+                                .child(IKey.lang("cover.advanced_energy_detector.max").asWidget())
+                                .child(new TextFieldWidget()
+                                        .right(0)
+                                        .size(90, 18)
+                                        .onUpdateListener(this::updateWidget)
+                                        .value(max)))
+                        .child(Flow.row()
+                                .widthRel(1f)
+                                .coverChildrenHeight()
+                                .marginBottom(5)
+                                .child(IKey.lang("cover.advanced_energy_detector.modes_label").asWidget()
+                                        .size(72, 18))
+                                .child(new ToggleButton()
+                                        .right(0)
+                                        .size(72, 18)
+                                        .addTooltipLine(IKey.lang("cover.advanced_energy_detector.modes_tooltip"))
+                                        .value(new BooleanSyncValue(this::isUsePercent, this::setUsePercent))
+                                        .overlay(new DynamicDrawable(() -> IKey
+                                                .lang("cover.advanced_energy_detector.mode_" +
+                                                        (isUsePercent() ? "percent" : "eu"))
+                                                .format(TextFormatting.WHITE)))))
+                        .child(Flow.row()
+                                .widthRel(1f)
+                                .coverChildrenHeight()
+                                .child(IKey.lang("cover.generic.advanced_detector.invert_label").asWidget()
+                                        .size(72, 18))
+                                .child(new ToggleButton()
+                                        .right(0)
+                                        .size(72, 18)
+                                        .addTooltipLine(IKey.lang("cover.advanced_energy_detector.invert_tooltip"))
+                                        .value(new BooleanSyncValue(this::isInverted, this::setInverted))
+                                        .overlay(new DynamicDrawable(() -> IKey
+                                                .lang("cover.advanced_energy_detector." +
+                                                        (isInverted() ? "inverted" : "normal"))
+                                                .format(TextFormatting.WHITE))))));
+    }
+
+    private void updateWidget(TextFieldWidget w) {
+        w.setMaxLength(getLength());
+        w.setNumbers(0, isUsePercent() ? 100 : Integer.MAX_VALUE);
+    }
+
+    @Override
     public ModularUI createUI(EntityPlayer player) {
         WidgetGroup group = new WidgetGroup();
         group.addWidget(new LabelWidget(10, 8, "cover.advanced_energy_detector.label"));
@@ -96,7 +178,7 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
 
         // surely this is a good idea :clueless:
         // construct widgets that need to be updated
-        this.widgetsToUpdate = constructWidgetsToUpdate();
+        // this.widgetsToUpdate = constructWidgetsToUpdate();
 
         // change modes between percent and discrete EU
         group.addWidget(new LabelWidget(10, 5 + 3 * (SIZE + PADDING), "cover.advanced_energy_detector.modes_label"));
@@ -114,7 +196,7 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
 
         return ModularUI.builder(GuiTextures.BACKGROUND, 176 + (3 * SIZE), 108 + (SIZE))
                 .widget(group)
-                .widget(widgetsToUpdate) // add synced widgets
+                // .widget(widgetsToUpdate) // add synced widgets
                 .build(this, player);
     }
 
@@ -169,16 +251,6 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
         } else { // using discrete EU
             this.minValue = DEFAULT_MIN_EU;
             this.maxValue = DEFAULT_MAX_EU;
-        }
-
-        // update widgets
-        updateSyncedWidgets();
-    }
-
-    private void updateSyncedWidgets() {
-        for (Widget widget : widgetsToUpdate.widgets) {
-            ((TextFieldWidget2) widget).setPostFix(getPostFix());
-            ((TextFieldWidget2) widget).setMaxLength(getLength());
         }
     }
 
