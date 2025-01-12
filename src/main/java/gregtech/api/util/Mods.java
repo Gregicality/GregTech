@@ -24,6 +24,7 @@ public enum Mods {
 
     AdvancedRocketry(Names.ADVANCED_ROCKETRY),
     AppliedEnergistics2(Names.APPLIED_ENERGISTICS2),
+    Avaritia(Names.AVARITIA),
     Baubles(Names.BAUBLES),
     BetterQuestingUnofficial(Names.BETTER_QUESTING, mod -> {
         var container = Loader.instance().getIndexedModList().get(Names.BETTER_QUESTING);
@@ -99,6 +100,7 @@ public enum Mods {
 
         public static final String ADVANCED_ROCKETRY = "advancedrocketry";
         public static final String APPLIED_ENERGISTICS2 = "appliedenergistics2";
+        public static final String AVARITIA = "avaritia";
         public static final String BAUBLES = "baubles";
         public static final String BETTER_QUESTING = "betterquesting";
         public static final String BINNIE_CORE = "binniecore";

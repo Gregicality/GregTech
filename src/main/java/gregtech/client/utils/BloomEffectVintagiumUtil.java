@@ -19,4 +19,6 @@ public class BloomEffectVintagiumUtil {
     public static BlockRenderPass getBloomPass() {
         return Objects.requireNonNull(BlockRenderPass.valueOf("BLOOM"), "Bloom effect is not initialized yet");
     }
+
+    public static void init() {}
 }

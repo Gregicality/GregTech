@@ -17,6 +17,7 @@ public class PropertyKey<T extends IMaterialProperty> {
     public static final PropertyKey<RotorProperty> ROTOR = new PropertyKey<>("rotor", RotorProperty.class);
     public static final PropertyKey<WireProperties> WIRE = new PropertyKey<>("wire", WireProperties.class);
     public static final PropertyKey<WoodProperty> WOOD = new PropertyKey<>("wood", WoodProperty.class);
+    public static final PropertyKey<CosmicProperty> COSMIC = new PropertyKey<>("cosmic", CosmicProperty.class);
 
     // Empty property used to allow property-less Materials without removing base type enforcement
     public static final PropertyKey<EmptyProperty> EMPTY = new PropertyKey<>("empty", EmptyProperty.class);
