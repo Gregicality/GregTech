@@ -1,5 +1,7 @@
 package gregtech.common.mui.widget;
 
+import net.minecraft.client.renderer.GlStateManager;
+
 import com.cleanroommc.modularui.api.ITheme;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.value.IStringValue;
@@ -10,11 +12,13 @@ import com.cleanroommc.modularui.value.StringValue;
 import com.cleanroommc.modularui.value.sync.SyncHandler;
 import com.cleanroommc.modularui.value.sync.ValueSyncHandler;
 import com.cleanroommc.modularui.widgets.textfield.BaseTextFieldWidget;
+import com.cleanroommc.modularui.widgets.textfield.TextFieldHandler;
+import com.cleanroommc.modularui.widgets.textfield.TextFieldRenderer;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.text.ParsePosition;
-import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -23,12 +27,17 @@ import static com.cleanroommc.modularui.widgets.textfield.TextFieldWidget.parse;
 
 public class GTTextFieldWidget extends BaseTextFieldWidget<GTTextFieldWidget> {
 
-    Supplier<String> postFix = null;
     private IStringValue<?> stringValue;
     private Function<String, String> validator = val -> val;
     private boolean numbers = false;
+    private final GTTextFieldRenderer renderer;
 
     protected boolean changedMarkedColor = false;
+
+    public GTTextFieldWidget() {
+        this.renderer = new GTTextFieldRenderer(this.handler);
+        super.renderer = this.renderer;
+    }
 
     @Override
     public void onInit() {
@@ -84,8 +93,7 @@ public class GTTextFieldWidget extends BaseTextFieldWidget<GTTextFieldWidget> {
         this.renderer.setPos(getArea().getPadding().left, 0);
         this.renderer.setScale(this.scale);
         this.renderer.setAlignment(this.textAlignment, -1, getArea().height);
-        // todo draw postfix better
-        this.renderer.draw(Collections.singletonList(getText() + this.postFix.get()));
+        this.renderer.draw(this.handler.getText());
         getScrollData().setScrollSize(Math.max(0, (int) this.renderer.getLastWidth()));
     }
 
@@ -98,12 +106,15 @@ public class GTTextFieldWidget extends BaseTextFieldWidget<GTTextFieldWidget> {
     }
 
     public GTTextFieldWidget setPostFix(String postFix) {
-        this.postFix = () -> postFix;
-        return getThis();
+        return setPostFix(() -> postFix);
     }
 
     public GTTextFieldWidget setPostFix(Supplier<String> postFix) {
-        this.postFix = postFix;
+        return setPostFix(IKey.dynamic(postFix));
+    }
+
+    public GTTextFieldWidget setPostFix(IKey postFix) {
+        this.renderer.setPostFix(postFix);
         return getThis();
     }
 
@@ -235,5 +246,59 @@ public class GTTextFieldWidget extends BaseTextFieldWidget<GTTextFieldWidget> {
         this.stringValue = stringValue;
         setValue(stringValue);
         return this;
+    }
+
+    private static class GTTextFieldRenderer extends TextFieldRenderer {
+
+        IKey postFix = IKey.EMPTY;
+
+        public GTTextFieldRenderer(TextFieldHandler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void draw(String text, float x, float y) {
+            if (this.simulate) return;
+            GlStateManager.disableBlend();
+            GlStateManager.pushMatrix();
+            GlStateManager.scale(this.scale, this.scale, 0f);
+            getFontRenderer().drawString(text + this.postFix.getFormatted(),
+                    x / this.scale, y / this.scale,
+                    this.color, this.shadow);
+            GlStateManager.popMatrix();
+            GlStateManager.enableBlend();
+        }
+
+        public void setPostFix(IKey postFix) {
+            this.postFix = postFix;
+        }
+
+        @Override
+        public Point getCursorPos(List<String> lines, int x, int y) {
+            if (lines.isEmpty()) {
+                return new Point();
+            }
+            List<Line> measuredLines = measureLines(lines);
+            y -= getStartY(measuredLines.size()) + this.y;
+            int index = (int) (y / (getFontHeight()));
+            if (index < 0) return new Point();
+            if (index >= measuredLines.size())
+                return new Point(measuredLines.get(measuredLines.size() - 1).getText().length(),
+                        measuredLines.size() - 1);
+            Line line = measuredLines.get(index);
+            x -= getStartX(line.getWidth()) + this.x;
+            if (x < 0) return new Point(0, index);
+            if (x > line.getWidth()) return new Point(line.getText().length(), index);
+            float currentX = 0;
+            for (int i = 0; i < line.getText().length(); i++) {
+                char c = line.getText().charAt(i);
+                float cw = getFontRenderer().getCharWidth(c) * this.scale;
+                currentX += cw;
+                if (currentX >= x + (cw / 2)) {
+                    return new Point(i + 1, index);
+                }
+            }
+            return new Point();
+        }
     }
 }
