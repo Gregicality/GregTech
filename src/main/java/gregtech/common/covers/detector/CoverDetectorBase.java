@@ -3,6 +3,7 @@ package gregtech.common.covers.detector;
 import gregtech.api.cover.CoverBase;
 import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverableView;
+import gregtech.common.mui.widget.GTTextFieldWidget;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,7 +14,16 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import codechicken.lib.raytracer.CuboidRayTraceResult;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.utils.Color;
+import com.cleanroommc.modularui.value.sync.StringSyncValue;
+import com.cleanroommc.modularui.widgets.layout.Flow;
+import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static gregtech.api.capability.GregtechDataCodes.UPDATE_INVERTED;
 
@@ -150,5 +160,29 @@ public abstract class CoverDetectorBase extends CoverBase {
             parsedValue = fallbackValue;
         }
         return Math.min(Math.max(parsedValue, minValue), maxValue);
+    }
+
+    protected static Flow createMinMaxRow(@NotNull String lang, @NotNull Supplier<String> getter,
+                                          @Nullable Consumer<String> setter) {
+        return createMinMaxRow(lang, getter, setter, null, null);
+    }
+
+    protected static Flow createMinMaxRow(@NotNull String lang, @NotNull Supplier<String> getter,
+                                          @Nullable Consumer<String> setter,
+                                          @Nullable Supplier<String> postFix,
+                                          @Nullable Consumer<GTTextFieldWidget> listener) {
+        return Flow.row()
+                .widthRel(1f)
+                .coverChildrenHeight()
+                .marginBottom(5)
+                .child(IKey.lang(lang).asWidget())
+                .child(new GTTextFieldWidget()
+                        .right(0)
+                        .size(90, 18)
+                        .setTextColor(Color.WHITE.main)
+                        .setPattern(TextFieldWidget.WHOLE_NUMS)
+                        .setPostFix(postFix == null ? IKey.EMPTY::get : postFix)
+                        .onUpdateListener(listener)
+                        .value(new StringSyncValue(getter, setter)));
     }
 }

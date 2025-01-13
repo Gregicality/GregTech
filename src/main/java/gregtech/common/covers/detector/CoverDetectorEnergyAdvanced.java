@@ -27,10 +27,8 @@ import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
-import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
-import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import com.cleanroommc.modularui.widgets.ToggleButton;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import org.jetbrains.annotations.NotNull;
@@ -89,9 +87,6 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
 
     @Override
     public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager syncManager) {
-        var min = new StringSyncValue(this::getMinValue, this::setMinValue);
-        var max = new StringSyncValue(this::getMaxValue, this::setMaxValue);
-
         return GTGuis.defaultPanel(this)
                 .height(202)
                 .child(CoverWithUI.createTitleRow(getPickItem()))
@@ -99,30 +94,12 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
                         .top(28)
                         .left(10).right(10)
                         .coverChildrenHeight()
-                        .child(Flow.row()
-                                .widthRel(1f)
-                                .coverChildrenHeight()
-                                .marginBottom(5)
-                                .child(IKey.lang("cover.advanced_energy_detector.min").asWidget())
-                                .child(new GTTextFieldWidget()
-                                        .right(0)
-                                        .size(90, 18)
-                                        .setTextColor(Color.WHITE.main)
-                                        .setPostFix(this::getPostFix)
-                                        .onUpdateListener(this::updateWidget)
-                                        .value(min)))
-                        .child(Flow.row()
-                                .widthRel(1f)
-                                .coverChildrenHeight()
-                                .marginBottom(5)
-                                .child(IKey.lang("cover.advanced_energy_detector.max").asWidget())
-                                .child(new GTTextFieldWidget()
-                                        .right(0)
-                                        .size(90, 18)
-                                        .setTextColor(Color.WHITE.main)
-                                        .setPostFix(this::getPostFix)
-                                        .onUpdateListener(this::updateWidget)
-                                        .value(max)))
+                        .child(createMinMaxRow("cover.advanced_energy_detector.min",
+                                this::getMinValue, this::setMinValue,
+                                this::getPostFix, this::updateWidget))
+                        .child(createMinMaxRow("cover.advanced_energy_detector.max",
+                                this::getMaxValue, this::setMaxValue,
+                                this::getPostFix, this::updateWidget))
                         .child(Flow.row()
                                 .widthRel(1f)
                                 .coverChildrenHeight()

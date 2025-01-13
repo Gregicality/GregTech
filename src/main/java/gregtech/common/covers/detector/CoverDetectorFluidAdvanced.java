@@ -6,6 +6,7 @@ import gregtech.api.cover.CoverableView;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.widgets.*;
+import gregtech.api.mui.GTGuis;
 import gregtech.api.util.RedstoneUtil;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.covers.filter.FluidFilterContainer;
@@ -18,6 +19,7 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -28,6 +30,14 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.drawable.DynamicDrawable;
+import com.cleanroommc.modularui.factory.SidedPosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.widgets.ToggleButton;
+import com.cleanroommc.modularui.widgets.layout.Flow;
 import org.jetbrains.annotations.NotNull;
 
 public class CoverDetectorFluidAdvanced extends CoverDetectorFluid implements CoverWithUI {
@@ -62,6 +72,46 @@ public class CoverDetectorFluidAdvanced extends CoverDetectorFluid implements Co
     public void renderCover(@NotNull CCRenderState renderState, @NotNull Matrix4 translation,
                             IVertexOperation[] pipeline, @NotNull Cuboid6 plateBox, @NotNull BlockRenderLayer layer) {
         Textures.DETECTOR_FLUID_ADVANCED.renderSided(getAttachedSide(), plateBox, renderState, pipeline, translation);
+    }
+
+    @Override
+    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
+        return GTGuis.defaultPanel(this)
+                .height(202)
+                .child(CoverWithUI.createTitleRow(getPickItem()))
+                .child(Flow.column()
+                        .top(28)
+                        .left(5).right(5)
+                        .child(createMinMaxRow("cover.advanced_fluid_detector.min",
+                                this::getMinValue, this::setMinValue,
+                                () -> "L", w -> w.setMaxLength(10)))
+                        .child(createMinMaxRow("cover.advanced_fluid_detector.max",
+                                this::getMaxValue, this::setMaxValue,
+                                () -> "L", w -> w.setMaxLength(10)))
+                        .child(Flow.row()
+                                .widthRel(1f)
+                                .coverChildrenHeight()
+                                .marginBottom(5)
+                                .child(new ToggleButton()
+                                        .size(72, 18)
+                                        .value(new BooleanSyncValue(this::isInverted, this::setInverted))
+                                        .addTooltipLine(IKey.lang("cover.generic.advanced_detector.invert_tooltip"))
+                                        .overlay(new DynamicDrawable(() -> {
+                                            String lang = "cover.advanced_energy_detector.";
+                                            lang += isInverted() ? "inverted" : "normal";
+                                            return IKey.lang(lang).format(TextFormatting.WHITE);
+                                        })))
+                                .child(new ToggleButton()
+                                        .size(72, 18)
+                                        .right(0)
+                                        .overlay(new DynamicDrawable(() -> {
+                                            String lang = "cover.generic.advanced_detector.";
+                                            lang += isLatched() ? "latched" : "continuous";
+                                            return IKey.lang(lang).format(TextFormatting.WHITE);
+                                        }))
+                                        .addTooltipLine(IKey.lang("cover.generic.advanced_detector.latch_tooltip"))
+                                        .value(new BooleanSyncValue(this::isLatched, this::setLatched)))))
+                .bindPlayerInventory();
     }
 
     @Override

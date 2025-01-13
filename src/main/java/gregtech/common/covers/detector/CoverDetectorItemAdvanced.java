@@ -32,13 +32,10 @@ import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
-import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
-import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import com.cleanroommc.modularui.widgets.ToggleButton;
 import com.cleanroommc.modularui.widgets.layout.Flow;
-import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.jetbrains.annotations.NotNull;
 
 public class CoverDetectorItemAdvanced extends CoverDetectorItem implements CoverWithUI {
@@ -70,36 +67,16 @@ public class CoverDetectorItemAdvanced extends CoverDetectorItem implements Cove
     @Override
     public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
         return GTGuis.defaultPanel(this)
-                .height(166 + 36)
+                .height(202)
                 .child(CoverWithUI.createTitleRow(getPickItem()))
                 .child(Flow.column()
                         .top(28)
                         .left(5).right(5)
                         .coverChildrenHeight()
-                        .child(Flow.row()
-                                .widthRel(1f)
-                                .coverChildrenHeight()
-                                .marginBottom(5)
-                                .child(IKey.lang("cover.advanced_item_detector.min").asWidget())
-                                .child(new TextFieldWidget()
-                                        .setTextColor(Color.WHITE.main)
-                                        .right(0)
-                                        .size(90, 18)
-                                        .setPattern(TextFieldWidget.WHOLE_NUMS)
-                                        .setMaxLength(10)
-                                        .value(new StringSyncValue(this::getMinValue, this::setMinValue))))
-                        .child(Flow.row()
-                                .widthRel(1f)
-                                .coverChildrenHeight()
-                                .marginBottom(5)
-                                .child(IKey.lang("cover.advanced_item_detector.max").asWidget())
-                                .child(new TextFieldWidget()
-                                        .setTextColor(Color.WHITE.main)
-                                        .right(0)
-                                        .size(90, 18)
-                                        .setPattern(TextFieldWidget.WHOLE_NUMS)
-                                        .setMaxLength(10)
-                                        .value(new StringSyncValue(this::getMaxValue, this::setMaxValue))))
+                        .child(createMinMaxRow("cover.advanced_item_detector.min", this::getMinValue,
+                                this::setMinValue))
+                        .child(createMinMaxRow("cover.advanced_item_detector.max", this::getMaxValue,
+                                this::setMaxValue))
                         .child(Flow.row()
                                 .widthRel(1f)
                                 .coverChildrenHeight()
