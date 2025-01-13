@@ -58,6 +58,12 @@ public abstract class CoverDetectorBase extends CoverBase {
         }
     }
 
+    @Override
+    public void readCustomData(int discriminator, @NotNull PacketBuffer buf) {
+        if (discriminator == UPDATE_INVERTED)
+            setInverted(buf.readBoolean());
+    }
+
     public final void setRedstoneSignalOutput(int redstoneSignalOutput) {
         this.redstoneSignalOutput = redstoneSignalOutput;
         getCoverableView().notifyBlockUpdate();
