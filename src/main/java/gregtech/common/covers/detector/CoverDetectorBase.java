@@ -59,6 +59,10 @@ public abstract class CoverDetectorBase extends CoverBase {
         return this.redstoneSignalOutput;
     }
 
+    public boolean usesMui2() {
+        return true;
+    }
+
     @Override
     public void writeToNBT(@NotNull NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);

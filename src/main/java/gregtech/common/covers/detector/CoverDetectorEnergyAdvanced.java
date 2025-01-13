@@ -3,9 +3,6 @@ package gregtech.common.covers.detector;
 import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
-import gregtech.api.gui.GuiTextures;
-import gregtech.api.gui.ModularUI;
-import gregtech.api.gui.widgets.*;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.util.RedstoneUtil;
 import gregtech.client.renderer.texture.Textures;
@@ -38,8 +35,6 @@ import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.jetbrains.annotations.NotNull;
 
 public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements CoverWithUI {
-
-    private static final int PADDING = 5, SIZE = 18;
 
     private static final long DEFAULT_MIN_EU = 0, DEFAULT_MAX_EU = 2048;
     private static final int DEFAULT_MIN_PERCENT = 33, DEFAULT_MAX_PERCENT = 66;
@@ -89,11 +84,6 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
                     this.maxValue, this.minValue, isInverted(), this.outputAmount);
         }
         setRedstoneSignalOutput(outputAmount);
-    }
-
-    @Override
-    public boolean usesMui2() {
-        return true;
     }
 
     @Override
@@ -161,59 +151,6 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
     private void updateWidget(TextFieldWidget w) {
         w.setMaxLength(getLength());
         w.setNumbers(0, isUsePercent() ? 100 : Integer.MAX_VALUE);
-    }
-
-    @Override
-    public ModularUI createUI(EntityPlayer player) {
-        WidgetGroup group = new WidgetGroup();
-        group.addWidget(new LabelWidget(10, 8, "cover.advanced_energy_detector.label"));
-
-        // get/set min EU
-        group.addWidget(new LabelWidget(10, 5 + (SIZE + PADDING), "cover.advanced_energy_detector.min"));
-        group.addWidget(new ImageWidget(72, (SIZE + PADDING), 8 * SIZE, SIZE, GuiTextures.DISPLAY));
-
-        // get/set max EU
-        group.addWidget(new LabelWidget(10, 5 + 2 * (SIZE + PADDING), "cover.advanced_energy_detector.max"));
-        group.addWidget(new ImageWidget(72, 2 * (SIZE + PADDING), 8 * SIZE, SIZE, GuiTextures.DISPLAY));
-
-        // surely this is a good idea :clueless:
-        // construct widgets that need to be updated
-        // this.widgetsToUpdate = constructWidgetsToUpdate();
-
-        // change modes between percent and discrete EU
-        group.addWidget(new LabelWidget(10, 5 + 3 * (SIZE + PADDING), "cover.advanced_energy_detector.modes_label"));
-        group.addWidget(
-                new CycleButtonWidget(72, 3 * (SIZE + PADDING), 4 * SIZE, SIZE, this::isUsePercent, this::setUsePercent,
-                        "cover.advanced_energy_detector.mode_eu", "cover.advanced_energy_detector.mode_percent")
-                                .setTooltipHoverString("cover.advanced_energy_detector.modes_tooltip"));
-
-        // invert logic button
-        group.addWidget(new LabelWidget(10, 5 + 4 * (SIZE + PADDING), "cover.generic.advanced_detector.invert_label"));
-        group.addWidget(
-                new CycleButtonWidget(72, 4 * (SIZE + PADDING), 4 * SIZE, SIZE, this::isInverted, this::setInverted,
-                        "cover.machine_controller.normal", "cover.machine_controller.inverted")
-                                .setTooltipHoverString("cover.advanced_energy_detector.invert_tooltip"));
-
-        return ModularUI.builder(GuiTextures.BACKGROUND, 176 + (3 * SIZE), 108 + (SIZE))
-                .widget(group)
-                // .widget(widgetsToUpdate) // add synced widgets
-                .build(this, player);
-    }
-
-    private WidgetGroup constructWidgetsToUpdate() {
-        WidgetGroup sync = new WidgetGroup();
-
-        sync.addWidget(
-                new TextFieldWidget2(76, 5 + (SIZE + PADDING), 8 * SIZE, SIZE, this::getMinValue, this::setMinValue)
-                        .setAllowedChars(TextFieldWidget2.NATURAL_NUMS)
-                        .setMaxLength(this.getLength())
-                        .setPostFix(this.getPostFix()));
-        sync.addWidget(
-                new TextFieldWidget2(76, 5 + 2 * (SIZE + PADDING), 8 * SIZE, SIZE, this::getMaxValue, this::setMaxValue)
-                        .setAllowedChars(TextFieldWidget2.NATURAL_NUMS)
-                        .setMaxLength(this.getLength())
-                        .setPostFix(this.getPostFix()));
-        return sync;
     }
 
     private String getMinValue() {
