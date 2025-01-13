@@ -3,8 +3,6 @@ package gregtech.common.covers.detector;
 import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
-import gregtech.api.gui.GuiTextures;
-import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.widgets.*;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.util.RedstoneUtil;
@@ -104,49 +102,6 @@ public class CoverDetectorItemAdvanced extends CoverDetectorItem implements Cove
                 .bindPlayerInventory();
     }
 
-    @Override
-    public ModularUI createUI(EntityPlayer player) {
-        WidgetGroup group = new WidgetGroup();
-        group.addWidget(new LabelWidget(10, 8, "cover.advanced_item_detector.label"));
-
-        // set min fluid amount
-        group.addWidget(new LabelWidget(10, 5 + (SIZE + PADDING), "cover.advanced_item_detector.min"));
-        group.addWidget(new ImageWidget(98 - 4, (SIZE + PADDING), 4 * SIZE, SIZE, GuiTextures.DISPLAY));
-        group.addWidget(new TextFieldWidget2(98, 5 + (SIZE + PADDING), 4 * SIZE, SIZE,
-                this::getMinValue, this::setMinValue)
-                        .setMaxLength(10)
-                        .setAllowedChars(TextFieldWidget2.WHOLE_NUMS));
-
-        // set max fluid amount
-        group.addWidget(new LabelWidget(10, 5 + 2 * (SIZE + PADDING), "cover.advanced_item_detector.max"));
-        group.addWidget(new ImageWidget(98 - 4, 2 * (SIZE + PADDING), 4 * SIZE, SIZE, GuiTextures.DISPLAY));
-        group.addWidget(new TextFieldWidget2(98, 5 + 2 * (SIZE + PADDING), 4 * SIZE, SIZE,
-                this::getMaxValue, this::setMaxValue)
-                        .setMaxLength(10)
-                        .setAllowedChars(TextFieldWidget2.WHOLE_NUMS));
-
-        // invert logic button
-        // group.addWidget(new LabelWidget(10, 5 + 3 * (SIZE + PADDING),
-        // "cover.generic.advanced_detector.invert_label"));
-        group.addWidget(
-                new CycleButtonWidget(10, 3 * (SIZE + PADDING), 4 * SIZE, SIZE, this::isInverted, this::setInverted,
-                        "cover.advanced_energy_detector.normal", "cover.advanced_energy_detector.inverted")
-                                .setTooltipHoverString("cover.generic.advanced_detector.invert_tooltip"));
-        // group.addWidget(new LabelWidget(10, 5 + 4 * (SIZE + PADDING),
-        // "cover.generic.advanced_detector.latch_label"));
-        group.addWidget(
-                new CycleButtonWidget(94, 3 * (SIZE + PADDING), 4 * SIZE, SIZE, this::isLatched, this::setLatched,
-                        "cover.generic.advanced_detector.continuous", "cover.generic.advanced_detector.latched")
-                                .setTooltipHoverString("cover.generic.advanced_detector.latch_tooltip"));
-
-        this.itemFilter.initUI(5 + 4 * (SIZE + PADDING), group::addWidget);
-
-        return ModularUI.builder(GuiTextures.BACKGROUND, 176, 188 + 4 * (SIZE + PADDING))
-                .widget(group)
-                .bindPlayerInventory(player.inventory, GuiTextures.SLOT, 7, 188)
-                .build(this, player);
-    }
-
     private String getMinValue() {
         return String.valueOf(min);
     }
@@ -156,23 +111,11 @@ public class CoverDetectorItemAdvanced extends CoverDetectorItem implements Cove
     }
 
     private void setMinValue(String val) {
-        int parsedValue;
-        try {
-            parsedValue = Integer.parseInt(val);
-        } catch (NumberFormatException e) {
-            parsedValue = DEFAULT_MIN;
-        }
-        this.min = Math.min(max - 1, Math.max(0, parsedValue));
+        this.min = CoverDetectorBase.parseCapped(val, 0, this.max - 1, DEFAULT_MIN);
     }
 
     private void setMaxValue(String val) {
-        int parsedValue;
-        try {
-            parsedValue = Integer.parseInt(val);
-        } catch (NumberFormatException e) {
-            parsedValue = DEFAULT_MAX;
-        }
-        max = Math.max(min + 1, parsedValue);
+        this.max = CoverDetectorBase.parseCapped(val, this.min + 1, Integer.MAX_VALUE, DEFAULT_MAX);
     }
 
     private void setLatched(boolean isLatched) {

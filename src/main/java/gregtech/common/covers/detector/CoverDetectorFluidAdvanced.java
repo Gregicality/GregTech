@@ -3,8 +3,6 @@ package gregtech.common.covers.detector;
 import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
-import gregtech.api.gui.GuiTextures;
-import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.widgets.*;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.util.RedstoneUtil;
@@ -111,50 +109,8 @@ public class CoverDetectorFluidAdvanced extends CoverDetectorFluid implements Co
                                         }))
                                         .addTooltipLine(IKey.lang("cover.generic.advanced_detector.latch_tooltip"))
                                         .value(new BooleanSyncValue(this::isLatched, this::setLatched)))))
+                .child(this.fluidFilter.initUI(guiData, guiSyncManager))
                 .bindPlayerInventory();
-    }
-
-    @Override
-    public ModularUI createUI(EntityPlayer player) {
-        WidgetGroup group = new WidgetGroup();
-        group.addWidget(new LabelWidget(10, 8, "cover.advanced_fluid_detector.label"));
-
-        // set min fluid amount
-        group.addWidget(new LabelWidget(10, 5 + (SIZE + PADDING), "cover.advanced_fluid_detector.min"));
-        group.addWidget(new ImageWidget(98 - 4, (SIZE + PADDING), 4 * SIZE, SIZE, GuiTextures.DISPLAY));
-        group.addWidget(new TextFieldWidget2(98, 5 + (SIZE + PADDING), 4 * SIZE, SIZE,
-                this::getMinValue, this::setMinValue)
-                        .setMaxLength(10)
-                        .setAllowedChars(TextFieldWidget2.WHOLE_NUMS)
-                        .setPostFix("L"));
-
-        // set max fluid amount
-        group.addWidget(new LabelWidget(10, 5 + 2 * (SIZE + PADDING), "cover.advanced_fluid_detector.max"));
-        group.addWidget(new ImageWidget(98 - 4, 2 * (SIZE + PADDING), 4 * SIZE, SIZE, GuiTextures.DISPLAY));
-        group.addWidget(new TextFieldWidget2(98, 5 + 2 * (SIZE + PADDING), 4 * SIZE, SIZE,
-                this::getMaxValue, this::setMaxValue)
-                        .setMaxLength(10)
-                        .setAllowedChars(TextFieldWidget2.WHOLE_NUMS)
-                        .setPostFix("L"));
-
-        // invert logic button
-        // group.addWidget(new LabelWidget(10, 5 + 3 * (SIZE + PADDING),
-        // "cover.generic.advanced_detector.invert_label"));
-        group.addWidget(
-                new CycleButtonWidget(10, 3 * (SIZE + PADDING), 4 * SIZE, SIZE, this::isInverted, this::setInverted,
-                        "cover.advanced_energy_detector.normal", "cover.advanced_energy_detector.inverted")
-                                .setTooltipHoverString("cover.generic.advanced_detector.invert_tooltip"));
-        group.addWidget(
-                new CycleButtonWidget(94, 3 * (SIZE + PADDING), 4 * SIZE, SIZE, this::isLatched, this::setLatched,
-                        "cover.generic.advanced_detector.continuous", "cover.generic.advanced_detector.latched")
-                                .setTooltipHoverString("cover.generic.advanced_detector.latch_tooltip"));
-
-        this.fluidFilter.initUI(5 + 4 * (SIZE + PADDING), group::addWidget);
-
-        return ModularUI.builder(GuiTextures.BACKGROUND, 176, 164 + 4 * (SIZE + PADDING))
-                .widget(group)
-                .bindPlayerInventory(player.inventory, GuiTextures.SLOT, 7, 164)
-                .build(this, player);
     }
 
     private String getMinValue() {
