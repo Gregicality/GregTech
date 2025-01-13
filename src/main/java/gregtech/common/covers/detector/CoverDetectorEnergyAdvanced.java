@@ -6,6 +6,7 @@ import gregtech.api.cover.CoverableView;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.util.RedstoneUtil;
 import gregtech.client.renderer.texture.Textures;
+import gregtech.common.mui.widget.GTTextFieldWidget;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -26,12 +27,12 @@ import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import com.cleanroommc.modularui.widgets.ToggleButton;
 import com.cleanroommc.modularui.widgets.layout.Flow;
-import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.jetbrains.annotations.NotNull;
 
 public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements CoverWithUI {
@@ -92,6 +93,7 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
         var max = new StringSyncValue(this::getMaxValue, this::setMaxValue);
 
         return GTGuis.defaultPanel(this)
+                .height(202)
                 .child(CoverWithUI.createTitleRow(getPickItem()))
                 .child(Flow.column()
                         .top(28)
@@ -102,9 +104,11 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
                                 .coverChildrenHeight()
                                 .marginBottom(5)
                                 .child(IKey.lang("cover.advanced_energy_detector.min").asWidget())
-                                .child(new TextFieldWidget()
+                                .child(new GTTextFieldWidget()
                                         .right(0)
                                         .size(90, 18)
+                                        .setTextColor(Color.WHITE.main)
+                                        .setPostFix(this::getPostFix)
                                         .onUpdateListener(this::updateWidget)
                                         .value(min)))
                         .child(Flow.row()
@@ -112,9 +116,11 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
                                 .coverChildrenHeight()
                                 .marginBottom(5)
                                 .child(IKey.lang("cover.advanced_energy_detector.max").asWidget())
-                                .child(new TextFieldWidget()
+                                .child(new GTTextFieldWidget()
                                         .right(0)
                                         .size(90, 18)
+                                        .setTextColor(Color.WHITE.main)
+                                        .setPostFix(this::getPostFix)
                                         .onUpdateListener(this::updateWidget)
                                         .value(max)))
                         .child(Flow.row()
@@ -145,10 +151,11 @@ public class CoverDetectorEnergyAdvanced extends CoverDetectorEnergy implements 
                                         .overlay(new DynamicDrawable(() -> IKey
                                                 .lang("cover.advanced_energy_detector." +
                                                         (isInverted() ? "inverted" : "normal"))
-                                                .format(TextFormatting.WHITE))))));
+                                                .format(TextFormatting.WHITE))))))
+                .bindPlayerInventory();
     }
 
-    private void updateWidget(TextFieldWidget w) {
+    private void updateWidget(GTTextFieldWidget w) {
         w.setMaxLength(getLength());
         w.setNumbers(0, isUsePercent() ? 100 : Integer.MAX_VALUE);
     }

@@ -6,6 +6,7 @@ import gregtech.api.cover.CoverableView;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.widgets.*;
+import gregtech.api.mui.GTGuis;
 import gregtech.api.util.RedstoneUtil;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.covers.filter.ItemFilterContainer;
@@ -18,6 +19,7 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -26,6 +28,17 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.drawable.DynamicDrawable;
+import com.cleanroommc.modularui.factory.SidedPosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.utils.Color;
+import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.value.sync.StringSyncValue;
+import com.cleanroommc.modularui.widgets.ToggleButton;
+import com.cleanroommc.modularui.widgets.layout.Flow;
+import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.jetbrains.annotations.NotNull;
 
 public class CoverDetectorItemAdvanced extends CoverDetectorItem implements CoverWithUI {
@@ -36,7 +49,9 @@ public class CoverDetectorItemAdvanced extends CoverDetectorItem implements Cove
     private static final int DEFAULT_MIN = 64;
     private static final int DEFAULT_MAX = 512;
 
-    private int min = DEFAULT_MIN, max = DEFAULT_MAX, outputAmount;
+    private int min = DEFAULT_MIN;
+    private int max = DEFAULT_MAX;
+    private int outputAmount;
     private boolean isLatched = false;
     protected ItemFilterContainer itemFilter;
 
@@ -50,6 +65,66 @@ public class CoverDetectorItemAdvanced extends CoverDetectorItem implements Cove
     public void renderCover(@NotNull CCRenderState renderState, @NotNull Matrix4 translation,
                             IVertexOperation[] pipeline, @NotNull Cuboid6 plateBox, @NotNull BlockRenderLayer layer) {
         Textures.DETECTOR_ITEM_ADVANCED.renderSided(getAttachedSide(), plateBox, renderState, pipeline, translation);
+    }
+
+    @Override
+    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
+        return GTGuis.defaultPanel(this)
+                .height(166 + 36)
+                .child(CoverWithUI.createTitleRow(getPickItem()))
+                .child(Flow.column()
+                        .top(28)
+                        .left(5).right(5)
+                        .coverChildrenHeight()
+                        .child(Flow.row()
+                                .widthRel(1f)
+                                .coverChildrenHeight()
+                                .marginBottom(5)
+                                .child(IKey.lang("cover.advanced_item_detector.min").asWidget())
+                                .child(new TextFieldWidget()
+                                        .setTextColor(Color.WHITE.main)
+                                        .right(0)
+                                        .size(90, 18)
+                                        .setPattern(TextFieldWidget.WHOLE_NUMS)
+                                        .setMaxLength(10)
+                                        .value(new StringSyncValue(this::getMinValue, this::setMinValue))))
+                        .child(Flow.row()
+                                .widthRel(1f)
+                                .coverChildrenHeight()
+                                .marginBottom(5)
+                                .child(IKey.lang("cover.advanced_item_detector.max").asWidget())
+                                .child(new TextFieldWidget()
+                                        .setTextColor(Color.WHITE.main)
+                                        .right(0)
+                                        .size(90, 18)
+                                        .setPattern(TextFieldWidget.WHOLE_NUMS)
+                                        .setMaxLength(10)
+                                        .value(new StringSyncValue(this::getMaxValue, this::setMaxValue))))
+                        .child(Flow.row()
+                                .widthRel(1f)
+                                .coverChildrenHeight()
+                                .marginBottom(5)
+                                .child(new ToggleButton()
+                                        .size(72, 18)
+                                        .overlay(new DynamicDrawable(() -> {
+                                            String lang = "cover.advanced_energy_detector.";
+                                            lang += isInverted() ? "inverted" : "normal";
+                                            return IKey.lang(lang).format(TextFormatting.WHITE);
+                                        }))
+                                        .addTooltipLine(IKey.lang("cover.generic.advanced_detector.invert_tooltip"))
+                                        .value(new BooleanSyncValue(this::isInverted, this::setInverted)))
+                                .child(new ToggleButton()
+                                        .size(72, 18)
+                                        .right(0)
+                                        .overlay(new DynamicDrawable(() -> {
+                                            String lang = "cover.generic.advanced_detector.";
+                                            lang += isLatched() ? "latched" : "continuous";
+                                            return IKey.lang(lang).format(TextFormatting.WHITE);
+                                        }))
+                                        .addTooltipLine(IKey.lang("cover.generic.advanced_detector.latch_tooltip"))
+                                        .value(new BooleanSyncValue(this::isLatched, this::setLatched))))
+                        .child(itemFilter.initUI(guiData, guiSyncManager)))
+                .bindPlayerInventory();
     }
 
     @Override
