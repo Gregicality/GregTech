@@ -108,8 +108,8 @@ public class CoverDetectorFluidAdvanced extends CoverDetectorFluid implements Co
                                             return IKey.lang(lang).format(TextFormatting.WHITE);
                                         }))
                                         .addTooltipLine(IKey.lang("cover.generic.advanced_detector.latch_tooltip"))
-                                        .value(new BooleanSyncValue(this::isLatched, this::setLatched)))))
-                .child(this.fluidFilter.initUI(guiData, guiSyncManager))
+                                        .value(new BooleanSyncValue(this::isLatched, this::setLatched))))
+                        .child(this.fluidFilter.initUI(guiData, guiSyncManager)))
                 .bindPlayerInventory();
     }
 
