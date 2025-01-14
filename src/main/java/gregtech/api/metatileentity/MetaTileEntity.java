@@ -1043,7 +1043,10 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
             MTETrait trait = mteTraitByNetworkId.get(traitNetworkId);
             if (trait == null) {
                 GTLog.logger.warn("Could not find MTETrait for id: {} at position {}.", traitNetworkId, getPos());
-            } else trait.receiveInitialData(buf);
+            } else {
+                trait.receiveInitialSyncData(buf);
+                ISyncedTileEntity.checkInitialData(buf, trait);
+            }
         }
         CoverSaveHandler.receiveInitialSyncData(buf, this);
         this.muffled = buf.readBoolean();
@@ -1076,10 +1079,14 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
             scheduleRenderUpdate();
         } else if (dataId == SYNC_MTE_TRAITS) {
             int traitNetworkId = buf.readVarInt();
+            int internalId = buf.readVarInt();
             MTETrait trait = mteTraitByNetworkId.get(traitNetworkId);
             if (trait == null) {
                 GTLog.logger.warn("Could not find MTETrait for id: {} at position {}.", traitNetworkId, getPos());
-            } else trait.receiveCustomData(buf.readVarInt(), buf);
+            } else {
+                trait.receiveCustomData(internalId, buf);
+                ISyncedTileEntity.checkCustomData(internalId, buf, trait);
+            }
         } else if (dataId == COVER_ATTACHED_MTE) {
             CoverSaveHandler.readCoverPlacement(buf, this);
         } else if (dataId == COVER_REMOVED_MTE) {
@@ -1095,6 +1102,7 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
             int internalId = buf.readVarInt();
             if (cover != null) {
                 cover.readCustomData(internalId, buf);
+                ISyncedTileEntity.checkCustomData(internalId, buf, cover);
             }
         } else if (dataId == UPDATE_SOUND_MUFFLED) {
             this.muffled = buf.readBoolean();
