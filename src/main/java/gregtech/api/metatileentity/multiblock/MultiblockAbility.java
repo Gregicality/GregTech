@@ -114,12 +114,6 @@ public class MultiblockAbility<T> {
         return name;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof MultiblockAbility<?>other &&
-                this.name.equals(other.name);
-    }
-
     public boolean checkType(Object o) {
         return clazz.isAssignableFrom(o.getClass());
     }
