@@ -6,6 +6,7 @@ import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.capability.IOpticalDataAccessHatch;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
@@ -128,8 +129,8 @@ public class MetaTileEntityOpticalDataHatch extends MetaTileEntityMultiblockNoti
     }
 
     @Override
-    public void registerAbilities(@NotNull List<IOpticalDataAccessHatch> abilityList) {
-        abilityList.add(this);
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.add(this);
     }
 
     @Override

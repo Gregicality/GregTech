@@ -6,6 +6,7 @@ import gregtech.api.capability.impl.LaserContainerHandler;
 import gregtech.api.metatileentity.IDataInfoProvider;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.client.renderer.texture.Textures;
@@ -71,8 +72,8 @@ public class MetaTileEntityLaserHatch extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public void registerAbilities(List<ILaserContainer> abilityList) {
-        abilityList.add(this.buffer);
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.add(this.buffer);
     }
 
     @Override

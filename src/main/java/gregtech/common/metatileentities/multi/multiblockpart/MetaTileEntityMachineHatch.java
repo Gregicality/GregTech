@@ -7,6 +7,7 @@ import gregtech.api.gui.widgets.BlockableSlotWidget;
 import gregtech.api.metatileentity.IMachineHatchMultiblock;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
@@ -52,8 +53,8 @@ public class MetaTileEntityMachineHatch extends MetaTileEntityMultiblockNotifiab
     }
 
     @Override
-    public void registerAbilities(List<IItemHandlerModifiable> abilityList) {
-        abilityList.add(machineHandler);
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.add(machineHandler);
     }
 
     @Override

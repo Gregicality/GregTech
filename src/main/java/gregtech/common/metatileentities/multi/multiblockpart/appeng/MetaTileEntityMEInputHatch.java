@@ -10,6 +10,7 @@ import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.widgets.ImageWidget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.client.renderer.texture.Textures;
@@ -270,8 +271,8 @@ public class MetaTileEntityMEInputHatch extends MetaTileEntityAEHostablePart<IAE
     }
 
     @Override
-    public void registerAbilities(List<IFluidTank> list) {
-        list.addAll(Arrays.asList(this.getAEFluidHandler().getInventory()));
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.addAll(Arrays.asList(this.getAEFluidHandler().getInventory()));
     }
 
     @Override
