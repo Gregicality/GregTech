@@ -86,9 +86,7 @@ public interface CoverWithUI extends Cover, IUIHolder, IGuiHolder<SidedPosGuiDat
         var w = createUI(guiData, guiSyncManager);
         return confgurePanel(GTGuis.defaultPopupPanel(getPickItem().getTranslationKey()), true)
                 .childIf(w != null, w)
-                .child(createTitleRow(getPickItem()).pos(5, 5))
-                .paddingBottom(24)
-                .coverChildrenHeight();
+                .child(createTitleRow(getPickItem()).pos(5, 5));
     }
 
     default @Nullable IWidget createUI(SidedPosGuiData data, PanelSyncManager manager) {
