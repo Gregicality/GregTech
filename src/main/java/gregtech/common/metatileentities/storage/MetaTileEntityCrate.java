@@ -47,7 +47,7 @@ import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.SyncHandlers;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.ItemSlot;
-import com.cleanroommc.modularui.widgets.layout.Column;
+import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import com.cleanroommc.modularui.widgets.layout.Row;
 import org.apache.commons.lang3.tuple.Pair;
@@ -176,8 +176,8 @@ public class MetaTileEntityCrate extends MetaTileEntity {
                         .matrix(widgets));
     }
 
-    private Row createCoverWidgets(PosGuiData data, PanelSyncManager manager, ModularPanel mainPanel) {
-        Column leftCoverColumn = new Column()
+    private Flow createCoverWidgets(PosGuiData data, PanelSyncManager manager, ModularPanel mainPanel) {
+        Flow leftCoverColumn = Flow.column()
                 .background(GuiTextures.MC_BACKGROUND)
                 .crossAxisAlignment(Alignment.CrossAxis.CENTER)
                 .padding(4)
@@ -185,7 +185,7 @@ public class MetaTileEntityCrate extends MetaTileEntity {
                 .topRel(0.25f)
                 .left(-20)
                 .height(24 * 3);
-        Column rightCoverColumn = new Column()
+        Flow rightCoverColumn = Flow.column()
                 .background(GuiTextures.MC_BACKGROUND)
                 .crossAxisAlignment(Alignment.CrossAxis.CENTER)
                 .padding(4)
@@ -204,8 +204,8 @@ public class MetaTileEntityCrate extends MetaTileEntity {
                         data.getY(), data.getZ(), side);
 
                 // todo better key for this?
-                var panel = manager.panel("cover at side: " + side.getName(), mainPanel,
-                        (syncManager, syncHandler) -> cover.getSmallGUI(sideData, syncManager));
+                var panel = (PanelSyncHandler) manager.panel("cover at side: " + side.getName(),
+                        (syncManager, syncHandler) -> cover.getSmallGUI(sideData, syncManager), true);
                 coverPanels.add(panel);
 
                 IGuiAction.MousePressed handlePanel = i -> {
