@@ -22,6 +22,7 @@ import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Matrix4;
 import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.SyncHandlers;
@@ -92,7 +93,7 @@ public class CoverStorage extends CoverBase implements CoverWithUI {
     }
 
     @Override
-    public @Nullable ParentWidget<?> createUI(ModularPanel mainPanel, PanelSyncManager manager) {
+    public @Nullable ParentWidget<?> createUI(SidedPosGuiData data, PanelSyncManager manager) {
         manager.registerSlotGroup("item_inv", this.storageHandler.getSlots());
 
         int rowSize = this.storageHandler.getSlots();

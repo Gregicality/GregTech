@@ -70,9 +70,9 @@ public interface CoverWithUI extends Cover, IUIHolder, IGuiHolder<SidedPosGuiDat
 
     @Override
     default ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        var panel = confgurePanel(GTGuis.createPanel(getPickItem(), 100, 100), false);
-        var w = createUI(panel, guiSyncManager);
-        return panel.childIf(w != null, w)
+        var w = createUI(guiData, guiSyncManager);
+        return confgurePanel(GTGuis.defaultPanel(getPickItem()), false)
+                .childIf(w != null, w)
                 .child(createTitleRow(getPickItem()).pos(5, 5))
                 .bindPlayerInventory();
     }
@@ -83,16 +83,15 @@ public interface CoverWithUI extends Cover, IUIHolder, IGuiHolder<SidedPosGuiDat
 
     default @NotNull ModularPanel getSmallGUI(@NotNull SidedPosGuiData guiData,
                                               @NotNull PanelSyncManager guiSyncManager) {
-        var panel = confgurePanel(GTGuis.createPopupPanel(getPickItem().getTranslationKey(), 100, 100), true);
-        var w = createUI(panel, guiSyncManager);
-        return panel.childIf(w != null, w)
+        var w = createUI(guiData, guiSyncManager);
+        return confgurePanel(GTGuis.defaultPopupPanel(getPickItem().getTranslationKey()), true)
+                .childIf(w != null, w)
                 .child(createTitleRow(getPickItem()).pos(5, 5))
                 .paddingBottom(24)
                 .coverChildrenHeight();
     }
 
-    // todo remove main panel once mui2 rc2+ is merged
-    default @Nullable IWidget createUI(ModularPanel mainPanel, PanelSyncManager manager) {
+    default @Nullable IWidget createUI(SidedPosGuiData data, PanelSyncManager manager) {
         return null;
     }
 
