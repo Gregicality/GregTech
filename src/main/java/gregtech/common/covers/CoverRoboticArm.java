@@ -30,6 +30,7 @@ import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -192,12 +193,13 @@ public class CoverRoboticArm extends CoverConveyor {
     }
 
     @Override
-    public int getHeight() {
-        return 192 + 36 + 18 + 2;
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return super.confgurePanel(panel, isSmallGui)
+                .height(248);
     }
 
     @Override
-    public @NotNull ParentWidget<Flow> createUI(GuiData data, PanelSyncManager guiSyncManager) {
+    public @Nullable ParentWidget<?> createUI(ModularPanel mainPanel, PanelSyncManager guiSyncManager) {
         EnumSyncValue<TransferMode> transferMode = new EnumSyncValue<>(TransferMode.class, this::getTransferMode,
                 this::setTransferMode);
         guiSyncManager.syncValue("transfer_mode", transferMode);

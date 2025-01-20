@@ -4,7 +4,6 @@ import gregtech.api.cover.CoverBase;
 import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
-import gregtech.api.mui.GTGuis;
 import gregtech.client.renderer.texture.Textures;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,12 +21,11 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Matrix4;
-import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
-import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.SyncHandlers;
+import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.ItemSlot;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import org.jetbrains.annotations.ApiStatus;
@@ -89,12 +87,12 @@ public class CoverStorage extends CoverBase implements CoverWithUI {
     }
 
     @Override
-    public int getHeight() {
-        return MAX_HEIGHT;
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return panel.height(MAX_HEIGHT);
     }
 
     @Override
-    public @Nullable IWidget createUI(ModularPanel mainPanel, PanelSyncManager manager) {
+    public @Nullable ParentWidget<?> createUI(ModularPanel mainPanel, PanelSyncManager manager) {
         manager.registerSlotGroup("item_inv", this.storageHandler.getSlots());
 
         int rowSize = this.storageHandler.getSlots();

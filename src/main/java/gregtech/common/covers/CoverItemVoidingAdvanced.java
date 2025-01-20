@@ -25,9 +25,11 @@ import com.cleanroommc.modularui.value.sync.EnumSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import com.cleanroommc.modularui.widget.ParentWidget;
-import com.cleanroommc.modularui.widgets.layout.Flow;
+import com.cleanroommc.modularui.widgets.layout.Column;
+import com.cleanroommc.modularui.widgets.layout.Row;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -89,12 +91,13 @@ public class CoverItemVoidingAdvanced extends CoverItemVoiding {
     }
 
     @Override
-    public int getHeight() {
-        return 192 + 18;
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return super.confgurePanel(panel, isSmallGui)
+                .height(210);
     }
 
     @Override
-    public @NotNull ParentWidget<Flow> createUI(GuiData data, PanelSyncManager guiSyncManager) {
+    public @Nullable ParentWidget<?> createUI(ModularPanel mainPanel, PanelSyncManager guiSyncManager) {
         var voidingMode = new EnumSyncValue<>(VoidingMode.class, this::getVoidingMode, this::setVoidingMode);
         guiSyncManager.syncValue("voiding_mode", voidingMode);
 

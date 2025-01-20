@@ -188,7 +188,7 @@ public class CoverPump extends CoverBase implements CoverWithUI, ITickable, ICon
         return true;
     }
 
-    public @NotNull ParentWidget<?> createUI(ModularPanel mainPanel, PanelSyncManager syncManager) {
+    public @Nullable ParentWidget<?> createUI(ModularPanel mainPanel, PanelSyncManager syncManager) {
         getFluidFilterContainer().setMaxTransferSize(getMaxTransferRate());
         var manualIOmode = new EnumSyncValue<>(ManualImportExportMode.class,
                 this::getManualImportExportMode, this::setManualImportExportMode);

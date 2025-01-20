@@ -35,6 +35,7 @@ import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.ToggleButton;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CoverFluidVoiding extends CoverPump {
 
@@ -72,12 +73,12 @@ public class CoverFluidVoiding extends CoverPump {
     }
 
     @Override
-    public int getHeight() {
-        return super.getHeight() - 22;
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return panel.height(170);
     }
 
     @Override
-    public @NotNull ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
+    public @Nullable ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
         var isWorking = new BooleanSyncValue(this::isWorkingEnabled, this::setWorkingEnabled);
 
         return super.createUI(data, syncManager)

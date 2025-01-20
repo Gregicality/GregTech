@@ -30,6 +30,7 @@ import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -101,12 +102,13 @@ public class CoverFluidVoidingAdvanced extends CoverFluidVoiding {
     }
 
     @Override
-    public int getHeight() {
-        return super.getHeight() + 42;
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return super.confgurePanel(panel, isSmallGui)
+                .height(212);
     }
 
     @Override
-    public @NotNull ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
+    public @Nullable ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
         var voidingMode = new EnumSyncValue<>(VoidingMode.class, this::getVoidingMode, this::setVoidingMode);
         syncManager.syncValue("voiding_mode", voidingMode);
 

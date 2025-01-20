@@ -32,6 +32,7 @@ import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.logging.log4j.message.FormattedMessage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -243,12 +244,12 @@ public class CoverFluidRegulator extends CoverPump {
     }
 
     @Override
-    public int getHeight() {
-        return super.getHeight() + 36;
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return panel.height(228);
     }
 
     @Override
-    public @NotNull ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
+    public @Nullable ParentWidget<?> createUI(GuiData data, PanelSyncManager syncManager) {
         var transferMode = new EnumSyncValue<>(TransferMode.class, this::getTransferMode, this::setTransferMode);
         transferMode.updateCacheFromSource(true);
         syncManager.syncValue("transfer_mode", transferMode);

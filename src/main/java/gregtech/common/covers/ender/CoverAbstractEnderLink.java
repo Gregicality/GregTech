@@ -40,6 +40,7 @@ import com.cleanroommc.modularui.value.sync.PanelSyncHandler;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import com.cleanroommc.modularui.value.sync.SyncHandler;
+import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.ListWidget;
 import com.cleanroommc.modularui.widgets.ToggleButton;
@@ -147,7 +148,7 @@ public abstract class CoverAbstractEnderLink<T extends VirtualEntry> extends Cov
                 .bindPlayerInventory();
     }
 
-    public @NotNull IWidget createUI(ModularPanel panel, PanelSyncManager manager) {
+    public @NotNull ParentWidget<?> createUI(ModularPanel panel, PanelSyncManager manager) {
         var name = new StringSyncValue(this::getColorStr, this::updateColor);
 
         // todo unneeded cast in mui2 rc3

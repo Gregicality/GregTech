@@ -63,6 +63,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
@@ -503,11 +504,11 @@ public class CoverConveyor extends CoverBase implements CoverWithUI, ITickable, 
     }
 
     @Override
-    public int getHeight() {
-        return 192 + 18;
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return panel.height(210);
     }
 
-    public @NotNull ParentWidget<Column> createUI(ModularPanel mainPanel, PanelSyncManager guiSyncManager) {
+    public @Nullable ParentWidget<?> createUI(ModularPanel mainPanel, PanelSyncManager guiSyncManager) {
         getItemFilterContainer().setMaxTransferSize(getMaxStackSize());
 
         var column = new Column().top(24).margin(7, 0)
