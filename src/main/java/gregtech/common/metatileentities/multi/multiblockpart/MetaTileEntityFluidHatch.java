@@ -85,6 +85,11 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         this.fluidTank = new HatchFluidTank(getInventorySize(), this, isExportHatch);
         initializeInventory(); // the fact that this has to be called three times is so dumb
         this.workingEnabled = true;
+    }
+
+    @Override
+    protected void initializeInventory() {
+        super.initializeInventory();
         if (this.hasGhostCircuitInventory()) {
             this.circuitInventory = new GhostCircuitItemStackHandler(this);
             this.circuitInventory.addNotifiableMetaTileEntity(this);
@@ -190,6 +195,8 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         buf.writeBoolean(workingEnabled);
         if (isExportHatch) {
             buf.writeBoolean(locked);
+        } else {
+            buf.writeVarInt(this.circuitInventory.getCircuitValue());
         }
     }
 
@@ -199,6 +206,8 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         this.workingEnabled = buf.readBoolean();
         if (isExportHatch) {
             this.locked = buf.readBoolean();
+        } else {
+            this.circuitInventory.setCircuitValue(buf.readVarInt());
         }
     }
 
