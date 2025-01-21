@@ -207,7 +207,7 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         if (isExportHatch) {
             this.locked = buf.readBoolean();
         } else {
-            this.circuitInventory.setCircuitValue(buf.readVarInt());
+            setGhostCircuitConfig(buf.readVarInt());
         }
     }
 
