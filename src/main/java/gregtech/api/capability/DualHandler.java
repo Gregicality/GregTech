@@ -21,6 +21,7 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
             .compareItem(true)
             .compareDamage(true)
             .compareTag(true)
+            .compareCount(true)
             .build();
     @NotNull
     IItemHandlerModifiable itemDelegate;
@@ -173,24 +174,25 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
 
     public static class DualEntry implements ITankEntry, INotifiableHandler {
 
-        private final DualHandler delegate;
+        @NotNull
+        private final DualHandler tank;
 
         @NotNull
-        private final ITankEntry tank;
+        private final ITankEntry delegate;
 
-        public DualEntry(DualHandler delegate, ITankEntry tank) {
+        public DualEntry(@NotNull DualHandler tank, @NotNull ITankEntry delegate) {
             this.delegate = delegate;
             this.tank = tank;
         }
 
         @Override
         public @NotNull IMultipleTankHandler getParent() {
-            return this.delegate;
+            return this.tank;
         }
 
         @Override
         public @NotNull IFluidTank getDelegate() {
-            return this.tank;
+            return this.delegate;
         }
 
         @Override
@@ -202,7 +204,7 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         public int fill(FluidStack resource, boolean doFill) {
             int filled = getTank().fill(resource, doFill);
             if (doFill && filled > 0)
-                delegate.onContentsChanged(this);
+                tank.onContentsChanged(this);
             return filled;
         }
 
@@ -210,7 +212,7 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         public FluidStack drain(FluidStack resource, boolean doDrain) {
             var drained = getTank().drain(resource, doDrain);
             if (doDrain && drained != null)
-                delegate.onContentsChanged(this);
+                tank.onContentsChanged(this);
             return drained;
         }
 
@@ -218,22 +220,23 @@ public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler
         public FluidStack drain(int maxDrain, boolean doDrain) {
             var drained = getTank().drain(maxDrain, doDrain);
             if (doDrain && drained != null)
-                delegate.onContentsChanged(this);
+                tank.onContentsChanged(this);
             return drained;
         }
 
+        // this method might be redundant
         private @NotNull ITankEntry getTank() {
-            return this.tank;
+            return this.delegate;
         }
 
         @Override
         public void addNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
-            this.delegate.addNotifiableMetaTileEntity(metaTileEntity);
+            this.tank.addNotifiableMetaTileEntity(metaTileEntity);
         }
 
         @Override
         public void removeNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
-            this.delegate.removeNotifiableMetaTileEntity(metaTileEntity);
+            this.tank.removeNotifiableMetaTileEntity(metaTileEntity);
         }
     }
 }
