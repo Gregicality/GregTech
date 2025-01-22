@@ -1,6 +1,6 @@
 package gregtech.mixins.minecraft;
 
-import gregtech.api.items.armor.IArmorItem;
+import gregtech.api.items.armoritem.IGTArmor;
 
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(LayerCustomHead.class)
+@Deprecated
 public class LayerCustomHeadMixin {
 
     @WrapOperation(method = "doRenderLayer",
@@ -32,7 +33,7 @@ public class LayerCustomHeadMixin {
     @Unique
     private static boolean gregTechCEu$shouldNotRenderHeadItem(EntityLivingBase entityLivingBase) {
         ItemStack itemStack = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        return (itemStack.getItem() instanceof IArmorItem &&
+        return (itemStack.getItem() instanceof IGTArmor &&
                 itemStack.getItem().getEquipmentSlot(itemStack) == EntityEquipmentSlot.HEAD);
     }
 }

@@ -2,7 +2,8 @@ package gregtech.api.items.materialitem;
 
 import gregtech.api.GTValues;
 import gregtech.api.damagesources.DamageSources;
-import gregtech.api.items.armor.ArmorMetaItem;
+import gregtech.api.items.armoritem.ArmorHelper;
+import gregtech.api.items.armoritem.IGTArmor;
 import gregtech.api.items.metaitem.StandardMetaItem;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Material;
@@ -26,6 +27,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -159,11 +161,16 @@ public class MetaPrefixItem extends StandardMetaItem {
                 if (material == null || !material.hasProperty(PropertyKey.BLAST)) return;
 
                 float heatDamage = prefix.heatDamageFunction.apply(material.getBlastTemperature());
-                ItemStack armor = entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-                if (!armor.isEmpty() && armor.getItem() instanceof ArmorMetaItem<?>) {
-                    ArmorMetaItem<?>.ArmorMetaValueItem metaValueItem = ((ArmorMetaItem<?>) armor.getItem())
-                            .getItem(armor);
-                    if (metaValueItem != null) heatDamage *= metaValueItem.getArmorLogic().getHeatResistance();
+                for (EntityEquipmentSlot slot : ArmorHelper.getArmorSlots()) {
+                    ItemStack armor = entity.getItemStackFromSlot(slot);
+                    if (!armor.isEmpty() && armor.getItem() instanceof IGTArmor gtArmor) {
+                        NBTTagCompound tag = ArmorHelper.getBehaviorsTag(armor);
+                        if (tag.hasKey(ArmorHelper.HEAT_REDUCTION_KEY) && gtArmor.areBehaviorsActive(armor)) {
+                            float reductionFactor = tag.getFloat(ArmorHelper.HEAT_REDUCTION_KEY);
+                            if (reductionFactor == 0) return;
+                            heatDamage *= reductionFactor;
+                        }
+                    }
                 }
 
                 if (heatDamage > 0.0) {

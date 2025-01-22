@@ -29,6 +29,7 @@ import gregtech.common.MetaEntities;
 import gregtech.common.blocks.BlockCompressed;
 import gregtech.common.blocks.BlockFrame;
 import gregtech.common.blocks.MetaBlocks;
+import gregtech.common.items.ArmorItems;
 import gregtech.common.items.MetaItems;
 import gregtech.common.items.ToolItems;
 
@@ -112,6 +113,7 @@ public class ClientProxy extends CommonProxy {
         MetaBlocks.registerColors();
         MetaItems.registerColors();
         ToolItems.registerColors();
+        ArmorItems.registerColors();
     }
 
     @SubscribeEvent
@@ -133,6 +135,7 @@ public class ClientProxy extends CommonProxy {
         MetaBlocks.registerItemModels();
         MetaItems.registerModels();
         ToolItems.registerModels();
+        ArmorItems.registerModels();
     }
 
     @SubscribeEvent

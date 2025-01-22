@@ -2,39 +2,31 @@ package gregtech.api.items.armor;
 
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
-import gregtech.api.util.ItemStackHashStrategy;
 import gregtech.common.ConfigHolder;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.util.*;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 public class ArmorUtils {
 
     public static final Side SIDE = FMLCommonHandler.instance().getSide();
-    public static final SoundEvent JET_ENGINE = new SoundEvent(new ResourceLocation("gregtech:jet_engine"));
 
     /**
      * Check is possible to charge item
@@ -103,45 +95,6 @@ public class ArmorUtils {
     }
 
     /**
-     * Spawn particle behind player with speedY speed
-     */
-    public static void spawnParticle(World world, EntityPlayer player, EnumParticleTypes type, double speedY) {
-        if (type != null && SIDE.isClient()) {
-            Vec3d forward = player.getForward();
-            world.spawnParticle(type, player.posX - forward.x, player.posY + 0.5D, player.posZ - forward.z, 0.0D,
-                    speedY, 0.0D);
-        }
-    }
-
-    public static void playJetpackSound(@NotNull EntityPlayer player) {
-        if (player.world.isRemote) {
-            float cons = (float) player.motionY + player.moveForward;
-            cons = MathHelper.clamp(cons, 0.6F, 1.0F);
-
-            if (player.motionY > 0.05F) {
-                cons += 0.1F;
-            }
-
-            if (player.motionY < -0.05F) {
-                cons -= 0.4F;
-            }
-
-            player.playSound(JET_ENGINE, 0.3F, cons);
-        }
-    }
-
-    /**
-     * Resets private field, amount of ticks player in the sky
-     */
-    @SuppressWarnings("deprecation")
-    public static void resetPlayerFloatingTime(EntityPlayer player) {
-        if (player instanceof EntityPlayerMP) {
-            ObfuscationReflectionHelper.setPrivateValue(NetHandlerPlayServer.class,
-                    ((EntityPlayerMP) player).connection, 0, "field_147365_f", "floatingTickCount");
-        }
-    }
-
-    /**
      * This method feeds player with food, if food heal amount more than
      * empty food gaps, then reminder adds to saturation
      *
@@ -176,41 +129,6 @@ public class ArmorUtils {
         } else {
             return new ActionResult<>(EnumActionResult.FAIL, food);
         }
-    }
-
-    /**
-     * Format itemstacks list from [1xitem@1, 1xitem@1, 1xitem@2] to
-     * [2xitem@1, 1xitem@2]
-     *
-     * @return Formated list
-     */
-    public static List<ItemStack> format(List<ItemStack> input) {
-        Object2IntMap<ItemStack> items = new Object2IntOpenCustomHashMap<>(
-                ItemStackHashStrategy.comparingAllButCount());
-        List<ItemStack> output = new ArrayList<>();
-        for (ItemStack itemStack : input) {
-            if (items.containsKey(itemStack)) {
-                int amount = items.get(itemStack);
-                items.replace(itemStack, ++amount);
-            } else {
-                items.put(itemStack, 1);
-            }
-        }
-        for (Object2IntMap.Entry<ItemStack> entry : items.object2IntEntrySet()) {
-            ItemStack stack = entry.getKey().copy();
-            stack.setCount(entry.getIntValue());
-            output.add(stack);
-        }
-        return output;
-    }
-
-    @NotNull
-    public static String format(long value) {
-        return new DecimalFormat("###,###.##").format(value);
-    }
-
-    public static String format(double value) {
-        return new DecimalFormat("###,###.##").format(value);
     }
 
     /**

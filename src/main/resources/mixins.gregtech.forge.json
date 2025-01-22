@@ -5,8 +5,7 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "mixins" : [
-    "ModelLoaderRegistryMixin",
-    "SpecialArmorPropertiesMixin"
+    "ModelLoaderRegistryMixin"
   ],
   "client": [],
   "server": []

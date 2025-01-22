@@ -13,7 +13,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,7 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.List;
 
-public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack {
+@Deprecated
+public class AdvancedNanoMuscleSuite extends NanoMuscleSuite {
 
     // A replacement for checking the current world time, to get around the gamerule that stops it
     private long timer = 0L;
@@ -43,21 +47,8 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
         }
 
         NBTTagCompound data = GTUtility.getOrCreateNbtCompound(item);
-        boolean hoverMode = data.hasKey("hover") && data.getBoolean("hover");
         byte toggleTimer = data.hasKey("toggleTimer") ? data.getByte("toggleTimer") : 0;
         boolean canShare = data.hasKey("canShare") && data.getBoolean("canShare");
-
-        if (toggleTimer == 0 && KeyBind.ARMOR_HOVER.isKeyDown(player)) {
-            hoverMode = !hoverMode;
-            toggleTimer = 5;
-            data.setBoolean("hover", hoverMode);
-            if (!world.isRemote) {
-                if (hoverMode)
-                    player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.hover.enable"), true);
-                else
-                    player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.hover.disable"), true);
-            }
-        }
 
         if (toggleTimer == 0 && KeyBind.ARMOR_CHARGING.isKeyDown(player)) {
             canShare = !canShare;
@@ -75,8 +66,6 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
             canShare = canShare && (cont.getCharge() != 0);
             data.setBoolean("canShare", canShare);
         }
-
-        performFlying(player, hoverMode, item);
 
         // Charging mechanics
         if (canShare && !world.isRemote) {
@@ -125,7 +114,6 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
         if (toggleTimer > 0) toggleTimer--;
 
         data.setBoolean("canShare", canShare);
-        data.setBoolean("hover", hoverMode);
         data.setByte("toggleTimer", toggleTimer);
         player.inventoryContainer.detectAndSendChanges();
 
@@ -147,12 +135,6 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
         lines.add(I18n.format("metaarmor.energy_share.tooltip", state));
         lines.add(I18n.format("metaarmor.energy_share.tooltip.guide"));
 
-        String status = I18n.format("metaarmor.hud.status.disabled");
-        if (data.hasKey("hover")) {
-            if (data.getBoolean("hover"))
-                status = I18n.format("metaarmor.hud.status.enabled");
-        }
-        lines.add(I18n.format("metaarmor.hud.hover_mode", status));
         super.addInfo(itemStack, lines);
     }
 
@@ -202,12 +184,6 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
                         "metaarmor.hud.status.disabled";
                 this.HUD.newString(I18n.format("mataarmor.hud.supply_mode", I18n.format(status)));
             }
-
-            if (data.hasKey("hover")) {
-                String status = data.getBoolean("hover") ? "metaarmor.hud.status.enabled" :
-                        "metaarmor.hud.status.disabled";
-                this.HUD.newString(I18n.format("metaarmor.hud.hover_mode", I18n.format(status)));
-            }
         }
         this.HUD.draw();
         this.HUD.reset();
@@ -216,78 +192,5 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
         return "gregtech:textures/armor/advanced_nano_muscle_suite_1.png";
-    }
-
-    @Override
-    public boolean canUseEnergy(@NotNull ItemStack stack, int amount) {
-        IElectricItem container = getIElectricItem(stack);
-        if (container == null)
-            return false;
-        return container.canUse(amount);
-    }
-
-    @Override
-    public void drainEnergy(@NotNull ItemStack stack, int amount) {
-        IElectricItem container = getIElectricItem(stack);
-        if (container == null)
-            return;
-        container.discharge(amount, tier, true, false, false);
-    }
-
-    @Override
-    public boolean hasEnergy(@NotNull ItemStack stack) {
-        IElectricItem container = getIElectricItem(stack);
-        if (container == null)
-            return false;
-        return container.getCharge() > 0;
-    }
-
-    private static IElectricItem getIElectricItem(@NotNull ItemStack stack) {
-        return stack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
-    }
-
-    @Override
-    public double getSprintEnergyModifier() {
-        return 4.0D;
-    }
-
-    @Override
-    public double getSprintSpeedModifier() {
-        return 1.8D;
-    }
-
-    @Override
-    public double getVerticalHoverSpeed() {
-        return 0.4D;
-    }
-
-    @Override
-    public double getVerticalHoverSlowSpeed() {
-        return 0.005D;
-    }
-
-    @Override
-    public double getVerticalAcceleration() {
-        return 0.14D;
-    }
-
-    @Override
-    public double getVerticalSpeed() {
-        return 0.8D;
-    }
-
-    @Override
-    public double getSidewaysSpeed() {
-        return 0.19D;
-    }
-
-    @Override
-    public EnumParticleTypes getParticle() {
-        return null;
-    }
-
-    @Override
-    public float getFallDamageReduction() {
-        return 3.5f;
     }
 }

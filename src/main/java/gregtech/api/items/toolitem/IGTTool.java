@@ -82,8 +82,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static gregtech.api.items.armor.IArmorLogic.ATTACK_DAMAGE_MODIFIER;
-import static gregtech.api.items.armor.IArmorLogic.ATTACK_SPEED_MODIFIER;
 import static gregtech.api.items.toolitem.ToolHelper.*;
 
 /**

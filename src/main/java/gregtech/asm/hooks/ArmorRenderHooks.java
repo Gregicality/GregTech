@@ -1,6 +1,6 @@
 package gregtech.asm.hooks;
 
-import gregtech.api.items.armor.IArmorItem;
+import gregtech.api.items.armor.ArmorMetaItem;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
@@ -18,6 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SuppressWarnings("unused")
 @SideOnly(Side.CLIENT)
+@Deprecated
 public class ArmorRenderHooks {
 
     public static boolean shouldNotRenderHeadItem(EntityLivingBase entityLivingBase) {
@@ -26,7 +27,8 @@ public class ArmorRenderHooks {
     }
 
     public static boolean isArmorItem(ItemStack itemStack, EntityEquipmentSlot slot) {
-        return (itemStack.getItem() instanceof IArmorItem && itemStack.getItem().getEquipmentSlot(itemStack) == slot);
+        return (itemStack.getItem() instanceof ArmorMetaItem<?> &&
+                itemStack.getItem().getEquipmentSlot(itemStack) == slot);
     }
 
     public static void renderArmorLayer(LayerArmorBase<ModelBase> layer, EntityLivingBase entity, float limbSwing,
@@ -35,7 +37,6 @@ public class ArmorRenderHooks {
         ItemStack itemStack = entity.getItemStackFromSlot(slotIn);
 
         if (isArmorItem(itemStack, slotIn)) {
-            IArmorItem armorItem = (IArmorItem) itemStack.getItem();
             ModelBase armorModel = layer.getModelFromSlot(slotIn);
             if (armorModel instanceof ModelBiped) {
                 armorModel = ForgeHooksClient.getArmorModel(entity, itemStack, slotIn, (ModelBiped) armorModel);
@@ -47,17 +48,10 @@ public class ArmorRenderHooks {
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(SourceFactor.ONE, DestFactor.ONE_MINUS_SRC_ALPHA);
 
-            int layers = armorItem.getArmorLayersAmount(itemStack);
-            for (int layerIndex = 0; layerIndex < layers; layerIndex++) {
-                int i = armorItem.getArmorLayerColor(itemStack, layerIndex);
-                float f = (float) (i >> 16 & 255) / 255.0F;
-                float f1 = (float) (i >> 8 & 255) / 255.0F;
-                float f2 = (float) (i & 255) / 255.0F;
-                GlStateManager.color(f, f1, f2, 1.0f);
-                String type = layerIndex == 0 ? null : "layer_" + layerIndex;
-                layer.renderer.bindTexture(getArmorTexture(entity, itemStack, slotIn, type));
-                armorModel.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-            }
+            GlStateManager.color(1, 1, 1, 1);
+            layer.renderer.bindTexture(getArmorTexture(entity, itemStack, slotIn));
+            armorModel.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+
             if (itemStack.hasEffect()) {
                 LayerArmorBase.renderEnchantedGlint(layer.renderer, entity, armorModel, limbSwing, limbSwingAmount,
                         partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
@@ -70,7 +64,7 @@ public class ArmorRenderHooks {
     }
 
     private static ResourceLocation getArmorTexture(EntityLivingBase entity, ItemStack itemStack,
-                                                    EntityEquipmentSlot slot, String type) {
+                                                    EntityEquipmentSlot slot) {
         ResourceLocation registryName = itemStack.getItem().getRegistryName();
         if (registryName == null) {
             throw new IllegalArgumentException(
@@ -79,7 +73,7 @@ public class ArmorRenderHooks {
 
         String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", registryName.getNamespace(),
                 registryName.getPath(),
-                (isLegSlot(slot) ? 2 : 1), type == null ? "" : String.format("_%s", type));
-        return new ResourceLocation(ForgeHooksClient.getArmorTexture(entity, itemStack, s1, slot, type));
+                (isLegSlot(slot) ? 2 : 1), "");
+        return new ResourceLocation(ForgeHooksClient.getArmorTexture(entity, itemStack, s1, slot, null));
     }
 }

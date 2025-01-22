@@ -11,7 +11,6 @@ import gregtech.api.unification.material.registry.MaterialRegistry;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.util.GTLog;
 import gregtech.client.renderer.handler.FacadeRenderer;
-import gregtech.common.items.armor.MetaArmor;
 
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -25,7 +24,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.base.CaseFormat;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class MetaItems {
 
@@ -531,22 +534,11 @@ public final class MetaItems {
 
     public static MetaItem<?>.MetaValueItem CLIPBOARD;
 
-    public static ArmorMetaItem<?>.ArmorMetaValueItem NIGHTVISION_GOGGLES;
-
-    public static ArmorMetaItem<?>.ArmorMetaValueItem NANO_CHESTPLATE;
-    public static ArmorMetaItem<?>.ArmorMetaValueItem NANO_LEGGINGS;
-    public static ArmorMetaItem<?>.ArmorMetaValueItem NANO_BOOTS;
-    public static ArmorMetaItem<?>.ArmorMetaValueItem NANO_HELMET;
-
     public static ArmorMetaItem<?>.ArmorMetaValueItem QUANTUM_CHESTPLATE;
     public static ArmorMetaItem<?>.ArmorMetaValueItem QUANTUM_LEGGINGS;
     public static ArmorMetaItem<?>.ArmorMetaValueItem QUANTUM_BOOTS;
     public static ArmorMetaItem<?>.ArmorMetaValueItem QUANTUM_HELMET;
 
-    public static ArmorMetaItem<?>.ArmorMetaValueItem SEMIFLUID_JETPACK;
-    public static ArmorMetaItem<?>.ArmorMetaValueItem ELECTRIC_JETPACK;
-
-    public static ArmorMetaItem<?>.ArmorMetaValueItem ELECTRIC_JETPACK_ADVANCED;
     public static ArmorMetaItem<?>.ArmorMetaValueItem NANO_CHESTPLATE_ADVANCED;
     public static ArmorMetaItem<?>.ArmorMetaValueItem QUANTUM_CHESTPLATE_ADVANCED;
 
@@ -611,8 +603,6 @@ public final class MetaItems {
     public static void init() {
         MetaItem1 first = new MetaItem1();
         first.setRegistryName("meta_item_1");
-        MetaArmor armor = new MetaArmor();
-        armor.setRegistryName("gt_armor");
         for (OrePrefix prefix : orePrefixes) {
             for (MaterialRegistry registry : GregTechAPI.materialManager.getRegistries()) {
                 String regName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, prefix.name());

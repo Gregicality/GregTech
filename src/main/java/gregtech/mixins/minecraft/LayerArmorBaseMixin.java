@@ -1,6 +1,6 @@
 package gregtech.mixins.minecraft;
 
-import gregtech.api.items.armor.IArmorItem;
+import gregtech.api.items.armoritem.IGTArmor;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LayerArmorBase.class)
+@Deprecated
 public class LayerArmorBaseMixin {
 
     @Inject(method = "renderArmorLayer", at = @At("TAIL"))
@@ -27,7 +28,7 @@ public class LayerArmorBaseMixin {
                               EntityEquipmentSlot slotIn, CallbackInfo ci) {
         ItemStack itemStack = entityLivingBaseIn.getItemStackFromSlot(slotIn);
 
-        if ((itemStack.getItem() instanceof IArmorItem armorItem &&
+        if ((itemStack.getItem() instanceof IGTArmor armorItem &&
                 itemStack.getItem().getEquipmentSlot(itemStack) == slotIn)) {
             @SuppressWarnings("unchecked")
             LayerArmorBase<ModelBase> layer = (LayerArmorBase<ModelBase>) (Object) this;
@@ -43,18 +44,21 @@ public class LayerArmorBaseMixin {
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-            int layers = armorItem.getArmorLayersAmount(itemStack);
-            for (int layerIndex = 0; layerIndex < layers; layerIndex++) {
-                int i = armorItem.getArmorLayerColor(itemStack, layerIndex);
-                float f = (float) (i >> 16 & 255) / 255.0F;
-                float f1 = (float) (i >> 8 & 255) / 255.0F;
-                float f2 = (float) (i & 255) / 255.0F;
-                GlStateManager.color(f, f1, f2, 1.0f);
-                String type = layerIndex == 0 ? null : "layer_" + layerIndex;
-                layer.renderer.bindTexture(gregTechCEu$getArmorTexture(entityLivingBaseIn, itemStack, slotIn, type));
-                armorModel.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch,
-                        scale);
-            }
+            // TODO, old implementation, still needed with new system?
+            /*
+             * int layers = armorItem.getArmorLayersAmount(itemStack);
+             * for (int layerIndex = 0; layerIndex < layers; layerIndex++) {
+             * int i = armorItem.getArmorLayerColor(itemStack, layerIndex);
+             * float f = (float) (i >> 16 & 255) / 255.0F;
+             * float f1 = (float) (i >> 8 & 255) / 255.0F;
+             * float f2 = (float) (i & 255) / 255.0F;
+             * GlStateManager.color(f, f1, f2, 1.0f);
+             * String type = layerIndex == 0 ? null : "layer_" + layerIndex;
+             * layer.renderer.bindTexture(gregTechCEu$getArmorTexture(entityLivingBaseIn, itemStack, slotIn, type));
+             * armorModel.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch,
+             * scale);
+             * }
+             */
             if (itemStack.hasEffect()) {
                 LayerArmorBase.renderEnchantedGlint(layer.renderer, entityLivingBaseIn, armorModel, limbSwing,
                         limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);

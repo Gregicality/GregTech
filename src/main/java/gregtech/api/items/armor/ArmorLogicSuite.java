@@ -2,8 +2,6 @@ package gregtech.api.items.armor;
 
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
-import gregtech.api.items.armor.ArmorMetaItem.ArmorMetaValueItem;
-import gregtech.api.items.metaitem.ElectricStats;
 import gregtech.api.items.metaitem.stats.IItemHUDProvider;
 
 import net.minecraft.client.resources.I18n;
@@ -22,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+@Deprecated
 public abstract class ArmorLogicSuite implements ISpecialArmorLogic, IItemHUDProvider {
 
     protected final int energyPerUse;
@@ -61,22 +60,6 @@ public abstract class ArmorLogicSuite implements ISpecialArmorLogic, IItemHUDPro
         } else {
             return (int) Math.round(4.0F * this.getAbsorption(armor) * this.getDamageAbsorption());
         }
-    }
-
-    @Override
-    public void addToolComponents(ArmorMetaValueItem mvi) {
-        mvi.addComponents(new ElectricStats(maxCapacity, tier, true, false) {
-
-            @Override
-            public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-                return onRightClick(world, player, hand);
-            }
-
-            @Override
-            public void addInformation(ItemStack itemStack, List<String> lines) {
-                addInfo(itemStack, lines);
-            }
-        });
     }
 
     public void addInfo(ItemStack itemStack, List<String> lines) {
@@ -127,10 +110,6 @@ public abstract class ArmorLogicSuite implements ISpecialArmorLogic, IItemHUDPro
     @Override
     public boolean shouldDrawHUD() {
         return this.SLOT == EntityEquipmentSlot.CHEST;
-    }
-
-    public int getEnergyPerUse() {
-        return this.energyPerUse;
     }
 
     protected float getAbsorption(ItemStack itemStack) {

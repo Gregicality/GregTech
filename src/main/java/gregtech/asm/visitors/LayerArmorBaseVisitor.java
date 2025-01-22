@@ -5,6 +5,7 @@ import gregtech.asm.util.ObfMapping;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+@Deprecated
 public class LayerArmorBaseVisitor extends MethodVisitor implements Opcodes {
 
     public static final String TARGET_CLASS_NAME = "net/minecraft/client/renderer/entity/layers/LayerArmorBase";

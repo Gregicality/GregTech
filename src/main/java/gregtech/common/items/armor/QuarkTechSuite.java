@@ -36,7 +36,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
+@Deprecated
+public class QuarkTechSuite extends ArmorLogicSuite {
 
     protected static final Map<Potion, Integer> potionRemovalCost = new IdentityHashMap<>();
     private float charge = 0.0F;
@@ -220,7 +221,6 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
                     }
                 }
             }
-            updateStepHeight(player);
         }
 
         if (ret) {
@@ -292,11 +292,6 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
     @Override
     public double getDamageAbsorption() {
         return SLOT == EntityEquipmentSlot.CHEST ? 1.2D : 1.0D;
-    }
-
-    @Override
-    public float getHeatResistance() {
-        return 0.5f;
     }
 
     @SideOnly(Side.CLIENT)

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * Armor logic that wraps {@link net.minecraftforge.common.ISpecialArmor} methods
  * to allow full control over damage absorption additionally to vanilla attribute values
  */
+@Deprecated
 public interface ISpecialArmorLogic extends IArmorLogic {
 
     /**

@@ -152,6 +152,9 @@ public final class ToolHelper {
     public static final Supplier<ItemStack> SUPPLY_POWER_UNIT_EV = () -> MetaItems.POWER_UNIT_EV.getStackForm();
     public static final Supplier<ItemStack> SUPPLY_POWER_UNIT_IV = () -> MetaItems.POWER_UNIT_IV.getStackForm();
 
+    public static final UUID ATTACK_DAMAGE_MODIFIER = UUID.fromString("CB3F55D3-645C-4F38-A144-9C13A33DB5CF");
+    public static final UUID ATTACK_SPEED_MODIFIER = UUID.fromString("FA233E1C-4180-4288-B05C-BCCE9785ACA3");
+
     // for retrieving the silk touch drop from a block. Cannot be Access-Transformed because it is a Forge method.
     private static final MethodHandle GET_SILK_TOUCH_DROP;
 
