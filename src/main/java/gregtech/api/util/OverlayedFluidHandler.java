@@ -1,11 +1,12 @@
 package gregtech.api.util;
 
-import gregtech.api.capability.IMultipleTankHandler;
-import gregtech.api.capability.IMultipleTankHandler.MultiFluidTankEntry;
+import gregtech.api.capability.MultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler.Entry;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,20 +15,20 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Simulates consecutive fills to {@link IMultipleTankHandler} instance.
+ * Simulates consecutive fills to {@link MultipleTankHandler} instance.
  */
+@Deprecated
+@ApiStatus.ScheduledForRemoval(inVersion = "2.9")
 public class OverlayedFluidHandler {
 
     private final List<OverlayedTank> overlayedTanks;
 
-    public OverlayedFluidHandler(@NotNull IMultipleTankHandler tank) {
+    public OverlayedFluidHandler(@NotNull MultipleTankHandler tank) {
         this.overlayedTanks = new ArrayList<>();
-        MultiFluidTankEntry[] entries = tank.getFluidTanks().toArray(new MultiFluidTankEntry[0]);
-        Arrays.sort(entries, IMultipleTankHandler.ENTRY_COMPARATOR);
-        for (MultiFluidTankEntry fluidTank : entries) {
-            for (IFluidTankProperties property : fluidTank.getTankProperties()) {
-                this.overlayedTanks.add(new OverlayedTank(property, fluidTank.allowSameFluidFill()));
-            }
+        Entry[] entries = tank.getFluidTanks().toArray(new Entry[0]);
+        Arrays.sort(entries, MultipleTankHandler.ENTRY_COMPARATOR);
+        for (Entry fluidTank : entries) {
+            this.overlayedTanks.add(new OverlayedTank(fluidTank, fluidTank.allowSameFluidFill()));
         }
     }
 

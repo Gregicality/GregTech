@@ -76,7 +76,7 @@ public class MetaTileEntityBuffer extends MetaTileEntity implements ITieredMetaT
         int invTier = tier + 2;
         ModularUI.Builder builder = ModularUI.builder(GuiTextures.BACKGROUND,
                 176, Math.max(166, 18 + 18 * invTier + 94));// 176, 166
-        for (int i = 0; i < this.fluidTankList.getTanks(); i++) {
+        for (int i = 0; i < this.fluidTankList.size(); i++) {
             builder.widget(new TankWidget(this.fluidTankList.getTankAt(i), 176 - 8 - 18, 18 + 18 * i, 18, 18)
                     .setAlwaysShowFull(true)
                     .setBackgroundTexture(GuiTextures.FLUID_SLOT)

@@ -1,6 +1,6 @@
 package gregtech.api.recipes;
 
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.recipes.category.GTRecipeCategory;
 import gregtech.api.recipes.chance.boost.ChanceBoostFunction;
 import gregtech.api.recipes.chance.output.ChancedOutputList;
@@ -185,7 +185,7 @@ public class Recipe {
     }
 
     public final boolean matches(boolean consumeIfSuccessful, IItemHandlerModifiable inputs,
-                                 IMultipleTankHandler fluidInputs) {
+                                 MultipleTankHandler fluidInputs) {
         Pair<Boolean, int[]> fluids = null;
         Pair<Boolean, int[]> items = null;
 

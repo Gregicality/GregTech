@@ -492,7 +492,7 @@ public class MetaTileEntityQuantumStorageController extends MetaTileEntity imple
 
         @Override
         public boolean hasFluidTanks() {
-            return getFluidTanks().getTanks() > 0;
+            return getFluidTanks().size() > 0;
         }
 
         @Override

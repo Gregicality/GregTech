@@ -3,7 +3,7 @@ package gregtech.api.util;
 import gregtech.api.GTValues;
 import gregtech.api.GregTechAPI;
 import gregtech.api.block.machines.MachineItemBlock;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.cover.CoverDefinition;
 import gregtech.api.fluids.GTFluid;
 import gregtech.api.gui.widgets.ProgressWidget;
@@ -431,8 +431,8 @@ public class GTUtility {
      * @return a list of fluidstack linked with given fluid handler
      *         modifications in list will reflect on fluid handler and wise-versa
      */
-    public static List<FluidStack> fluidHandlerToList(IMultipleTankHandler fluidInputs) {
-        List<IMultipleTankHandler.MultiFluidTankEntry> backedList = fluidInputs.getFluidTanks();
+    public static List<FluidStack> fluidHandlerToList(MultipleTankHandler fluidInputs) {
+        List<MultipleTankHandler.Entry> backedList = fluidInputs.getFluidTanks();
         return new AbstractList<FluidStack>() {
 
             @Override

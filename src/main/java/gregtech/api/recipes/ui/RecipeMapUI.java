@@ -192,7 +192,7 @@ public class RecipeMapUI<R extends RecipeMap<?>> {
                                          @NotNull IItemHandlerModifiable itemHandler,
                                          @NotNull FluidTankList fluidHandler, boolean isOutputs, int yOffset) {
         int itemInputsCount = itemHandler.getSlots();
-        int fluidInputsCount = fluidHandler.getTanks();
+        int fluidInputsCount = fluidHandler.size();
         boolean invertFluids = false;
         if (itemInputsCount == 0) {
             int tmp = itemInputsCount;
@@ -205,9 +205,9 @@ public class RecipeMapUI<R extends RecipeMap<?>> {
         int itemSlotsToDown = inputSlotGrid[1];
         int startInputsX = isOutputs ? 106 : 70 - itemSlotsToLeft * 18;
         int startInputsY = 33 - (int) (itemSlotsToDown / 2.0 * 18) + yOffset;
-        boolean wasGroup = itemHandler.getSlots() + fluidHandler.getTanks() == 12;
+        boolean wasGroup = itemHandler.getSlots() + fluidHandler.size() == 12;
         if (wasGroup) startInputsY -= 9;
-        else if (itemHandler.getSlots() >= 6 && fluidHandler.getTanks() >= 2 && !isOutputs) startInputsY -= 9;
+        else if (itemHandler.getSlots() >= 6 && fluidHandler.size() >= 2 && !isOutputs) startInputsY -= 9;
         for (int i = 0; i < itemSlotsToDown; i++) {
             for (int j = 0; j < itemSlotsToLeft; j++) {
                 int slotIndex = i * itemSlotsToLeft + j;
@@ -256,7 +256,7 @@ public class RecipeMapUI<R extends RecipeMap<?>> {
                     getOverlaysForSlot(isOutputs, false, slotIndex == itemHandler.getSlots() - 1)));
         } else {
             builder.widget(new TankWidget(fluidHandler.getTankAt(slotIndex), x, y, 18, 18).setAlwaysShowFull(true)
-                    .setBackgroundTexture(getOverlaysForSlot(isOutputs, true, slotIndex == fluidHandler.getTanks() - 1))
+                    .setBackgroundTexture(getOverlaysForSlot(isOutputs, true, slotIndex == fluidHandler.size() - 1))
                     .setContainerClicking(true, !isOutputs));
         }
     }

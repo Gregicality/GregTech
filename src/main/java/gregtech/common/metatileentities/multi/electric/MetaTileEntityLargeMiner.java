@@ -75,7 +75,7 @@ public class MetaTileEntityLargeMiner extends MultiblockWithDisplayBase
     private final int tier;
 
     private IEnergyContainer energyContainer;
-    protected IMultipleTankHandler inputFluidInventory;
+    protected MultipleTankHandler inputFluidInventory;
     protected IItemHandlerModifiable outputInventory;
 
     private boolean silkTouch = false;

@@ -2,7 +2,7 @@ package gregtech.api.metatileentity.multiblock;
 
 import gregtech.api.GTValues;
 import gregtech.api.capability.IEnergyContainer;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.capability.impl.EnergyContainerList;
 import gregtech.api.capability.impl.MultiblockFuelRecipeLogic;
 import gregtech.api.recipes.RecipeMap;
@@ -123,12 +123,12 @@ public abstract class FuelMultiblockController extends RecipeMapMultiblockContro
         return list;
     }
 
-    protected int[] getTotalFluidAmount(FluidStack testStack, IMultipleTankHandler multiTank) {
+    protected int[] getTotalFluidAmount(FluidStack testStack, MultipleTankHandler multiTank) {
         int fluidAmount = 0;
         int fluidCapacity = 0;
         for (var tank : multiTank) {
             if (tank != null) {
-                FluidStack drainStack = tank.drain(testStack, false);
+                FluidStack drainStack = tank.drain(testStack.amount, false);
                 if (drainStack != null && drainStack.amount > 0) {
                     fluidAmount += drainStack.amount;
                     fluidCapacity += tank.getCapacity();

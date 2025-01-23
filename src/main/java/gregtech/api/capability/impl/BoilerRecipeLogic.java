@@ -2,7 +2,7 @@ package gregtech.api.capability.impl;
 
 import gregtech.api.GTValues;
 import gregtech.api.capability.IMultiblockController;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.RecipeMaps;
@@ -77,7 +77,7 @@ public class BoilerRecipeLogic extends AbstractRecipeLogic implements ICategoryO
 
         // can optimize with an override of checkPreviousRecipe() and a check here
 
-        IMultipleTankHandler importFluids = boiler.getImportFluids();
+        MultipleTankHandler importFluids = boiler.getImportFluids();
         boolean didStartRecipe = false;
 
         for (IFluidTank fluidTank : importFluids.getFluidTanks()) {

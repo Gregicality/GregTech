@@ -1,10 +1,7 @@
 package gregtech.api.items.metaitem;
 
 import gregtech.api.GTValues;
-import gregtech.api.capability.GregtechCapabilities;
-import gregtech.api.capability.IElectricItem;
-import gregtech.api.capability.IFilteredFluidContainer;
-import gregtech.api.capability.IPropertyFluidFilter;
+import gregtech.api.capability.*;
 import gregtech.api.capability.impl.CombinedCapabilityProvider;
 import gregtech.api.capability.impl.ElectricItem;
 import gregtech.api.gui.ModularUI;

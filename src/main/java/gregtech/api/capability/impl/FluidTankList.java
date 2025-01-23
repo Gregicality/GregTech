@@ -1,79 +1,72 @@
 package gregtech.api.capability.impl;
 
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBTTagCompound> {
+public final class FluidTankList extends MultipleTankHandler {
 
-    private final MultiFluidTankEntry[] fluidTanks;
     private final boolean allowSameFluidFill;
+    private Entry[] tanks = new Entry[0];
 
     public FluidTankList(boolean allowSameFluidFill, IFluidTank... fluidTanks) {
-        ArrayList<MultiFluidTankEntry> list = new ArrayList<>();
-        for (IFluidTank tank : fluidTanks) list.add(wrapIntoEntry(tank));
-        this.fluidTanks = list.toArray(new MultiFluidTankEntry[0]);
+        if (!ArrayUtils.isEmpty(fluidTanks)) {
+            tanks = new Entry[fluidTanks.length];
+            Arrays.setAll(tanks, value -> wrap(fluidTanks[value]));
+        }
         this.allowSameFluidFill = allowSameFluidFill;
     }
 
     public FluidTankList(boolean allowSameFluidFill, @NotNull List<? extends IFluidTank> fluidTanks) {
-        ArrayList<MultiFluidTankEntry> list = new ArrayList<>();
-        for (IFluidTank tank : fluidTanks) list.add(wrapIntoEntry(tank));
-        this.fluidTanks = list.toArray(new MultiFluidTankEntry[0]);
-        this.allowSameFluidFill = allowSameFluidFill;
+        this(allowSameFluidFill, fluidTanks.toArray(new IFluidTank[0]));
     }
 
-    public FluidTankList(boolean allowSameFluidFill, @NotNull IMultipleTankHandler parent,
+    public FluidTankList(boolean allowSameFluidFill, @NotNull MultipleTankHandler parent,
                          IFluidTank... additionalTanks) {
-        ArrayList<MultiFluidTankEntry> list = new ArrayList<>(parent.getFluidTanks());
-        for (IFluidTank tank : additionalTanks) list.add(wrapIntoEntry(tank));
-        this.fluidTanks = list.toArray(new MultiFluidTankEntry[0]);
+        int tanks = parent.size();
+        int additional = ArrayUtils.getLength(additionalTanks);
+
+        this.tanks = new Entry[tanks + additional];
+
+        Arrays.setAll(this.tanks, value -> {
+            if (value < tanks) return parent.getTankAt(value);
+            else return wrap(additionalTanks[value - tanks]);
+        });
+
         this.allowSameFluidFill = allowSameFluidFill;
     }
 
-    private MultiFluidTankEntry wrapIntoEntry(IFluidTank tank) {
-        return tank instanceof MultiFluidTankEntry entry ? entry : new MultiFluidTankEntry(this, tank);
-    }
-
-    @NotNull
     @Override
-    public List<MultiFluidTankEntry> getFluidTanks() {
-        return Collections.unmodifiableList(Arrays.asList(fluidTanks));
+    public @NotNull List<Entry> getFluidTanks() {
+        return Collections.unmodifiableList(Arrays.asList(this.tanks));
     }
 
     @Override
-    public int getTanks() {
-        return fluidTanks.length;
+    public int size() {
+        return tanks.length;
     }
 
-    @NotNull
     @Override
-    public MultiFluidTankEntry getTankAt(int index) {
-        return fluidTanks[index];
+    public @NotNull Entry getTankAt(int index) {
+        return tanks[index];
     }
 
-    @NotNull
     @Override
     public IFluidTankProperties[] getTankProperties() {
-        ArrayList<IFluidTankProperties> propertiesList = new ArrayList<>();
-        for (MultiFluidTankEntry fluidTank : fluidTanks) {
-            Collections.addAll(propertiesList, fluidTank.getTankProperties());
-        }
-        return propertiesList.toArray(new IFluidTankProperties[0]);
+        return this.tanks;
     }
 
     @Override
@@ -83,63 +76,45 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
 
     @Override
     public int fill(FluidStack resource, boolean doFill) {
-        if (resource == null || resource.amount <= 0) {
+        if (resource == null || resource.amount <= 0)
             return 0;
-        }
-        int totalInserted = 0;
-        boolean inputFluidCopied = false;
-        // flag value indicating whether the fluid was stored in 'distinct' slot at least once
-        boolean distinctSlotVisited = false;
 
-        MultiFluidTankEntry[] fluidTanks = this.fluidTanks.clone();
-        Arrays.sort(fluidTanks, IMultipleTankHandler.ENTRY_COMPARATOR);
+        FluidStack copy = resource.copy();
+
+        int totalInserted = 0;
+
+        Entry[] fluidTanks = this.tanks.clone();
+        Arrays.sort(fluidTanks, ENTRY_COMPARATOR);
+
+        boolean overflow = false;
 
         // search for tanks with same fluid type first
-        for (MultiFluidTankEntry tank : fluidTanks) {
+        for (Entry tank : fluidTanks) {
+            boolean empty = tank.getFluidAmount() == 0;
+
+            // if we still have fluid to insert, loop through empty tanks until we find one that can accept the fluid
+            if (empty) {
+                // if the tank uses distinct fluid fill (allowSameFluidFill disabled) and another distinct tank had
+                // received the fluid, skip this tank
+                if (overflow && !tank.allowSameFluidFill()) continue;
+                // if simulating, pass in the original resource since nothing was actually filled,
+                // otherwise pass in the mutated copy
+                if (!tank.canFillFluidType(doFill ? copy : resource)) continue;
+
+                // if not empty fluid doesn't match, skip
+            } else if (!resource.isFluidEqual(tank.getFluid()))
+                continue;
+
             // if the fluid to insert matches the tank, insert the fluid
-            if (resource.isFluidEqual(tank.getFluid())) {
-                int inserted = tank.fill(resource, doFill);
-                if (inserted > 0) {
-                    totalInserted += inserted;
-                    if (resource.amount - inserted <= 0) {
-                        return totalInserted;
-                    }
-                    if (!inputFluidCopied) {
-                        inputFluidCopied = true;
-                        resource = resource.copy();
-                    }
-                    resource.amount -= inserted;
-                }
-                // regardless of whether the insertion succeeded, presence of identical fluid in
-                // a slot prevents distinct fill to other slots
-                if (!tank.allowSameFluidFill()) {
-                    distinctSlotVisited = true;
-                }
-            }
+            int inserted = tank.fill(copy, doFill);
+            if (inserted <= 0) continue;
+
+            totalInserted += inserted;
+            copy.amount -= inserted;
+            if (copy.amount <= 0) return totalInserted;
+            else if (empty) overflow = true;
         }
-        // if we still have fluid to insert, loop through empty tanks until we find one that can accept the fluid
-        for (MultiFluidTankEntry tank : fluidTanks) {
-            // if the tank uses distinct fluid fill (allowSameFluidFill disabled) and another distinct tank had
-            // received the fluid, skip this tank
-            boolean usesDistinctFluidFill = tank.allowSameFluidFill();
-            if ((usesDistinctFluidFill || !distinctSlotVisited) && tank.getFluidAmount() == 0) {
-                int inserted = tank.fill(resource, doFill);
-                if (inserted > 0) {
-                    totalInserted += inserted;
-                    if (resource.amount - inserted <= 0) {
-                        return totalInserted;
-                    }
-                    if (!inputFluidCopied) {
-                        inputFluidCopied = true;
-                        resource = resource.copy();
-                    }
-                    resource.amount -= inserted;
-                    if (!usesDistinctFluidFill) {
-                        distinctSlotVisited = true;
-                    }
-                }
-            }
-        }
+
         // return the amount of fluid that was inserted
         return totalInserted;
     }
@@ -147,12 +122,12 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
     @Nullable
     @Override
     public FluidStack drain(FluidStack resource, boolean doDrain) {
-        if (resource == null || resource.amount <= 0) {
+        if (resource == null || resource.amount <= 0)
             return null;
-        }
+
         int amountLeft = resource.amount;
         FluidStack totalDrained = null;
-        for (IFluidTank handler : fluidTanks) {
+        for (IFluidTank handler : tanks) {
             if (!resource.isFluidEqual(handler.getFluid())) {
                 continue;
             }
@@ -175,29 +150,28 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
     @Nullable
     @Override
     public FluidStack drain(int maxDrain, boolean doDrain) {
-        if (maxDrain <= 0) {
-            return null;
-        }
+        if (maxDrain <= 0) return null;
+
         FluidStack totalDrained = null;
-        for (IFluidTank handler : fluidTanks) {
+        for (IFluidTank handler : tanks) {
             if (totalDrained == null) {
-                totalDrained = handler.drain(maxDrain, doDrain);
-                if (totalDrained != null) {
-                    maxDrain -= totalDrained.amount;
-                }
+                var drained = handler.drain(maxDrain, doDrain);
+                if (drained == null) continue;
+
+                totalDrained = drained.copy();
+                maxDrain -= totalDrained.amount;
+
             } else {
-                if (!totalDrained.isFluidEqual(handler.getFluid())) {
+                if (!totalDrained.isFluidEqual(handler.getFluid()))
                     continue;
-                }
+
                 FluidStack drain = handler.drain(maxDrain, doDrain);
-                if (drain != null) {
-                    totalDrained.amount += drain.amount;
-                    maxDrain -= drain.amount;
-                }
+                if (drain == null) continue;
+
+                totalDrained.amount += drain.amount;
+                maxDrain -= drain.amount;
             }
-            if (maxDrain <= 0) {
-                return totalDrained;
-            }
+            if (maxDrain <= 0) return totalDrained;
         }
         return totalDrained;
     }
@@ -206,8 +180,8 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
     public NBTTagCompound serializeNBT() {
         NBTTagCompound fluidInventory = new NBTTagCompound();
         NBTTagList tanks = new NBTTagList();
-        for (int i = 0; i < this.getTanks(); i++) {
-            tanks.appendTag(this.fluidTanks[i].trySerialize());
+        for (Entry tank : this.tanks) {
+            tanks.appendTag(tank.serializeNBT());
         }
         fluidInventory.setTag("Tanks", tanks);
         return fluidInventory;
@@ -216,8 +190,8 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
         NBTTagList tanks = nbt.getTagList("Tanks", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < Math.min(fluidTanks.length, tanks.tagCount()); i++) {
-            this.fluidTanks[i].tryDeserialize(tanks.getCompoundTagAt(i));
+        for (int i = 0; i < tanks.tagCount(); i++) {
+            this.tanks[i].deserializeNBT(tanks.getCompoundTagAt(i));
         }
     }
 
@@ -227,17 +201,17 @@ public class FluidTankList implements IMultipleTankHandler, INBTSerializable<NBT
     }
 
     public String toString(boolean lineBreak) {
-        StringBuilder stb = new StringBuilder("FluidTankList[").append(this.fluidTanks.length).append(";");
-        for (int i = 0; i < this.fluidTanks.length; i++) {
+        StringBuilder stb = new StringBuilder("FluidTankList[").append(this.tanks.length).append(";");
+        for (int i = 0; i < this.tanks.length; i++) {
             if (i != 0) stb.append(',');
             stb.append(lineBreak ? "\n  " : " ");
 
-            FluidStack fluid = this.fluidTanks[i].getFluid();
+            FluidStack fluid = this.tanks[i].getFluid();
             if (fluid == null || fluid.amount == 0) {
-                stb.append("None 0 / ").append(this.fluidTanks[i].getCapacity());
+                stb.append("None 0 / ").append(this.tanks[i].getCapacity());
             } else {
                 stb.append(fluid.getFluid().getName()).append(' ').append(fluid.amount)
-                        .append(" / ").append(this.fluidTanks[i].getCapacity());
+                        .append(" / ").append(this.tanks[i].getCapacity());
             }
         }
         if (lineBreak) stb.append('\n');

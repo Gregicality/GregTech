@@ -1,5 +1,6 @@
 package gregtech.api.capability.impl;
 
+import gregtech.api.capability.IFilter;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.metatileentity.MetaTileEntity;
 
@@ -11,13 +12,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
+@Deprecated
 public class FilteredItemHandler extends GTItemStackHandler {
 
     public static Predicate<ItemStack> getCapabilityFilter(Capability<?> cap) {
         return stack -> stack.hasCapability(cap, null);
     }
-
-    private Predicate<ItemStack> fillPredicate;
 
     public FilteredItemHandler(MetaTileEntity metaTileEntity) {
         super(metaTileEntity, 1);
@@ -32,12 +32,18 @@ public class FilteredItemHandler extends GTItemStackHandler {
     }
 
     public FilteredItemHandler setFillPredicate(Predicate<ItemStack> fillPredicate) {
-        this.fillPredicate = fillPredicate;
-        return this;
-    }
+        setFilter(new IFilter<>() {
 
-    @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        return fillPredicate == null || fillPredicate.test(stack);
+            @Override
+            public boolean test(@NotNull ItemStack stack) {
+                return fillPredicate.test(stack);
+            }
+
+            @Override
+            public int getPriority() {
+                return IFilter.noPriority();
+            }
+        });
+        return this;
     }
 }

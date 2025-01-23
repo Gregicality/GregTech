@@ -3,7 +3,7 @@ package gregtech.api.metatileentity.multiblock;
 import gregtech.api.GTValues;
 import gregtech.api.capability.IDistinctBusController;
 import gregtech.api.capability.IEnergyContainer;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.capability.impl.EnergyContainerList;
 import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.capability.impl.ItemHandlerList;
@@ -45,8 +45,8 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
     protected MultiblockRecipeLogic recipeMapWorkable;
     protected IItemHandlerModifiable inputInventory;
     protected IItemHandlerModifiable outputInventory;
-    protected IMultipleTankHandler inputFluidInventory;
-    protected IMultipleTankHandler outputFluidInventory;
+    protected MultipleTankHandler inputFluidInventory;
+    protected MultipleTankHandler outputFluidInventory;
     protected IEnergyContainer energyContainer;
 
     private boolean isDistinct = false;
@@ -72,11 +72,11 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         return outputInventory;
     }
 
-    public IMultipleTankHandler getInputFluidInventory() {
+    public MultipleTankHandler getInputFluidInventory() {
         return inputFluidInventory;
     }
 
-    public IMultipleTankHandler getOutputFluidInventory() {
+    public MultipleTankHandler getOutputFluidInventory() {
         return outputFluidInventory;
     }
 

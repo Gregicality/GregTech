@@ -1,7 +1,7 @@
 package gregtech.integration.opencomputers.drivers;
 
 import gregtech.api.capability.GregtechTileCapabilities;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.capability.impl.MultiblockRecipeLogic;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
@@ -126,7 +126,7 @@ public class DriverRecipeMapMultiblockController extends DriverSidedTileEntity {
         }
 
         @NotNull
-        private Object[] getTank(IMultipleTankHandler handler) {
+        private Object[] getTank(MultipleTankHandler handler) {
             List<Map<String, Object>> result = new ArrayList<>();
             handler.getFluidTanks().forEach(tank -> {
                 Map<String, Object> map = new Object2ObjectOpenHashMap<>();

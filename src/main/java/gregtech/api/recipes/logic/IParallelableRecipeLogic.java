@@ -1,6 +1,6 @@
 package gregtech.api.recipes.logic;
 
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.metatileentity.IVoidable;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.multiblock.ParallelLogicType;
@@ -42,9 +42,9 @@ public interface IParallelableRecipeLogic {
     default RecipeBuilder<?> findMultipliedParallelRecipe(@NotNull RecipeMap<?> recipeMap,
                                                           @NotNull Recipe currentRecipe,
                                                           @NotNull IItemHandlerModifiable inputs,
-                                                          @NotNull IMultipleTankHandler fluidInputs,
+                                                          @NotNull MultipleTankHandler fluidInputs,
                                                           @NotNull IItemHandlerModifiable outputs,
-                                                          @NotNull IMultipleTankHandler fluidOutputs, int parallelLimit,
+                                                          @NotNull MultipleTankHandler fluidOutputs, int parallelLimit,
                                                           long maxVoltage, @NotNull IVoidable voidable) {
         return ParallelLogic.doParallelRecipes(
                 currentRecipe,
@@ -85,9 +85,9 @@ public interface IParallelableRecipeLogic {
 
     // Recipes passed in here should be already trimmed, if desired
     default Recipe findParallelRecipe(@NotNull Recipe currentRecipe, @NotNull IItemHandlerModifiable inputs,
-                                      @NotNull IMultipleTankHandler fluidInputs,
+                                      @NotNull MultipleTankHandler fluidInputs,
                                       @NotNull IItemHandlerModifiable outputs,
-                                      @NotNull IMultipleTankHandler fluidOutputs, long maxVoltage, int parallelLimit) {
+                                      @NotNull MultipleTankHandler fluidOutputs, long maxVoltage, int parallelLimit) {
         if (parallelLimit > 1 && getRecipeMap() != null) {
             RecipeBuilder<?> parallelBuilder = switch (getParallelLogicType()) {
                 case MULTIPLY -> findMultipliedParallelRecipe(getRecipeMap(), currentRecipe, inputs, fluidInputs,

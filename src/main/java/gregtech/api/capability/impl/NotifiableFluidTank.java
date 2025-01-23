@@ -1,14 +1,18 @@
 package gregtech.api.capability.impl;
 
+import gregtech.api.capability.IFilter;
 import gregtech.api.capability.INotifiableHandler;
 import gregtech.api.metatileentity.MetaTileEntity;
 
-import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidStack;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotifiableFluidTank extends FluidTank implements INotifiableHandler {
+public class NotifiableFluidTank extends FilteredFluidHandler implements INotifiableHandler {
 
     List<MetaTileEntity> notifiableEntities = new ArrayList<>();
     private final boolean isExport;
@@ -37,5 +41,11 @@ public class NotifiableFluidTank extends FluidTank implements INotifiableHandler
     @Override
     public void removeNotifiableMetaTileEntity(MetaTileEntity metaTileEntity) {
         this.notifiableEntities.remove(metaTileEntity);
+    }
+
+    @Override
+    public @NotNull NotifiableFluidTank setFilter(@Nullable IFilter<FluidStack> filter) {
+        super.setFilter(filter);
+        return this;
     }
 }

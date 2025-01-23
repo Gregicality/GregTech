@@ -43,7 +43,7 @@ public final class SingleFluidFilter implements IFilter<FluidStack> {
     }
 
     @Override
-    public IFilter<FluidStack> negate() {
+    public @NotNull IFilter<FluidStack> negate() {
         return new SingleFluidFilter(this.fluid, !this.blacklist);
     }
 

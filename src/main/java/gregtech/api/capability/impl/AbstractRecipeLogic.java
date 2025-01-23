@@ -4,8 +4,8 @@ import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IMultiblockController;
-import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.IWorkable;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.metatileentity.MTETrait;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.multiblock.CleanroomType;
@@ -152,14 +152,14 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
     /**
      * @return the fluid inventory to input fluids from
      */
-    protected IMultipleTankHandler getInputTank() {
+    protected MultipleTankHandler getInputTank() {
         return metaTileEntity.getImportFluids();
     }
 
     /**
      * @return the fluid inventory to output fluids to
      */
-    protected IMultipleTankHandler getOutputTank() {
+    protected MultipleTankHandler getOutputTank() {
         return metaTileEntity.getExportFluids();
     }
 
@@ -379,7 +379,7 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
         long maxVoltage = getMaxVoltage();
         Recipe currentRecipe;
         IItemHandlerModifiable importInventory = getInputInventory();
-        IMultipleTankHandler importFluids = getInputTank();
+        MultipleTankHandler importFluids = getInputTank();
 
         // see if the last recipe we used still works
         if (checkPreviousRecipe()) {
@@ -463,7 +463,7 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
      * @return true if the recipe was successfully prepared, else false
      */
     public boolean prepareRecipe(Recipe recipe, IItemHandlerModifiable inputInventory,
-                                 IMultipleTankHandler inputFluidInventory) {
+                                 MultipleTankHandler inputFluidInventory) {
         recipe = Recipe.trimRecipeOutputs(recipe, getRecipeMap(), metaTileEntity.getItemOutputLimit(),
                 metaTileEntity.getFluidOutputLimit());
 
@@ -600,8 +600,8 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
      * @param tanks the tanks to check
      * @return the minimum fluid capacity of the tanks
      */
-    protected static int getMinTankCapacity(@NotNull IMultipleTankHandler tanks) {
-        if (tanks.getTanks() == 0) {
+    protected static int getMinTankCapacity(@NotNull MultipleTankHandler tanks) {
+        if (tanks.size() == 0) {
             return 0;
         }
         int result = Integer.MAX_VALUE;
@@ -620,7 +620,7 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
      * @return the recipe if found, otherwise null
      */
     @Nullable
-    protected Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs, IMultipleTankHandler fluidInputs) {
+    protected Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs, MultipleTankHandler fluidInputs) {
         RecipeMap<?> map = getRecipeMap();
         if (map == null || !isRecipeMapValid(map)) {
             return null;
@@ -681,7 +681,7 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
      */
     protected final @Nullable Recipe setupAndConsumeRecipeInputs(@NotNull Recipe recipe,
                                                                  @NotNull IItemHandlerModifiable importInventory,
-                                                                 @NotNull IMultipleTankHandler importFluids) {
+                                                                 @NotNull MultipleTankHandler importFluids) {
         calculateOverclock(recipe);
 
         modifyOverclockPost(ocResult, recipe.propertyStorage());
@@ -731,10 +731,10 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
      * @param exportFluids the inventory to output to
      * @return if the recipe can be successfully output to the inventory
      */
-    protected boolean checkOutputSpaceFluids(@NotNull Recipe recipe, @NotNull IMultipleTankHandler exportFluids) {
+    protected boolean checkOutputSpaceFluids(@NotNull Recipe recipe, @NotNull MultipleTankHandler exportFluids) {
         // We have already trimmed fluid outputs at this time
         if (!metaTileEntity.canVoidRecipeFluidOutputs() &&
-                !GTTransferUtils.addFluidsToFluidHandler(exportFluids, true, recipe.getAllFluidOutputs())) {
+                !GTTransferUtils.addFluidsToFluidHandler(recipe.getAllFluidOutputs(), exportFluids, true)) {
             this.isOutputsFull = true;
             return false;
         }
@@ -752,7 +752,7 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
      */
     protected @Nullable Recipe subTickOC(@NotNull OCResult ocResult, @NotNull Recipe recipe,
                                          @NotNull IItemHandlerModifiable importInventory,
-                                         @NotNull IMultipleTankHandler importFluids) {
+                                         @NotNull MultipleTankHandler importFluids) {
         RecipeMap<?> map = getRecipeMap();
         if (map == null) {
             return null;
@@ -982,7 +982,7 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
      */
     protected void outputRecipeOutputs() {
         GTTransferUtils.addItemsToItemHandler(getOutputInventory(), false, itemOutputs);
-        GTTransferUtils.addFluidsToFluidHandler(getOutputTank(), false, fluidOutputs);
+        GTTransferUtils.addFluidsToFluidHandler(fluidOutputs, getOutputTank(), false);
     }
 
     /**

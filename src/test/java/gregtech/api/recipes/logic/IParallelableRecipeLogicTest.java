@@ -1,7 +1,7 @@
 package gregtech.api.recipes.logic;
 
 import gregtech.Bootstrap;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.capability.impl.MultiblockRecipeLogic;
 import gregtech.api.metatileentity.MetaTileEntity;
@@ -335,7 +335,7 @@ public class IParallelableRecipeLogicTest {
         importFluidBus.getImportFluids().fill(Materials.Toluene.getFluid(4000), true);
         secondImportFluidBus.getImportFluids().fill(Materials.RawGasoline.getFluid(50000), true);
 
-        IMultipleTankHandler tankHandler = new FluidTankList(false, importFluidBus.getImportFluids().getTankAt(0),
+        MultipleTankHandler tankHandler = new FluidTankList(false, importFluidBus.getImportFluids().getTankAt(0),
                 secondImportFluidBus.getImportFluids().getTankAt(0));
 
         RecipeBuilder<?> parallelRecipe = logic.findMultipliedParallelRecipe(map, recipe,
@@ -388,7 +388,7 @@ public class IParallelableRecipeLogicTest {
         importFluidBus.getImportFluids().fill(Materials.Toluene.getFluid(2000), true);
         secondImportFluidBus.getImportFluids().fill(Materials.RawGasoline.getFluid(50000), true);
 
-        IMultipleTankHandler tankHandler = new FluidTankList(false, importFluidBus.getImportFluids().getTankAt(0),
+        MultipleTankHandler tankHandler = new FluidTankList(false, importFluidBus.getImportFluids().getTankAt(0),
                 secondImportFluidBus.getImportFluids().getTankAt(0));
 
         RecipeBuilder<?> parallelRecipe = logic.findMultipliedParallelRecipe(map, recipe,

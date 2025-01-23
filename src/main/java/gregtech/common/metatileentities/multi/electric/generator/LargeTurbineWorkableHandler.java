@@ -1,8 +1,8 @@
 package gregtech.common.metatileentities.multi.electric.generator;
 
 import gregtech.api.GTValues;
-import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.IRotorHolder;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.capability.impl.MultiblockFuelRecipeLogic;
 import gregtech.api.metatileentity.multiblock.FuelMultiblockController;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
@@ -16,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import org.jetbrains.annotations.NotNull;
@@ -113,7 +112,7 @@ public class LargeTurbineWorkableHandler extends MultiblockFuelRecipeLogic {
 
     @Override
     protected @Nullable Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs,
-                                          IMultipleTankHandler fluidInputs) {
+                                          MultipleTankHandler fluidInputs) {
         RecipeMap<?> map = getRecipeMap();
         if (map == null || !isRecipeMapValid(map)) {
             return null;
@@ -183,9 +182,7 @@ public class LargeTurbineWorkableHandler extends MultiblockFuelRecipeLogic {
 
     public void updateTanks() {
         FuelMultiblockController controller = (FuelMultiblockController) this.metaTileEntity;
-        List<IFluidHandler> tanks = controller.getNotifiedFluidInputList();
-        for (IFluidTank tank : controller.getAbilities(MultiblockAbility.IMPORT_FLUIDS)) {
-            tanks.add((IFluidHandler) tank);
-        }
+        List<IFluidTank> tanks = controller.getNotifiedFluidInputList();
+        tanks.addAll(controller.getAbilities(MultiblockAbility.IMPORT_FLUIDS));
     }
 }

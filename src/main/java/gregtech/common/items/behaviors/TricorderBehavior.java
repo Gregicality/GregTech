@@ -298,7 +298,7 @@ public class TricorderBehavior implements IItemBehaviour {
                 list.add(new TextComponentTranslation("behavior.tricorder.quantum_controller.connected_items",
                         TextFormatting.RED.toString() + handler.getItemHandlers().getSlots()));
                 list.add(new TextComponentTranslation("behavior.tricorder.quantum_controller.connected_fluids",
-                        TextFormatting.RED.toString() + handler.getFluidTanks().getTanks()));
+                        TextFormatting.RED.toString() + handler.getFluidTanks().size()));
             } else if (metaTileEntity instanceof IQuantumStorage<?>storage) {
                 var qcontrollor = storage.getQuantumController();
                 if (qcontrollor != null) {

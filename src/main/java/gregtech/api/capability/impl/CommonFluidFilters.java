@@ -11,12 +11,14 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import static gregtech.api.capability.IFilter.*;
+
 /**
  * Common fluid filter implementations.
  */
-public enum CommonFluidFilters implements IFilter<FluidStack> {
+public class CommonFluidFilters {
 
-    ALLOW_ALL {
+    public static final IFilter<FluidStack> ALLOW_ALL = new IFilter<>() {
 
         @Override
         public boolean test(@NotNull FluidStack fluid) {
@@ -29,11 +31,12 @@ public enum CommonFluidFilters implements IFilter<FluidStack> {
         }
 
         @Override
-        public IFilter<FluidStack> negate() {
+        public @NotNull IFilter<FluidStack> negate() {
             return DISALLOW_ALL;
         }
-    },
-    DISALLOW_ALL {
+    };
+
+    public static final IFilter<FluidStack> DISALLOW_ALL = new IFilter<>() {
 
         @Override
         public boolean test(@NotNull FluidStack fluid) {
@@ -46,11 +49,12 @@ public enum CommonFluidFilters implements IFilter<FluidStack> {
         }
 
         @Override
-        public IFilter<FluidStack> negate() {
+        public @NotNull IFilter<FluidStack> negate() {
             return ALLOW_ALL;
         }
-    },
-    BOILER_FLUID {
+    };
+
+    public static final IFilter<FluidStack> BOILER_FLUID = new IFilter<>() {
 
         @Override
         public boolean test(@NotNull FluidStack fluid) {
@@ -69,10 +73,11 @@ public enum CommonFluidFilters implements IFilter<FluidStack> {
 
         @Override
         public int getPriority() {
-            return IFilter.whitelistLikePriority();
+            return whitelistLikePriority();
         }
-    },
-    STEAM {
+    };
+
+    public static final IFilter<FluidStack> STEAM = new IFilter<>() {
 
         @Override
         public boolean test(@NotNull FluidStack fluid) {
@@ -81,10 +86,11 @@ public enum CommonFluidFilters implements IFilter<FluidStack> {
 
         @Override
         public int getPriority() {
-            return IFilter.whitelistPriority(1);
+            return whitelistPriority(1);
         }
-    },
-    LIGHTER_FUEL {
+    };
+
+    public static final IFilter<FluidStack> LIGHTER_FUEL = new IFilter<>() {
 
         @Override
         public boolean test(@NotNull FluidStack fluidStack) {
@@ -93,7 +99,7 @@ public enum CommonFluidFilters implements IFilter<FluidStack> {
 
         @Override
         public int getPriority() {
-            return IFilter.whitelistPriority(2);
+            return whitelistPriority(2);
         }
     };
 

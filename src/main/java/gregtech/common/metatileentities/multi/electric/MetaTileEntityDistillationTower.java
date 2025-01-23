@@ -1,7 +1,7 @@
 package gregtech.common.metatileentities.multi.electric;
 
 import gregtech.api.capability.IDistillationTower;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.capability.impl.DistillationTowerLogicHandler;
 import gregtech.api.capability.impl.MultiblockRecipeLogic;
 import gregtech.api.metatileentity.MetaTileEntity;
@@ -158,7 +158,7 @@ public class MetaTileEntityDistillationTower extends RecipeMapMultiblockControll
         }
 
         @Override
-        protected boolean checkOutputSpaceFluids(@NotNull Recipe recipe, @NotNull IMultipleTankHandler exportFluids) {
+        protected boolean checkOutputSpaceFluids(@NotNull Recipe recipe, @NotNull MultipleTankHandler exportFluids) {
             // We have already trimmed fluid outputs at this time
             if (!metaTileEntity.canVoidRecipeFluidOutputs() &&
                     !handler.applyFluidToOutputs(recipe.getAllFluidOutputs(), false)) {
@@ -169,7 +169,7 @@ public class MetaTileEntityDistillationTower extends RecipeMapMultiblockControll
         }
 
         @Override
-        protected IMultipleTankHandler getOutputTank() {
+        protected MultipleTankHandler getOutputTank() {
             return handler.getFluidTanks();
         }
     }

@@ -11,7 +11,8 @@ import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStackSimpl
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class GTSimpleFluidHandlerItemStack extends FluidHandlerItemStackSimple implements IFilteredFluidContainer {
+public class GTSimpleFluidHandlerItemStack extends FluidHandlerItemStackSimple
+                                           implements IFilteredFluidContainer {
 
     @Nullable
     private IFilter<FluidStack> filter;

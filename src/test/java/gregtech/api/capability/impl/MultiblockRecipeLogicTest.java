@@ -1,7 +1,7 @@
 package gregtech.api.capability.impl;
 
 import gregtech.Bootstrap;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
@@ -216,12 +216,12 @@ public class MultiblockRecipeLogicTest {
             }
 
             @Override
-            protected IMultipleTankHandler getInputTank() {
+            protected MultipleTankHandler getInputTank() {
                 return importFluidBus.getImportFluids();
             }
 
             @Override
-            protected IMultipleTankHandler getOutputTank() {
+            protected MultipleTankHandler getOutputTank() {
                 return importFluidBus.getExportFluids();
             }
         };
@@ -463,12 +463,12 @@ public class MultiblockRecipeLogicTest {
             }
 
             @Override
-            protected IMultipleTankHandler getInputTank() {
+            protected MultipleTankHandler getInputTank() {
                 return importFluidBus.getImportFluids();
             }
 
             @Override
-            protected IMultipleTankHandler getOutputTank() {
+            protected MultipleTankHandler getOutputTank() {
                 return importFluidBus.getExportFluids();
             }
 
@@ -690,12 +690,12 @@ public class MultiblockRecipeLogicTest {
             }
 
             @Override
-            protected IMultipleTankHandler getInputTank() {
+            protected MultipleTankHandler getInputTank() {
                 return new FluidTankList(false);
             }
 
             @Override
-            protected IMultipleTankHandler getOutputTank() {
+            protected MultipleTankHandler getOutputTank() {
                 return new FluidTankList(false);
             }
 

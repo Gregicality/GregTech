@@ -1,6 +1,6 @@
 package gregtech.api.util;
 
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidActionResult;
@@ -135,26 +135,24 @@ public class GTTransferUtils {
     }
 
     /**
-     * Simulates the insertion of fluid into a target fluid handler, then optionally performs the insertion.
-     * <br />
-     * <br />
+     * Simulates the insertion of fluid into a target fluid handler, then optionally performs the insertion. <br />
+     * <br
+     * />
      * Simulating will not modify any of the input parameters. Insertion will either succeed completely, or fail
-     * without modifying anything.
-     * This method should be called with {@code simulate} {@code true} first, then {@code simulate} {@code false},
-     * only if it returned {@code true}.
+     * without modifying anything. This method should be called with {@code simulate} {@code true} first, then
+     * {@code simulate} {@code false}, only if it returned {@code true}.
      *
+     * @param fluidStacks  the items to insert into {@code fluidHandler}.
      * @param fluidHandler the target inventory
      * @param simulate     whether to simulate ({@code true}) or actually perform the insertion ({@code false})
-     * @param fluidStacks  the items to insert into {@code fluidHandler}.
      * @return {@code true} if the insertion succeeded, {@code false} otherwise.
      */
-    public static boolean addFluidsToFluidHandler(IMultipleTankHandler fluidHandler,
-                                                  boolean simulate,
-                                                  List<FluidStack> fluidStacks) {
+    public static boolean addFluidsToFluidHandler(List<FluidStack> fluidStacks,
+                                                  MultipleTankHandler fluidHandler,
+                                                  boolean simulate) {
         if (simulate) {
-            OverlayedFluidHandler overlayedFluidHandler = new OverlayedFluidHandler(fluidHandler);
             for (FluidStack fluidStack : fluidStacks) {
-                int inserted = overlayedFluidHandler.insertFluid(fluidStack, fluidStack.amount);
+                int inserted = fluidHandler.fill(fluidStack, false);
                 if (inserted != fluidStack.amount) {
                     return false;
                 }

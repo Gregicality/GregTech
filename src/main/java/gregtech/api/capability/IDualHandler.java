@@ -8,7 +8,7 @@ public interface IDualHandler {
 
     boolean hasItemHandlers();
 
-    IMultipleTankHandler getFluidTanks();
+    MultipleTankHandler getFluidTanks();
 
     IItemHandler getItemHandlers();
 }

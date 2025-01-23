@@ -321,7 +321,7 @@ public class CoverDigitalInterface extends CoverBase implements IFastRenderMetaT
                     int maxSlotLimit = Integer.MAX_VALUE;
                     if (this.getCoverableView() instanceof MetaTileEntity metaTileEntity) {
                         maxSlotLimit = this.mode == MODE.ITEM ? metaTileEntity.getImportItems().getSlots() :
-                                metaTileEntity.getImportFluids().getTanks();
+                                metaTileEntity.getImportFluids().size();
                     }
                     double x = 0;
                     double y = 1 - rayTraceResult.hitVec.y + rayTraceResult.getBlockPos().getY();

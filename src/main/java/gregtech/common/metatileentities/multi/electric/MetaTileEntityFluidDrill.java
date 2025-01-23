@@ -3,8 +3,8 @@ package gregtech.common.metatileentities.multi.electric;
 import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IEnergyContainer;
-import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.IWorkable;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.capability.impl.EnergyContainerList;
 import gregtech.api.capability.impl.FluidDrillLogic;
 import gregtech.api.capability.impl.FluidTankList;
@@ -61,8 +61,8 @@ public class MetaTileEntityFluidDrill extends MultiblockWithDisplayBase
     private final FluidDrillLogic minerLogic;
     private final int tier;
 
-    protected IMultipleTankHandler inputFluidInventory;
-    protected IMultipleTankHandler outputFluidInventory;
+    protected MultipleTankHandler inputFluidInventory;
+    protected MultipleTankHandler outputFluidInventory;
     protected IEnergyContainer energyContainer;
 
     public MetaTileEntityFluidDrill(ResourceLocation metaTileEntityId, int tier) {
@@ -287,8 +287,8 @@ public class MetaTileEntityFluidDrill extends MultiblockWithDisplayBase
     }
 
     public boolean fillTanks(FluidStack stack, boolean simulate) {
-        return GTTransferUtils.addFluidsToFluidHandler(outputFluidInventory, simulate,
-                Collections.singletonList(stack));
+        return GTTransferUtils.addFluidsToFluidHandler(Collections.singletonList(stack), outputFluidInventory,
+                simulate);
     }
 
     public int getEnergyTier() {

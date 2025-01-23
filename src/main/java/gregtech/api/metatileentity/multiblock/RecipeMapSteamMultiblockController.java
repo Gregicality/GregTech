@@ -1,6 +1,6 @@
 package gregtech.api.metatileentity.multiblock;
 
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.capability.impl.ItemHandlerList;
 import gregtech.api.capability.impl.SteamMultiblockRecipeLogic;
@@ -41,7 +41,7 @@ public abstract class RecipeMapSteamMultiblockController extends MultiblockWithD
 
     protected IItemHandlerModifiable inputInventory;
     protected IItemHandlerModifiable outputInventory;
-    protected IMultipleTankHandler steamFluidTank;
+    protected MultipleTankHandler steamFluidTank;
 
     public RecipeMapSteamMultiblockController(ResourceLocation metaTileEntityId, RecipeMap<?> recipeMap,
                                               double conversionRate) {
@@ -59,7 +59,7 @@ public abstract class RecipeMapSteamMultiblockController extends MultiblockWithD
         return outputInventory;
     }
 
-    public IMultipleTankHandler getSteamFluidTank() {
+    public MultipleTankHandler getSteamFluidTank() {
         return steamFluidTank;
     }
 

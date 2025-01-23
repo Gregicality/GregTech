@@ -67,7 +67,7 @@ public class DistillationTowerUI<R extends RecipeMap<?>> extends RecipeMapUI<R> 
                                          @NotNull IItemHandlerModifiable itemHandler,
                                          @NotNull FluidTankList fluidHandler, boolean isOutputs, int yOffset) {
         int itemInputsCount = itemHandler.getSlots();
-        int fluidInputsCount = fluidHandler.getTanks();
+        int fluidInputsCount = fluidHandler.size();
         boolean invertFluids = false;
         if (itemInputsCount == 0) {
             int tmp = itemInputsCount;
@@ -80,9 +80,9 @@ public class DistillationTowerUI<R extends RecipeMap<?>> extends RecipeMapUI<R> 
         int itemSlotsToDown = inputSlotGrid[1];
         int startInputsX = isOutputs ? 104 : 68 - itemSlotsToLeft * 18;
         int startInputsY = 55 - (int) (itemSlotsToDown / 2.0 * 18) + yOffset;
-        boolean wasGroupOutput = itemHandler.getSlots() + fluidHandler.getTanks() == 12;
+        boolean wasGroupOutput = itemHandler.getSlots() + fluidHandler.size() == 12;
         if (wasGroupOutput && isOutputs) startInputsY -= 9;
-        if (itemHandler.getSlots() == 6 && fluidHandler.getTanks() == 2 && !isOutputs) startInputsY -= 9;
+        if (itemHandler.getSlots() == 6 && fluidHandler.size() == 2 && !isOutputs) startInputsY -= 9;
         if (!isOutputs) {
             addSlot(builder, 40, startInputsY + (itemSlotsToDown - 1) * 18 - 18, 0, itemHandler, fluidHandler,
                     invertFluids, false);

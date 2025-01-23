@@ -1,7 +1,7 @@
 package gregtech.api.capability.impl;
 
 import gregtech.api.GTValues;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.metatileentity.multiblock.RecipeMapSteamMultiblockController;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
@@ -27,14 +27,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class SteamMultiblockRecipeLogic extends AbstractRecipeLogic {
 
-    private IMultipleTankHandler steamFluidTank;
+    private MultipleTankHandler steamFluidTank;
     private IFluidTank steamFluidTankCombined;
 
     // EU per mB
     private final double conversionRate;
 
     public SteamMultiblockRecipeLogic(RecipeMapSteamMultiblockController tileEntity, RecipeMap<?> recipeMap,
-                                      IMultipleTankHandler steamFluidTank, double conversionRate) {
+                                      MultipleTankHandler steamFluidTank, double conversionRate) {
         super(tileEntity, recipeMap);
         this.steamFluidTank = steamFluidTank;
         this.conversionRate = conversionRate;
@@ -59,7 +59,7 @@ public class SteamMultiblockRecipeLogic extends AbstractRecipeLogic {
         return controller.getOutputInventory();
     }
 
-    protected IMultipleTankHandler getSteamFluidTank() {
+    protected MultipleTankHandler getSteamFluidTank() {
         RecipeMapSteamMultiblockController controller = (RecipeMapSteamMultiblockController) metaTileEntity;
         return controller.getSteamFluidTank();
     }
@@ -69,7 +69,7 @@ public class SteamMultiblockRecipeLogic extends AbstractRecipeLogic {
         if (steamFluidTank == null)
             steamFluidTankCombined = new FluidTank(0);
         else {
-            int capacity = steamFluidTank.getTanks() * 64000;
+            int capacity = steamFluidTank.size() * 64000;
             steamFluidTankCombined = new FluidTank(capacity);
             steamFluidTankCombined.fill(steamFluidTank.drain(capacity, false), true);
         }

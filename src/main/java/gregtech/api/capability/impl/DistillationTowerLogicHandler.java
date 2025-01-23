@@ -1,7 +1,7 @@
 package gregtech.api.capability.impl;
 
 import gregtech.api.capability.IDistillationTower;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.pattern.BlockPattern;
@@ -31,7 +31,7 @@ public class DistillationTowerLogicHandler {
 
     private int layerCount;
     private List<IFluidHandler> orderedFluidOutputs;
-    private IMultipleTankHandler fluidTanks;
+    private MultipleTankHandler fluidTanks;
 
     public DistillationTowerLogicHandler(IDistillationTower tower) {
         this.tower = tower;
@@ -138,11 +138,11 @@ public class DistillationTowerLogicHandler {
         return orderedFluidOutputs;
     }
 
-    protected void setFluidTanks(IMultipleTankHandler fluidTanks) {
+    protected void setFluidTanks(MultipleTankHandler fluidTanks) {
         this.fluidTanks = fluidTanks;
     }
 
-    public IMultipleTankHandler getFluidTanks() {
+    public MultipleTankHandler getFluidTanks() {
         return fluidTanks;
     }
 

@@ -3,7 +3,7 @@ package gregtech.common.metatileentities.multi.electric.generator;
 import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IEnergyContainer;
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.capability.impl.MultiblockFuelRecipeLogic;
 import gregtech.api.fluids.store.FluidStorageKeys;
 import gregtech.api.gui.GuiTextures;
@@ -364,7 +364,7 @@ public class MetaTileEntityLargeCombustionEngine extends FuelMultiblockControlle
         protected void checkOxygen() {
             // check oxygen if present to boost production, and if the dynamo hatch supports it
             if (combustionEngine.isBoostAllowed()) {
-                IMultipleTankHandler inputTank = combustionEngine.getInputFluidInventory();
+                MultipleTankHandler inputTank = combustionEngine.getInputFluidInventory();
                 FluidStack boosterStack = isExtreme ? LIQUID_OXYGEN_STACK : OXYGEN_STACK;
                 isOxygenBoosted = boosterStack.isFluidStackIdentical(inputTank.drain(boosterStack, false));
             }
@@ -379,7 +379,7 @@ public class MetaTileEntityLargeCombustionEngine extends FuelMultiblockControlle
 
         protected boolean checkLubricant() {
             // check lubricant and invalidate if it fails
-            IMultipleTankHandler inputTank = combustionEngine.getInputFluidInventory();
+            MultipleTankHandler inputTank = combustionEngine.getInputFluidInventory();
             if (LUBRICANT_STACK.isFluidStackIdentical(inputTank.drain(LUBRICANT_STACK, false))) {
                 return true;
             } else {
@@ -390,7 +390,7 @@ public class MetaTileEntityLargeCombustionEngine extends FuelMultiblockControlle
 
         protected void drainLubricant() {
             if (totalContinuousRunningTime == 1 || totalContinuousRunningTime % 72 == 0) {
-                IMultipleTankHandler inputTank = combustionEngine.getInputFluidInventory();
+                MultipleTankHandler inputTank = combustionEngine.getInputFluidInventory();
                 inputTank.drain(LUBRICANT_STACK, true);
             }
         }

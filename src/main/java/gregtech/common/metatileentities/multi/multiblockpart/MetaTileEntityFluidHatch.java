@@ -338,10 +338,11 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         fluidTank.onContentsChanged();
     }
 
-    protected class HatchFluidTank extends NotifiableFluidTank implements IFilteredFluidContainer, IFilter<FluidStack> {
+    protected class HatchFluidTank extends NotifiableFluidTank implements IFilter<FluidStack> {
 
         public HatchFluidTank(int capacity, MetaTileEntity entityToNotify, boolean isExport) {
             super(capacity, entityToNotify, isExport);
+            setFilter(this);
         }
 
         @Override
@@ -357,21 +358,10 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
             return accepted;
         }
 
-        @Override
-        public boolean canFillFluidType(FluidStack fluid) {
-            return test(fluid);
-        }
-
         // override for visibility
         @Override
         public void onContentsChanged() {
             super.onContentsChanged();
-        }
-
-        @Nullable
-        @Override
-        public IFilter<FluidStack> getFilter() {
-            return this;
         }
 
         @Override
@@ -383,7 +373,8 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         @Override
         public int getPriority() {
             if (!isExportHatch) return IFilter.noPriority();
-            return !locked || lockedFluid == null ? IFilter.noPriority() : IFilter.whitelistPriority(1);
+            return !locked || lockedFluid == null ? IFilter.noPriority() :
+                    IFilter.whitelistPriority(1);
         }
     }
 }

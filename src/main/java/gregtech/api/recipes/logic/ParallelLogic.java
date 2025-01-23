@@ -1,6 +1,6 @@
 package gregtech.api.recipes.logic;
 
-import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.capability.MultipleTankHandler;
 import gregtech.api.metatileentity.IVoidable;
 import gregtech.api.recipes.FluidKey;
 import gregtech.api.recipes.Recipe;
@@ -10,7 +10,6 @@ import gregtech.api.recipes.ingredients.GTRecipeInput;
 import gregtech.api.util.GTHashMaps;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.ItemStackHashStrategy;
-import gregtech.api.util.OverlayedFluidHandler;
 import gregtech.api.util.OverlayedItemHandler;
 
 import net.minecraft.item.ItemStack;
@@ -41,7 +40,7 @@ public abstract class ParallelLogic {
      */
 
     public static int getMaxRecipeMultiplier(@NotNull Recipe recipe, @NotNull IItemHandlerModifiable inputs,
-                                             @NotNull IMultipleTankHandler fluidInputs, int parallelAmount) {
+                                             @NotNull MultipleTankHandler fluidInputs, int parallelAmount) {
         // Find all the items in the combined Item Input inventories and create oversized ItemStacks
         Object2IntMap<ItemStack> ingredientStacks = GTHashMaps.fromItemHandler(inputs);
 
@@ -71,7 +70,7 @@ public abstract class ParallelLogic {
      * @return returns the amount of recipes that can be merged successfully into a given output inventory
      */
     public static int limitByOutputMerging(@NotNull Recipe recipe, @NotNull IItemHandlerModifiable outputs,
-                                           @NotNull IMultipleTankHandler fluidOutputs, int parallelAmount,
+                                           @NotNull MultipleTankHandler fluidOutputs, int parallelAmount,
                                            boolean voidItems, boolean voidFluids) {
         int modifiedItemParallelAmount = Integer.MAX_VALUE;
         int modifiedFluidParallelAmount = Integer.MAX_VALUE;
@@ -103,7 +102,7 @@ public abstract class ParallelLogic {
             if (voidFluids) {
                 modifiedFluidParallelAmount = parallelAmount;
             } else {
-                modifiedFluidParallelAmount = limitParallelByFluids(recipe, new OverlayedFluidHandler(fluidOutputs),
+                modifiedFluidParallelAmount = limitParallelByFluids(recipe, fluidOutputs,
                         modifiedItemParallelAmount);
             }
 
@@ -120,7 +119,7 @@ public abstract class ParallelLogic {
      * @param recipe     the recipe from which we get the input to product ratio
      * @param multiplier the maximum possible multiplied we can get from the input inventory
      *                   see
-     *                   {@link ParallelLogic#getMaxRecipeMultiplier(Recipe, IItemHandlerModifiable, IMultipleTankHandler, int)}
+     *                   {@link ParallelLogic#getMaxRecipeMultiplier(Recipe, IItemHandlerModifiable, MultipleTankHandler, int)}
      * @return the amount of times a {@link Recipe} outputs can be merged into an inventory without
      *         voiding products.
      */
@@ -166,7 +165,7 @@ public abstract class ParallelLogic {
      * @param outputsToAppend  the recipe outputs from the recipe we want to append to the recipe we are building
      * @param multiplier       the maximum possible multiplied we can get from the input inventory
      *                         see
-     *                         {@link ParallelLogic#getMaxRecipeMultiplier(Recipe, IItemHandlerModifiable, IMultipleTankHandler, int)}
+     *                         {@link ParallelLogic#getMaxRecipeMultiplier(Recipe, IItemHandlerModifiable, MultipleTankHandler, int)}
      * @return the amount of times a {@link Recipe} outputs can be merged into an inventory without
      *         voiding products.
      */
@@ -253,17 +252,16 @@ public abstract class ParallelLogic {
      * @param recipe     the recipe from which we get the fluid input to product ratio
      * @param multiplier the maximum possible multiplied we can get from the input tanks
      *                   see
-     *                   {@link ParallelLogic#getMaxRecipeMultiplier(Recipe, IItemHandlerModifiable, IMultipleTankHandler, int)}
+     *                   {@link ParallelLogic#getMaxRecipeMultiplier(Recipe, IItemHandlerModifiable, MultipleTankHandler, int)}
      * @return the amount of times a {@link Recipe} outputs can be merged into a fluid handler without
      *         voiding products.
      */
     public static int limitParallelByFluids(@NotNull Recipe recipe,
-                                            @NotNull OverlayedFluidHandler overlayedFluidHandler, int multiplier) {
+                                            @NotNull MultipleTankHandler tankHandler, int multiplier) {
         int minMultiplier = 0;
         int maxMultiplier = multiplier;
 
         while (minMultiplier != maxMultiplier) {
-            overlayedFluidHandler.reset();
 
             int amountLeft = 0;
 
@@ -275,7 +273,7 @@ public abstract class ParallelLogic {
                 } else {
                     amountLeft = fluidStack.amount * multiplier;
                 }
-                int inserted = overlayedFluidHandler.insertFluid(fluidStack, amountLeft);
+                int inserted = tankHandler.simulateFill(fluidStack, amountLeft);
                 if (inserted > 0) {
                     amountLeft -= inserted;
                 }
@@ -476,9 +474,9 @@ public abstract class ParallelLogic {
     // take care of voiding
     public static RecipeBuilder<?> doParallelRecipes(@NotNull Recipe currentRecipe, @NotNull RecipeMap<?> recipeMap,
                                                      @NotNull IItemHandlerModifiable importInventory,
-                                                     @NotNull IMultipleTankHandler importFluids,
+                                                     @NotNull MultipleTankHandler importFluids,
                                                      @NotNull IItemHandlerModifiable exportInventory,
-                                                     @NotNull IMultipleTankHandler exportFluids, int parallelAmount,
+                                                     @NotNull MultipleTankHandler exportFluids, int parallelAmount,
                                                      long maxVoltage, @NotNull IVoidable voidable) {
         // First check if we are limited by recipe inputs. This can short circuit a lot of consecutive checking
         int multiplierByInputs = getMaxRecipeMultiplier(currentRecipe, importInventory, importFluids, parallelAmount);

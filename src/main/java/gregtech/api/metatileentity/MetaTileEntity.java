@@ -71,6 +71,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -157,8 +158,8 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
 
     protected List<IItemHandlerModifiable> notifiedItemOutputList = new ArrayList<>();
     protected List<IItemHandlerModifiable> notifiedItemInputList = new ArrayList<>();
-    protected List<IFluidHandler> notifiedFluidInputList = new ArrayList<>();
-    protected List<IFluidHandler> notifiedFluidOutputList = new ArrayList<>();
+    protected List<IFluidTank> notifiedFluidInputList = new ArrayList<>();
+    protected List<IFluidTank> notifiedFluidOutputList = new ArrayList<>();
 
     protected boolean muffled = false;
 
@@ -398,9 +399,9 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
             if (!notifiedItemInputList.contains(input)) {
                 this.notifiedItemInputList.add((IItemHandlerModifiable) input);
             }
-        } else if (input instanceof IFluidHandler) {
+        } else if (input instanceof IFluidTank) {
             if (!notifiedFluidInputList.contains(input)) {
-                this.notifiedFluidInputList.add((IFluidHandler) input);
+                this.notifiedFluidInputList.add((IFluidTank) input);
             }
         }
     }
@@ -1485,11 +1486,11 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
         return notifiedItemInputList;
     }
 
-    public List<IFluidHandler> getNotifiedFluidInputList() {
+    public List<IFluidTank> getNotifiedFluidInputList() {
         return notifiedFluidInputList;
     }
 
-    public List<IFluidHandler> getNotifiedFluidOutputList() {
+    public List<IFluidTank> getNotifiedFluidOutputList() {
         return notifiedFluidOutputList;
     }
 

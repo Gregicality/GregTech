@@ -1,9 +1,7 @@
 package gregtech.api.capability.impl;
 
 import gregtech.Bootstrap;
-import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.unification.material.Materials;
-import gregtech.api.util.OverlayedFluidHandler;
 
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -314,9 +312,6 @@ public class FluidTankListTest {
 
         private final FluidTankList tank;
 
-        @Nullable
-        private OverlayedFluidHandler overlayedFluidHandler;
-
         FluidHandlerTester(FluidTankList tank) {
             this.tank = tank;
         }
@@ -334,19 +329,8 @@ public class FluidTankListTest {
             String tankString = this.tank.toString(true);
 
             int tankFillSim = this.tank.fill(fluidStack, false);
-
-            if (this.overlayedFluidHandler != null) {
-                String overlayString = this.overlayedFluidHandler.toString(true);
-                int ofhSim = this.overlayedFluidHandler.insertFluid(fluidStack, fluidStack.amount);
-
-                if (tankFillSim != ofhSim) {
-                    throw new AssertionError("Result of simulation fill from tank and OFH differ.\n" +
-                            "Tank Simulation: " + tankFillSim + ", OFH simulation: " + ofhSim + "\n" +
-                            "Tank: " + tankString + "\n" +
-                            "OFH: " + overlayString);
-                }
-            }
             int actualFill = this.tank.fill(fluidStack, true);
+
             if (tankFillSim != actualFill) {
                 throw new AssertionError("Simulation fill to tank and actual fill differ.\n" +
                         "Simulated Fill: " + tankFillSim + ", Actual Fill: " + actualFill + "\n" +
@@ -360,9 +344,6 @@ public class FluidTankListTest {
         }
 
         FluidHandlerTester drain(FluidStack fluidStack) {
-            if (this.overlayedFluidHandler != null) {
-                throw new IllegalStateException("Cannot drain stuff in simulation");
-            }
             // make string representation before modifying the state, to produce better error message
             String tankString = this.tank.toString(true);
 
@@ -378,9 +359,6 @@ public class FluidTankListTest {
         }
 
         FluidHandlerTester drain(int amount) {
-            if (this.overlayedFluidHandler != null) {
-                throw new IllegalStateException("Cannot drain stuff in simulation");
-            }
             // make string representation before modifying the state, to produce better error message
             String tankString = this.tank.toString(true);
 
@@ -396,20 +374,16 @@ public class FluidTankListTest {
         }
 
         FluidHandlerTester beginSimulation() {
-            if (this.overlayedFluidHandler != null) {
-                throw new IllegalStateException("Simulation already begun");
-            }
-            this.overlayedFluidHandler = new OverlayedFluidHandler(this.tank);
             return this;
         }
 
         FluidHandlerTester expectContents(@NotNull FluidStack... optionalFluidStacks) {
-            if (optionalFluidStacks.length != this.tank.getTanks()) {
+            if (optionalFluidStacks.length != this.tank.size()) {
                 throw new IllegalArgumentException("Wrong number of fluids to compare; " +
-                        "expected: " + this.tank.getTanks() + ", provided: " + optionalFluidStacks.length);
+                        "expected: " + this.tank.size() + ", provided: " + optionalFluidStacks.length);
             }
             for (int i = 0; i < optionalFluidStacks.length; i++) {
-                IMultipleTankHandler.MultiFluidTankEntry tank = this.tank.getTankAt(i);
+                var tank = this.tank.getTankAt(i);
                 if (!eq(tank.getFluid(), optionalFluidStacks[i])) {
                     throw new AssertionError("Contents of the tank don't match expected state.\n" +
                             "Expected: [\n  " + Arrays.stream(optionalFluidStacks)

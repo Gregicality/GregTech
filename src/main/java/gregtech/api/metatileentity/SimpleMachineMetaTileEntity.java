@@ -182,7 +182,7 @@ public class SimpleMachineMetaTileEntity extends WorkableTieredMetaTileEntity
     @SideOnly(Side.CLIENT)
     public void renderMetaTileEntity(CCRenderState renderState, Matrix4 translation, IVertexOperation[] pipeline) {
         super.renderMetaTileEntity(renderState, translation, pipeline);
-        if (outputFacingFluids != null && getExportFluids().getTanks() > 0) {
+        if (outputFacingFluids != null && getExportFluids().size() > 0) {
             Textures.PIPE_OUT_OVERLAY.renderSided(outputFacingFluids, renderState,
                     RenderUtil.adjustTrans(translation, outputFacingFluids, 2), pipeline);
         }
@@ -508,7 +508,7 @@ public class SimpleMachineMetaTileEntity extends WorkableTieredMetaTileEntity
                             .shouldUseBaseBackground());
             leftButtonStartX += 18;
         }
-        if (exportFluids.getTanks() > 0) {
+        if (exportFluids.size() > 0) {
             builder.widget(new ToggleButtonWidget(leftButtonStartX, 62 + yOffset, 18, 18,
                     GuiTextures.BUTTON_FLUID_OUTPUT, this::isAutoOutputFluids, this::setAutoOutputFluids)
                             .setTooltipText("gregtech.gui.fluid_auto_output.tooltip")
@@ -521,7 +521,7 @@ public class SimpleMachineMetaTileEntity extends WorkableTieredMetaTileEntity
                         .setTooltipHoverString("gregtech.gui.overclock.description")
                         .setButtonTexture(GuiTextures.BUTTON_OVERCLOCK));
 
-        if (exportItems.getSlots() + exportFluids.getTanks() <= 9) {
+        if (exportItems.getSlots() + exportFluids.size() <= 9) {
             ImageWidget logo = new ImageWidget(152, 63 + yOffset, 17, 17,
                     GTValues.XMAS.get() ? getXmasLogo() : getLogo()).setIgnoreColor(true);
 
