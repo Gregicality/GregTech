@@ -17,7 +17,6 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Matrix4;
-import com.cleanroommc.modularui.factory.GuiData;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.utils.Color;
@@ -89,12 +88,13 @@ public class CoverItemVoidingAdvanced extends CoverItemVoiding {
     }
 
     @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        return super.buildUI(guiData, guiSyncManager).height(192 + 18);
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return super.confgurePanel(panel, isSmallGui)
+                .height(210);
     }
 
     @Override
-    protected ParentWidget<Flow> createUI(GuiData data, PanelSyncManager guiSyncManager) {
+    public @NotNull ParentWidget<?> createUI(SidedPosGuiData data, PanelSyncManager guiSyncManager) {
         var voidingMode = new EnumSyncValue<>(VoidingMode.class, this::getVoidingMode, this::setVoidingMode);
         guiSyncManager.syncValue("voiding_mode", voidingMode);
 

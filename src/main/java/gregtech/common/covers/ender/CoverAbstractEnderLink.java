@@ -30,7 +30,6 @@ import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
 import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.drawable.Rectangle;
-import com.cleanroommc.modularui.factory.GuiData;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.network.NetworkUtils;
 import com.cleanroommc.modularui.screen.ModularPanel;
@@ -40,6 +39,7 @@ import com.cleanroommc.modularui.value.sync.PanelSyncHandler;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import com.cleanroommc.modularui.value.sync.SyncHandler;
+import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.ListWidget;
 import com.cleanroommc.modularui.widgets.ToggleButton;
@@ -136,21 +136,16 @@ public abstract class CoverAbstractEnderLink<T extends VirtualEntry> extends Cov
     }
 
     @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        var panel = GTGuis.createPanel(this, 176, 192);
-
-        this.playerUUID = guiData.getPlayer().getUniqueID();
-
-        return panel.child(CoverWithUI.createTitleRow(getPickItem()))
-                .child(createWidgets(guiData, guiSyncManager))
-                .bindPlayerInventory();
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return panel.height(192);
     }
 
-    protected Flow createWidgets(GuiData data, PanelSyncManager syncManager) {
+    public @NotNull ParentWidget<?> createUI(SidedPosGuiData data, PanelSyncManager manager) {
+        this.playerUUID = data.getPlayer().getUniqueID();
         var name = new StringSyncValue(this::getColorStr, this::updateColor);
 
         // todo unneeded cast in mui2 rc3
-        var entrySelectorSH = (PanelSyncHandler) syncManager.panel("entry_selector", entrySelector(getType()), true);
+        var entrySelectorSH = (PanelSyncHandler) manager.panel("entry_selector", entrySelector(getType()), true);
 
         return Flow.column().coverChildrenHeight().top(24)
                 .margin(7, 0).widthRel(1f)

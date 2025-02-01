@@ -4,7 +4,6 @@ import gregtech.api.cover.CoverBase;
 import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
-import gregtech.api.mui.GTGuis;
 import gregtech.client.renderer.texture.Textures;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,16 +21,17 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Matrix4;
-import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.SyncHandlers;
+import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.ItemSlot;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,24 +88,24 @@ public class CoverStorage extends CoverBase implements CoverWithUI {
     }
 
     @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        guiSyncManager.registerSlotGroup("item_inv", this.storageHandler.getSlots());
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return panel.height(MAX_HEIGHT);
+    }
+
+    @Override
+    public @Nullable ParentWidget<?> createUI(SidedPosGuiData data, PanelSyncManager manager) {
+        manager.registerSlotGroup("item_inv", this.storageHandler.getSlots());
 
         int rowSize = this.storageHandler.getSlots();
-        List<List<IWidget>> widgets = new ArrayList<>();
-        widgets.add(new ArrayList<>());
+        List<IWidget> widgets = new ArrayList<>();
         for (int i = 0; i < rowSize; i++) {
-            widgets.get(0)
-                    .add(new ItemSlot().slot(SyncHandlers.itemSlot(this.storageHandler, i).slotGroup("item_inv")));
+            widgets.add(new ItemSlot().slot(SyncHandlers.itemSlot(this.storageHandler, i).slotGroup("item_inv")));
         }
-        return GTGuis.createPanel(this, MAX_WIDTH, MAX_HEIGHT)
-                .child(IKey.lang("cover.storage.title").asWidget().pos(5, 5))
-                .bindPlayerInventory()
-                .child(new Grid()
-                        .top((MAX_HEIGHT - SLOT_SIZE * 5) / 2).left(7).right(7).height(18)
-                        .minElementMargin(0, 0)
-                        .minColWidth(18).minRowHeight(18)
-                        .matrix(widgets));
+        return new Grid()
+                .top((MAX_HEIGHT - SLOT_SIZE * 5) / 2).left(7).right(7).height(18)
+                .minElementMargin(0, 0)
+                .minColWidth(18).minRowHeight(18)
+                .mapTo(rowSize, widgets, (index, value) -> value);
     }
 
     /**

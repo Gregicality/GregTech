@@ -29,10 +29,10 @@ import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Matrix4;
 import com.cleanroommc.modularui.api.widget.IWidget;
-import com.cleanroommc.modularui.factory.GuiData;
+import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.value.sync.EnumSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
-import com.cleanroommc.modularui.widgets.layout.Flow;
+import com.cleanroommc.modularui.widget.ParentWidget;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -143,15 +143,16 @@ public class CoverEnderFluidLink extends CoverAbstractEnderLink<VirtualTank>
                 .marginRight(2);
     }
 
-    protected Flow createWidgets(GuiData data, PanelSyncManager syncManager) {
+    @Override
+    public @NotNull ParentWidget<?> createUI(SidedPosGuiData data, PanelSyncManager manager) {
         getFluidFilterContainer().setMaxTransferSize(1);
 
         var pumpMode = new EnumSyncValue<>(CoverPump.PumpMode.class, this::getPumpMode, this::setPumpMode);
-        syncManager.syncValue("pump_mode", pumpMode);
+        manager.syncValue("pump_mode", pumpMode);
         pumpMode.updateCacheFromSource(true);
 
-        return super.createWidgets(data, syncManager)
-                .child(getFluidFilterContainer().initUI(data, syncManager))
+        return super.createUI(data, manager)
+                .child(getFluidFilterContainer().initUI(data, manager))
                 .child(new EnumRowBuilder<>(CoverPump.PumpMode.class)
                         .value(pumpMode)
                         .overlay(GTGuiTextures.CONVEYOR_MODE_OVERLAY)

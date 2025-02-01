@@ -1,9 +1,11 @@
 package gregtech.common.metatileentities.storage;
 
+import gregtech.api.cover.CoverWithUI;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.items.toolitem.ToolClasses;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.unification.material.Material;
@@ -31,13 +33,23 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.widget.IGuiAction;
 import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.Interactable;
+import com.cleanroommc.modularui.drawable.GuiTextures;
+import com.cleanroommc.modularui.drawable.ItemDrawable;
 import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.utils.Alignment;
+import com.cleanroommc.modularui.value.sync.PanelSyncHandler;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.SyncHandlers;
+import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.ItemSlot;
+import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.layout.Grid;
+import com.cleanroommc.modularui.widgets.layout.Row;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -152,14 +164,85 @@ public class MetaTileEntityCrate extends MetaTileEntity {
                         .slotGroup("item_inv")));
             }
         }
-        return GTGuis.createPanel(this, rowSize * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows)
-                .child(IKey.lang(getMetaFullName()).asWidget().pos(5, 5))
+        var panel = GTGuis.createPanel(this, rowSize * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows);
+
+        return panel.child(IKey.lang(getMetaFullName()).asWidget().pos(5, 5))
                 .bindPlayerInventory()
+                .childIf(hasAnyCover(), createCoverWidgets(guiData, guiSyncManager, panel))
                 .child(new Grid()
                         .top(18).left(7).right(7).height(rows * 18)
                         .minElementMargin(0, 0)
                         .minColWidth(18).minRowHeight(18)
                         .matrix(widgets));
+    }
+
+    private Flow createCoverWidgets(PosGuiData data, PanelSyncManager manager, ModularPanel mainPanel) {
+        Flow leftCoverColumn = Flow.column()
+                .background(GuiTextures.MC_BACKGROUND)
+                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
+                .padding(4)
+                .coverChildrenWidth()
+                .topRel(0.25f)
+                .left(-20)
+                .height(24 * 3);
+        Flow rightCoverColumn = Flow.column()
+                .background(GuiTextures.MC_BACKGROUND)
+                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
+                .padding(4)
+                .coverChildrenWidth()
+                .topRel(0.25f)
+                .right(-20)
+                .height(24 * 3);
+
+        int numCovers = 0;
+        List<PanelSyncHandler> coverPanels = new ArrayList<>();
+        for (EnumFacing side : EnumFacing.VALUES) {
+            if (getCoverAtSide(side) instanceof CoverWithUI cover) {
+                if (!cover.shouldShowSmallUI()) continue;
+
+                SidedPosGuiData sideData = new SidedPosGuiData(data.getPlayer(), data.getX(),
+                        data.getY(), data.getZ(), side);
+
+                // todo better key for this?
+                var panel = (PanelSyncHandler) manager.panel("cover at side: " + side.getName(),
+                        (syncManager, syncHandler) -> cover.getSmallGUI(sideData, syncManager), true);
+                coverPanels.add(panel);
+
+                IGuiAction.MousePressed handlePanel = i -> {
+                    if (!panel.isPanelOpen()) {
+                        coverPanels.forEach(h -> {
+                            if (h.isPanelOpen()) h.closePanel();
+                        });
+                        panel.openPanel();
+                    } else {
+                        panel.closePanel();
+                    }
+                    Interactable.playButtonClickSound();
+                    return true;
+                };
+
+                // Use the left side for the first three covers
+                if (numCovers++ < 3) {
+                    leftCoverColumn.child(new ButtonWidget<>()
+                            .size(20, 20)
+                            .marginBottom(2)
+                            .background(GTGuiTextures.SLOT)
+                            .onMousePressed(handlePanel)
+                            .overlay(new ItemDrawable(cover.getPickItem()).asIcon()));
+                } else {
+                    rightCoverColumn.child(new ButtonWidget<>()
+                            .size(20, 20)
+                            .marginBottom(2)
+                            .background(GTGuiTextures.SLOT)
+                            .onMousePressed(handlePanel)
+                            .overlay(new ItemDrawable(cover.getPickItem()).asIcon()));
+                }
+            }
+        }
+        return new Row()
+                .expanded()
+                .child(leftCoverColumn)
+                .child(rightCoverColumn);
     }
 
     @Override
@@ -242,7 +325,7 @@ public class MetaTileEntityCrate extends MetaTileEntity {
     }
 
     @Override
-    public void receiveCustomData(int dataId, PacketBuffer buf) {
+    public void receiveCustomData(int dataId, @NotNull PacketBuffer buf) {
         super.receiveCustomData(dataId, buf);
 
         if (dataId == IS_TAPED) {

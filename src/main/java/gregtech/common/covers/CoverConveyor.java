@@ -9,7 +9,6 @@ import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.mui.GTGuiTextures;
-import gregtech.api.mui.GTGuis;
 import gregtech.api.util.GTTransferUtils;
 import gregtech.api.util.ItemStackHashStrategy;
 import gregtech.client.renderer.texture.Textures;
@@ -45,7 +44,6 @@ import codechicken.lib.vec.Matrix4;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.DynamicDrawable;
-import com.cleanroommc.modularui.factory.GuiData;
 import com.cleanroommc.modularui.factory.SidedPosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.utils.Color;
@@ -504,17 +502,13 @@ public class CoverConveyor extends CoverBase implements CoverWithUI, ITickable, 
     }
 
     @Override
-    public ModularPanel buildUI(SidedPosGuiData guiData, PanelSyncManager guiSyncManager) {
-        var panel = GTGuis.createPanel(this, 176, 192 + 18);
-
-        getItemFilterContainer().setMaxTransferSize(getMaxStackSize());
-
-        return panel.child(CoverWithUI.createTitleRow(getPickItem()))
-                .child(createUI(guiData, guiSyncManager))
-                .bindPlayerInventory();
+    public ModularPanel confgurePanel(ModularPanel panel, boolean isSmallGui) {
+        return panel.height(210);
     }
 
-    protected ParentWidget<Flow> createUI(GuiData data, PanelSyncManager guiSyncManager) {
+    public @NotNull ParentWidget<?> createUI(SidedPosGuiData data, PanelSyncManager guiSyncManager) {
+        getItemFilterContainer().setMaxTransferSize(getMaxStackSize());
+
         var column = Flow.column().top(24).margin(7, 0)
                 .widthRel(1f).coverChildrenHeight();
 
