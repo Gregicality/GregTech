@@ -13,8 +13,8 @@ import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.factory.HandGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.SecondaryPanel;
 import com.cleanroommc.modularui.utils.Alignment;
-import com.cleanroommc.modularui.value.sync.PanelSyncHandler;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widget.ScrollWidget;
@@ -32,7 +32,7 @@ public class SettingsApp implements ITerminalApp {
 
     @Override
     public IWidget buildWidgets(HandGuiData guiData, PanelSyncManager guiSyncManager, ModularPanel panel) {
-        var backgroundSelectPanel = (PanelSyncHandler) guiSyncManager.panel("terminal_background_select",
+        var backgroundSelectPanel = IPanelHandler.simple(panel,
                 backgroundSelectWidget(), true);
 
         int rows = Terminal2Theme.colors.size() + 1;
@@ -115,7 +115,7 @@ public class SettingsApp implements ITerminalApp {
         return GuiTextures.GEAR;
     }
 
-    private PanelSyncHandler.IPanelBuilder backgroundSelectWidget() {
+    private SecondaryPanel.IPanelBuilder backgroundSelectWidget() {
         return (syncManager, syncHandler) -> {
             String[] files = Terminal2Theme.backgroundsDir.list();
             List<String> options;
@@ -127,12 +127,12 @@ public class SettingsApp implements ITerminalApp {
             options.sort(Comparator.naturalOrder());
             options.add(0, "default");
 
-            var list = ListWidget.builder(options, (st) -> new ButtonWidget<>()
-                    .overlay(IKey.str(st))
+            var list = new ListWidget<>().children(options.size(), (i) -> new ButtonWidget<>()
+                    .overlay(IKey.str(options.get(i)))
                     .size(140, 18)
                     .leftRel(0.2F)
-                    .onMousePressed(i -> {
-                        Terminal2Theme.setBackground(st);
+                    .onMousePressed(j -> {
+                        Terminal2Theme.setBackground(options.get(i));
                         Terminal2Theme.saveConfig();
                         return true;
                     }))

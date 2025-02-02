@@ -4,7 +4,7 @@ import gregtech.common.mui.widget.IColorableScrollData;
 
 import com.cleanroommc.modularui.drawable.Circle;
 import com.cleanroommc.modularui.drawable.Rectangle;
-import com.cleanroommc.modularui.widget.ScrollWidget;
+import com.cleanroommc.modularui.widget.AbstractScrollWidget;
 import com.cleanroommc.modularui.widget.scroll.HorizontalScrollData;
 import com.cleanroommc.modularui.widget.scroll.VerticalScrollData;
 import org.apache.commons.lang3.tuple.Pair;
@@ -54,7 +54,7 @@ public class BoundRectangle extends Rectangle {
         return this;
     }
 
-    public BoundRectangle bindScrollFG(ScrollWidget<?> widget) {
+    public BoundRectangle bindScrollFG(AbstractScrollWidget<?, ?> widget) {
         HorizontalScrollData scrollX = widget.getScrollArea().getScrollX();
         VerticalScrollData scrollY = widget.getScrollArea().getScrollY();
         if (scrollX instanceof IColorableScrollData scroll) {
@@ -66,7 +66,7 @@ public class BoundRectangle extends Rectangle {
         return this;
     }
 
-    public BoundRectangle bindScrollBG(ScrollWidget<?> widget) {
+    public BoundRectangle bindScrollBG(AbstractScrollWidget<?, ?> widget) {
         return bind(widget.getScrollArea()::setScrollBarBackgroundColor, () -> !widget.isValid());
     }
 

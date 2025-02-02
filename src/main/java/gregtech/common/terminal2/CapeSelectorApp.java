@@ -40,7 +40,7 @@ public class CapeSelectorApp implements ITerminalApp {
         var capeGrid = new Grid()
                 .sizeRel(1f)
                 .posRel(0.5f, 0.5f)
-                .margin(21)
+                .minElementMargin(21)
                 .scrollable(new ColorableVScrollData())
                 .nextRow();
         Terminal2Theme.COLOR_FOREGROUND_BRIGHT.bindScrollFG(capeGrid);

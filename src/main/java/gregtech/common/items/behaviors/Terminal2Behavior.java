@@ -68,7 +68,7 @@ public class Terminal2Behavior implements IItemBehaviour, ItemUIFactory {
         Grid appGrid = new Grid()
                 .pos(44, 22)
                 .size(Terminal2.SCREEN_WIDTH - 44 * 2, Terminal2.SCREEN_HEIGHT - 22 * 2)
-                .margin(6)
+                .minElementMargin(6)
                 .nextRow();
 
         for (ResourceLocation appID : Terminal2.appMap.keySet()) {
