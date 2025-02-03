@@ -14,6 +14,7 @@ import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.mui.sync.GTFluidSyncHandler;
+import gregtech.api.mui.widget.GhostCircuitSlotWidget;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.mui.widget.GTFluidSlot;
 
@@ -186,7 +187,11 @@ public class MetaTileEntityReservoirHatch extends MetaTileEntityMultiblockNotifi
                         .slotGroup("item_inv")
                         .accessibility(false, true))
                         .background(GTGuiTextures.SLOT, GTGuiTextures.OUT_SLOT_OVERLAY)
-                        .pos(90, 53));
+                        .pos(90, 53))
+                .child(new GhostCircuitSlotWidget()
+                        .slot(circuitInventory, 0)
+                        .background(GTGuiTextures.SLOT, GTGuiTextures.INT_CIRCUIT_OVERLAY)
+                        .pos(124, 62));
     }
 
     @Override
