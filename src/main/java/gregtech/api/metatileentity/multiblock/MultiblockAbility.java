@@ -8,17 +8,13 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("InstantiationOfUtilityClass")
 public class MultiblockAbility<T> {
 
-    public static final Map<String, MultiblockAbility<?>> NAME_REGISTRY = new HashMap<>();
     public static final Map<MultiblockAbility<?>, List<MetaTileEntity>> REGISTRY = new Object2ObjectOpenHashMap<>();
 
     public static final MultiblockAbility<IItemHandlerModifiable> EXPORT_ITEMS = ability(
@@ -106,7 +102,6 @@ public class MultiblockAbility<T> {
     public MultiblockAbility(String name, Class<T> clazz) {
         this.name = name.toLowerCase();
         this.clazz = clazz;
-        NAME_REGISTRY.put(this.name, this);
     }
 
     @Override
@@ -118,13 +113,15 @@ public class MultiblockAbility<T> {
         return clazz.isAssignableFrom(o.getClass());
     }
 
-    public String getType() {
-        return this.clazz.getSimpleName();
+    @SuppressWarnings("unchecked")
+    public <R> List<R> castList(AbilityInstances instances) {
+        if (instances.isKey(this)) {
+            return (List<R>) instances;
+        }
+        return null;
     }
 
-    public @Nullable T checkAndCast(Object o) {
-        if (checkType(o))
-            return clazz.cast(o);
-        else return null;
+    public String getType() {
+        return this.clazz.getSimpleName();
     }
 }

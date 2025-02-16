@@ -410,11 +410,7 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
     }
 
     public <T> List<T> getAbilities(MultiblockAbility<T> ability) {
-        return Collections.unmodifiableList(getAbilitiesModifiable(ability));
-    }
-
-    public <T> List<T> getAbilitiesModifiable(MultiblockAbility<T> ability) {
-        return multiblockAbilities.getOrDefault(ability, AbilityInstances.EMPTY).cast();
+        return Collections.unmodifiableList(multiblockAbilities.getOrDefault(ability, AbilityInstances.EMPTY).cast());
     }
 
     public List<IMultiblockPart> getMultiblockParts() {
