@@ -149,11 +149,16 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
 
     protected IMultipleTankHandler extendedImportFluidList(IMultipleTankHandler fluids) {
         List<IFluidTank> tanks = new ArrayList<>(fluids.getFluidTanks());
+        // iterate import items to look for and tanks that we might have missed
+        // honestly this might not be worth checking because
+        // it might already be handled in ARL/MRL
         for (var handler : getAbilities(MultiblockAbility.IMPORT_ITEMS)) {
             if (handler instanceof IFluidTank tank) {
-                tanks.add(tank);
+                if (!tanks.contains(tank)) tanks.add(tank);
             } else if (handler instanceof IMultipleTankHandler multipleTankHandler) {
-                tanks.addAll(multipleTankHandler.getFluidTanks());
+                for (var tank : multipleTankHandler.getFluidTanks()) {
+                    if (!tanks.contains(tank)) tanks.add(tank);
+                }
             }
         }
 
