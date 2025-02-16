@@ -2,11 +2,11 @@ package gregtech.api.metatileentity.multiblock;
 
 import gregtech.api.util.GTLog;
 
+import it.unimi.dsi.fastutil.objects.AbstractObjectList;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,7 +16,7 @@ import java.util.List;
  * Make sure to use {@link AbilityInstances#isKey(MultiblockAbility)} to check what kind of
  * instances to add to this list.
  */
-public class AbilityInstances extends AbstractList<Object> {
+public class AbilityInstances extends AbstractObjectList<Object> {
 
     public static final AbilityInstances EMPTY = new AbilityInstances(null) {
 
@@ -31,18 +31,8 @@ public class AbilityInstances extends AbstractList<Object> {
         }
 
         @Override
-        public void add(int index, Object element) {
-            // do nothing
-        }
-
-        @Override
-        public Object set(int index, Object element) {
-            return null;
-        }
-
-        @Override
-        public Object get(int index) {
-            return null;
+        public @NotNull <R> List<R> cast() {
+            return Collections.emptyList();
         }
     };
 
@@ -62,13 +52,8 @@ public class AbilityInstances extends AbstractList<Object> {
         return this.key.equals(key);
     }
 
-    public <R> @Nullable R getAndCast(int index, MultiblockAbility<R> key) {
-        return key.checkAndCast(get(index));
-    }
-
-    @SuppressWarnings("unchecked")
     public <R> @NotNull List<R> cast() {
-        return (List<R>) this;
+        return this.key.castList(this);
     }
 
     /**
@@ -87,10 +72,10 @@ public class AbilityInstances extends AbstractList<Object> {
         if (!canAdd(o) && o instanceof Iterable<?>iterable) {
             for (var e : iterable)
                 add(size(), e);
-            return s != size();
+        } else {
+            // otherwise add as normal
+            add(s, o);
         }
-        // otherwise add as normal
-        add(s, o);
         return s != size();
     }
 
@@ -100,12 +85,7 @@ public class AbilityInstances extends AbstractList<Object> {
 
     @Override
     public void add(int index, Object element) {
-        if (!key.checkType(element))
-            throw new IllegalArgumentException(
-                    String.format("element \"%s\" does not extend/implement \"%s\"",
-                            element.getClass().getSimpleName(),
-                            this.key.getType()));
-        if (!instances.contains(element))
+        if (canAdd(element) && !instances.contains(element))
             instances.add(index, element);
     }
 
@@ -118,11 +98,7 @@ public class AbilityInstances extends AbstractList<Object> {
      */
     @Override
     public Object set(int index, Object element) {
-        if (!key.checkType(element))
-            throw new IllegalArgumentException(
-                    String.format("element \"%s\" does not extend/implement \"%s\"",
-                            element.getClass().getSimpleName(),
-                            this.key.getType()));
+        if (!canAdd(element)) return null;
 
         int existing = instances.indexOf(element);
         if (existing != -1) {
