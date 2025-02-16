@@ -141,6 +141,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
     private void resetTileAbilities() {
         this.inputInventory = new GTItemStackHandler(this, 0);
         this.inputFluidInventory = new FluidTankList(true);
+        this.extendedFluidInputs = new FluidTankList(true);
         this.outputInventory = new GTItemStackHandler(this, 0);
         this.outputFluidInventory = new FluidTankList(true);
         this.energyContainer = new EnergyContainerList(Lists.newArrayList());
