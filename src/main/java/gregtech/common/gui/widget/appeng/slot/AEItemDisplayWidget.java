@@ -5,6 +5,7 @@ import gregtech.api.gui.IRenderContext;
 import gregtech.api.gui.Widget;
 import gregtech.api.util.Position;
 import gregtech.api.util.Size;
+import gregtech.client.utils.RenderUtil;
 import gregtech.common.gui.widget.appeng.AEListGridWidget;
 
 import net.minecraft.item.ItemStack;
@@ -39,7 +40,7 @@ public class AEItemDisplayWidget extends Widget {
         if (item != null) {
             ItemStack realStack = item.createItemStack();
             realStack.setCount(1);
-            drawItemStack(realStack, stackX, stackY, null);
+            RenderUtil.drawItemStack(realStack, stackX, stackY, null);
             String amountStr = String.format("x%,d", item.getStackSize());
             drawText(amountStr, stackX + 20, stackY + 5, 1, 0xFFFFFFFF);
         }

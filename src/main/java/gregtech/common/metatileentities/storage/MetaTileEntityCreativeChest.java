@@ -10,8 +10,10 @@ import gregtech.api.gui.widgets.TextFieldWidget2;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.mui.GTGuis;
 import gregtech.api.util.GTTransferUtils;
 import gregtech.api.util.GTUtility;
+import gregtech.api.util.LocalizationUtils;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.renderer.texture.custom.QuantumStorageRenderer;
 import gregtech.client.utils.TooltipHelper;
@@ -32,6 +34,18 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.ColourMultiplier;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.utils.Alignment;
+import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
+import com.cleanroommc.modularui.value.sync.IntSyncValue;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.value.sync.SyncHandlers;
+import com.cleanroommc.modularui.widgets.ItemSlot;
+import com.cleanroommc.modularui.widgets.ToggleButton;
+import com.cleanroommc.modularui.widgets.layout.Flow;
+import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -74,6 +88,53 @@ public class MetaTileEntityCreativeChest extends MetaTileEntityQuantumChest {
     @Override
     public MetaTileEntity createMetaTileEntity(IGregTechTileEntity tileEntity) {
         return new MetaTileEntityCreativeChest(this.metaTileEntityId);
+    }
+
+    @Override
+    public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager guiSyncManager) {
+        return GTGuis.createPanel(this, 176, 166)
+                .child(IKey.lang("gregtech.creative.chest.item").asWidget()
+                        .pos(7, 9))
+                .child(Flow.column()
+                        .pos(7, 28)
+                        .coverChildren()
+                        .crossAxisAlignment(Alignment.CrossAxis.START)
+                        .child(IKey.lang("gregtech.creative.chest.ipc").asWidget()
+                                .marginBottom(2))
+                        .child(new TextFieldWidget()
+                                .left(2)
+                                .marginBottom(15)
+                                .size(152, 14)
+                                .setMaxLength(11)
+                                .setNumbers(1, Integer.MAX_VALUE)
+                                .value(new IntSyncValue(() -> itemsPerCycle, value -> itemsPerCycle = value)))
+                        .child(IKey.lang("gregtech.creative.chest.tpc").asWidget()
+                                .marginBottom(2))
+                        .child(new TextFieldWidget()
+                                .left(2)
+                                .setTextAlignment(Alignment.CenterLeft)
+                                .size(152, 14)
+                                .setMaxLength(11)
+                                .setNumbers(1, Integer.MAX_VALUE)
+                                .value(new IntSyncValue(() -> ticksPerCycle, value -> ticksPerCycle = value))))
+                .child(new ToggleButton()
+                        .pos(7, 101)
+                        .size(162, 20)
+                        .overlay(IKey.dynamic(() -> LocalizationUtils.format(active ?
+                                "gregtech.creative.activity.on" :
+                                "gregtech.creative.activity.off")))
+                        .value(new BooleanSyncValue(() -> active, value -> {
+                            active = value;
+                            scheduleRenderUpdate();
+                            var c = getQuantumController();
+                            if (c != null) c.updateHandler();
+                        })))
+                .child(new ItemSlot()
+                        .slot(SyncHandlers.phantomItemSlot(handler, 0)
+                                .changeListener((newItem, onlyAmountChanged, client, init) -> markDirty()))
+                        .pos(36, 6))
+                .child(createConnectionButton()
+                        .top(7));
     }
 
     @Override

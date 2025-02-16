@@ -5,6 +5,7 @@ import gregtech.api.gui.IRenderContext;
 import gregtech.api.gui.Widget;
 import gregtech.api.util.Position;
 import gregtech.api.util.Size;
+import gregtech.client.utils.RenderUtil;
 import gregtech.client.utils.TooltipHelper;
 import gregtech.common.inventory.IItemInfo;
 import gregtech.common.inventory.IItemList;
@@ -52,7 +53,7 @@ public class ItemListSlotWidget extends Widget {
             // Set the count to 1 to prevent stack size from being drawn in drawItemStack
             itemStack.setCount(1);
             String itemAmountStr = formatItemAmount(itemInfo.getTotalItemAmount());
-            drawItemStack(itemStack, stackX, stackY, null);
+            RenderUtil.drawItemStack(itemStack, stackX, stackY, null);
             drawStringFixedCorner(itemAmountStr, stackX + 17, stackY + 17, 16777215, true, 0.5f);
             itemStack.setCount(cachedCount);
         }

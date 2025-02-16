@@ -5,6 +5,7 @@ import gregtech.api.gui.IRenderContext;
 import gregtech.api.util.Position;
 import gregtech.api.util.Size;
 import gregtech.api.util.TextFormattingUtil;
+import gregtech.client.utils.RenderUtil;
 import gregtech.common.gui.widget.appeng.AEItemConfigWidget;
 import gregtech.common.metatileentities.multi.multiblockpart.appeng.slot.IConfigurableSlot;
 import gregtech.common.metatileentities.multi.multiblockpart.appeng.stack.WrappedItemStack;
@@ -53,7 +54,7 @@ public class AEItemConfigSlot extends AEConfigSlot<IAEItemStack> {
         if (config != null) {
             ItemStack stack = config.createItemStack();
             stack.setCount(1);
-            drawItemStack(stack, stackX, stackY, null);
+            RenderUtil.drawItemStack(stack, stackX, stackY, null);
 
             // Only draw the config amount if not stocking, as its meaningless when stocking
             if (!pw.isStocking()) {
@@ -64,7 +65,7 @@ public class AEItemConfigSlot extends AEConfigSlot<IAEItemStack> {
         if (stock != null) {
             ItemStack stack = stock.createItemStack();
             stack.setCount(1);
-            drawItemStack(stack, stackX + DISPLAY_X_OFFSET, stackY, null);
+            RenderUtil.drawItemStack(stack, stackX + DISPLAY_X_OFFSET, stackY, null);
             String amountStr = TextFormattingUtil.formatLongToCompactString(stock.getStackSize(), 4);
             drawStringFixedCorner(amountStr, stackX + DISPLAY_X_OFFSET + 17, stackY + 17, 16777215, true, 0.5f);
         }
