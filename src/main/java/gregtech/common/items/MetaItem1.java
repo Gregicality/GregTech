@@ -6,6 +6,7 @@ import gregtech.api.capability.impl.CommonFluidFilters;
 import gregtech.api.items.metaitem.ElectricStats;
 import gregtech.api.items.metaitem.FilteredFluidStats;
 import gregtech.api.items.metaitem.FoodStats;
+import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.items.metaitem.MusicDiscStats;
 import gregtech.api.items.metaitem.StandardMetaItem;
 import gregtech.api.items.metaitem.stats.IItemComponent;
@@ -61,12 +62,16 @@ import gregtech.common.items.behaviors.monitorplugin.TextPluginBehavior;
 import gregtech.core.sound.GTSoundEvents;
 
 import net.minecraft.client.resources.I18n;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+
+import org.jetbrains.annotations.NotNull;
 
 import static gregtech.api.GTValues.M;
 import static gregtech.api.util.DyeUtil.getOredictColorName;
@@ -76,6 +81,26 @@ public class MetaItem1 extends StandardMetaItem {
 
     public MetaItem1() {
         super();
+    }
+
+    @Override
+    public void getSubItems(@NotNull CreativeTabs tab, @NotNull NonNullList<ItemStack> subItems) {
+        if (!isInCreativeTab(tab)) return;
+        for (MetaItem<?>.MetaValueItem item : metaItems.values()) {
+            if (!item.isInCreativeTab(tab)) continue;
+
+            int itemMetaData = item.getMetaValue();
+            if (itemMetaData >= 1004 && itemMetaData <= 1013) continue;
+
+            item.getSubItemHandler().getSubItems(item.getStackForm(), tab, subItems);
+
+            if (itemMetaData == 30) {
+                for (MetaItem<?>.MetaValueItem moldItem : SHAPE_MOLDS) {
+                    if (moldItem.getMetaValue() < 1005) continue;
+                    moldItem.getSubItemHandler().getSubItems(moldItem.getStackForm(), tab, subItems);
+                }
+            }
+        }
     }
 
     @Override
@@ -130,6 +155,18 @@ public class MetaItem1 extends StandardMetaItem {
         SHAPE_MOLDS[11] = SHAPE_MOLD_GEAR_SMALL = addItem(23, "shape.mold.gear.small")
                 .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
         SHAPE_MOLDS[12] = SHAPE_MOLD_ROTOR = addItem(24, "shape.mold.rotor")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[13] = SHAPE_MOLD_RING = addItem(25, "shape.mold.ring")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[14] = SHAPE_MOLD_BOLT = addItem(26, "shape.mold.bolt")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[15] = SHAPE_MOLD_ROD = addItem(27, "shape.mold.rod")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[16] = SHAPE_MOLD_ROD_LONG = addItem(28, "shape.mold.rod_long")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[17] = SHAPE_MOLD_SCREW = addItem(29, "shape.mold.screw")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[18] = SHAPE_MOLD_ROUND = addItem(30, "shape.mold.round")
                 .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
 
         // Extruder Shapes: ID 31-59
@@ -1148,5 +1185,25 @@ public class MetaItem1 extends StandardMetaItem {
 
         MULTIBLOCK_BUILDER = addItem(1004, "tool.multiblock_builder").addComponents(new MultiblockBuilderBehavior())
                 .setMaxStackSize(1);
+
+        // Extra molds 1005-1013
+        SHAPE_MOLDS[19] = SHAPE_MOLD_TURBINE_BLADE = addItem(1005, "shape.mold.turbine_blade")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[20] = SHAPE_MOLD_PIPE_TINY = addItem(1006, "shape.mold.pipe.tiny")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[21] = SHAPE_MOLD_PIPE_SMALL = addItem(1007, "shape.mold.pipe.small")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[22] = SHAPE_MOLD_PIPE_NORMAL = addItem(1008, "shape.mold.pipe.normal")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[23] = SHAPE_MOLD_PIPE_LARGE = addItem(1009, "shape.mold.pipe.large")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[24] = SHAPE_MOLD_PIPE_HUGE = addItem(1010, "shape.mold.pipe.huge")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[25] = SHAPE_MOLD_BUN = addItem(1011, "shape.mold.bun")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[26] = SHAPE_MOLD_BREAD = addItem(1012, "shape.mold.bread")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
+        SHAPE_MOLDS[27] = SHAPE_MOLD_BAGUETTE = addItem(1013, "shape.mold.baguette")
+                .setMaterialInfo(new ItemMaterialInfo(new MaterialStack(Materials.Steel, M * 4)));
     }
 }

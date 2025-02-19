@@ -118,6 +118,15 @@ public class PipeRecipeHandler {
                         'X', new UnificationEntry(OrePrefix.plate, material));
             }
         }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_PIPE_TINY)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L / 2))
+                    .output(pipePrefix, material)
+                    .EUt(VA[ULV]).duration(4)
+                    .buildAndRegister();
+        }
     }
 
     private static void processPipeSmall(OrePrefix pipePrefix, Material material, IMaterialProperty property) {
@@ -159,6 +168,15 @@ public class PipeRecipeHandler {
                         pipeStack, "wXh",
                         'X', new UnificationEntry(OrePrefix.plate, material));
             }
+        }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_PIPE_SMALL)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L))
+                    .output(pipePrefix, material)
+                    .EUt(VA[ULV]).duration(8)
+                    .buildAndRegister();
         }
     }
 
@@ -202,6 +220,15 @@ public class PipeRecipeHandler {
                         'X', new UnificationEntry(OrePrefix.plate, material));
             }
         }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_PIPE_NORMAL)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L * 3))
+                    .output(pipePrefix, material)
+                    .EUt(VA[ULV]).duration(24)
+                    .buildAndRegister();
+        }
     }
 
     private static void processPipeLarge(OrePrefix pipePrefix, Material material, IMaterialProperty property) {
@@ -243,6 +270,15 @@ public class PipeRecipeHandler {
                         'X', new UnificationEntry(OrePrefix.plate, material));
             }
         }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_PIPE_LARGE)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L * 6))
+                    .output(pipePrefix, material)
+                    .EUt(VA[ULV]).duration(48)
+                    .buildAndRegister();
+        }
     }
 
     private static void processPipeHuge(OrePrefix pipePrefix, Material material, IMaterialProperty property) {
@@ -283,6 +319,15 @@ public class PipeRecipeHandler {
                         pipeStack, "XXX", "w h", "XXX",
                         'X', new UnificationEntry(OrePrefix.plateDouble, material));
             }
+        }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_PIPE_HUGE)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L * 12))
+                    .output(pipePrefix, material)
+                    .EUt(VA[ULV]).duration(96)
+                    .buildAndRegister();
         }
     }
 
