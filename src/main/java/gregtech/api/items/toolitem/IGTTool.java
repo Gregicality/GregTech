@@ -46,7 +46,13 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
@@ -643,8 +649,7 @@ public interface IGTTool extends ItemUIFactory, IAEWrench, IToolWrench, IToolHam
     default double definition$getDurabilityForDisplay(ItemStack stack) {
         int damage = stack.getItem().getDamage(stack);
         int maxDamage = stack.getItem().getMaxDamage(stack);
-        if (damage == 0) return 1.0;
-        return (double) (maxDamage - damage) / (double) maxDamage;
+        return (double) damage / (double) maxDamage;
     }
 
     @Nullable

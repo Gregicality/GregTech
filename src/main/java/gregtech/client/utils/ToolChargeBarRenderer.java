@@ -165,12 +165,12 @@ public final class ToolChargeBarRenderer {
         boolean doDepletedColor = manager.doDamagedStateColors(stack);
         Color left = colors != null ? colors.getLeft() : colorBarLeftDurability;
         Color right = colors != null ? colors.getRight() : colorBarRightDurability;
-        render(level, xPosition, yPosition, 0, true, left, right, doDepletedColor);
+        render(1 - level, xPosition, yPosition, 0, true, left, right, doDepletedColor);
         return true;
     }
 
     private static boolean renderDurabilityBar(double level, int xPosition, int yPosition) {
-        render(level, xPosition, yPosition, 0, true, colorBarLeftDurability, colorBarRightDurability, true);
+        render(1 - level, xPosition, yPosition, 0, true, colorBarLeftDurability, colorBarRightDurability, true);
         return true;
     }
 
