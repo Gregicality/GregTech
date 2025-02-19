@@ -69,7 +69,8 @@ public class CoverRoboticArm extends CoverConveyor {
         return switch (transferMode) {
             case TRANSFER_ANY -> doTransferItemsAny(itemHandler, myItemHandler, maxTransferAmount);
             case TRANSFER_EXACT -> doTransferExact(itemHandler, myItemHandler, maxTransferAmount);
-            case KEEP_EXACT -> doKeepExact(itemHandler, myItemHandler, maxTransferAmount);
+            case KEEP_EXACT -> doKeepExact(itemHandler, myItemHandler, maxTransferAmount, true);
+            case RETAIN_EXACT -> doKeepExact(itemHandler, myItemHandler, maxTransferAmount, false);
         };
     }
 
@@ -122,7 +123,8 @@ public class CoverRoboticArm extends CoverConveyor {
         return Math.min(itemsTransferred, maxTransferAmount);
     }
 
-    protected int doKeepExact(IItemHandler itemHandler, IItemHandler myItemHandler, int maxTransferAmount) {
+    protected int doKeepExact(IItemHandler itemHandler, IItemHandler myItemHandler, int maxTransferAmount,
+                              boolean direction) {
         Map<Integer, GroupItemInfo> currentItemAmount = doCountDestinationInventoryItemsByMatchIndex(itemHandler,
                 myItemHandler);
         Map<Integer, GroupItemInfo> sourceItemAmounts = doCountDestinationInventoryItemsByMatchIndex(myItemHandler,
@@ -145,12 +147,20 @@ public class CoverRoboticArm extends CoverConveyor {
             }
 
             int itemAmount = 0;
-            if (currentItemAmount.containsKey(filterSlotIndex)) {
-                GroupItemInfo destItemInfo = currentItemAmount.get(filterSlotIndex);
-                itemAmount = destItemInfo.totalCount;
+            if (direction) {
+                if (currentItemAmount.containsKey(filterSlotIndex)) {
+                    GroupItemInfo destItemInfo = currentItemAmount.get(filterSlotIndex);
+                    itemAmount = destItemInfo.totalCount;
+                }
+            } else {
+                if (sourceItemAmounts.containsKey(filterSlotIndex)) {
+                    GroupItemInfo sourceItemInfo = sourceItemAmounts.get(filterSlotIndex);
+                    itemAmount = sourceItemInfo.totalCount;
+                }
             }
-            if (itemAmount < itemToKeepAmount) {
-                sourceInfo.totalCount = itemToKeepAmount - itemAmount;
+
+            if (direction ? (itemAmount < itemToKeepAmount) : (itemAmount > itemToKeepAmount)) {
+                sourceInfo.totalCount = direction ? (itemToKeepAmount - itemAmount) : (itemAmount - itemToKeepAmount);
             } else {
                 iterator.remove();
             }
