@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "builtin/generated",
+    "transform": "forge:default-item"
+  },
+  "variants": {
+    "type": {
+      "basalt": {
+        "textures": {
+          "layer0": "gregtech:items/basalt_pebble"
+        }
+      },
+      "black_granite": {
+        "textures": {
+          "layer0": "gregtech:items/black_granite_pebble"
+        }
+      },
+      "marble": {
+        "textures": {
+          "layer0": "gregtech:items/marble_pebble"
+        }
+      },
+      "red_granite": {
+        "textures": {
+          "layer0": "gregtech:items/red_granite_pebble"
+        }
+      }
+    }
+  }
+}

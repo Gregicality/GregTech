@@ -6458,3 +6458,48 @@ gregtech.scanner.forestry.pollen=§oScanned Pollen
 gregtech.mutation.block_of=Block of %s
 
 record.sus=Leonz - Among Us Drip
+
+### Ex Nihilo Integration
+item.gtPebble.basalt.name=Basalt Pebble
+item.gtPebble.black_granite.name=Black Granite Pebble
+item.gtPebble.marble.name=Marble Pebble
+item.gtPebble.red_granite.name=Red Granite Pebble
+
+item.material.oreprefix.oreChunk=%s Ore Chunk
+item.material.oreprefix.oreEnderChunk=Ender %s Ore Chunk
+item.material.oreprefix.oreNetherChunk=Nether %s Ore Chunk
+item.material.oreprefix.oreSandyChunk=Sandy %s Ore Chunk
+
+recipemap.electric_sieve.name=Electric Sieve
+
+gregtech.machine.sieve.steam.name=Steam Sieve
+gregtech.machine.sieve.steam.tooltip=Tired of Right-Clicking all day?
+gregtech.machine.steam_sieve_steel.name=High Pressure Steam Sieve
+gregtech.machine.steam_sieve_steel.tooltip=Tired of Right-Clicking all day?
+
+gregtech.machine.sieve.lv.name=Basic Electric Sieve
+gregtech.machine.sieve.lv.tooltip=AFK Simulator
+gregtech.machine.sieve.mv.name=Advanced Electric Sieve
+gregtech.machine.sieve.mv.tooltip=AFK Simulator
+gregtech.machine.sieve.hv.name=Advanced Electric Sieve II
+gregtech.machine.sieve.hv.tooltip=AFK Simulator
+gregtech.machine.sieve.ev.name=Advanced Electric Sieve III
+gregtech.machine.sieve.ev.tooltip=AFK Simulator
+gregtech.machine.sieve.iv.name=Elite Electric Sieve
+gregtech.machine.sieve.iv.tooltip=Particle Vibration Chamber
+gregtech.machine.sieve.luv.name=Elite Electric Sieve II
+gregtech.machine.sieve.luv.tooltip=Particle Vibration Chamber
+gregtech.machine.sieve.zpm.name=Elite Electric Sieve III
+gregtech.machine.sieve.zpm.tooltip=Particle Vibration Chamber
+gregtech.machine.sieve.uv.name=Ultimate Electric Sieve
+gregtech.machine.sieve.uv.tooltip=From nothing, something
+gregtech.machine.sieve.uhv.name=Epic Electric Sieve
+gregtech.machine.sieve.uhv.tooltip=From nothing, something
+gregtech.machine.sieve.uev.name=Epic Electric Sieve II
+gregtech.machine.sieve.uev.tooltip=From nothing, something
+gregtech.machine.sieve.uiv.name=Epic Electric Sieve III
+gregtech.machine.sieve.uiv.tooltip=From nothing, something
+gregtech.machine.sieve.uxv.name=Epic Electric Sieve IV
+gregtech.machine.sieve.uxv.tooltip=From nothing, something
+gregtech.machine.sieve.opv.name=Legendary Electric Sieve
+gregtech.machine.sieve.opv.tooltip=From nothing, something

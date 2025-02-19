@@ -75,6 +75,7 @@ public enum Mods {
     XaerosMinimap(Names.XAEROS_MINIMAP),
     Vintagium(Names.VINTAGIUM),
     Alfheim(Names.ALFHEIM),
+    ExNihiloCreatio(Names.EX_NIHILO_CREATIO),
 
     // Special Optifine handler, but consolidated here for simplicity
     Optifine(null) {
@@ -146,6 +147,7 @@ public enum Mods {
         public static final String XAEROS_MINIMAP = "xaerominimap";
         public static final String VINTAGIUM = "vintagium";
         public static final String ALFHEIM = "alfheim";
+        public static final String EX_NIHILO_CREATIO = "exnihilocreatio";
     }
 
     private final String ID;

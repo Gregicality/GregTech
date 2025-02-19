@@ -33,7 +33,7 @@ public class IntegrationUtil {
         if (Loader.isModLoaded(modID)) {
             String modName = TextFormatting.BOLD + modID + TextFormatting.RESET;
             List<String> messages = new ArrayList<>();
-            messages.add(modName + " mod detected, this mod is incompatible with Gregification.");
+            messages.add(modName + " mod detected, this mod is incompatible with GTCEu.");
             messages.addAll(Arrays.asList(customMessages));
             throwIncompatibility(messages);
         }

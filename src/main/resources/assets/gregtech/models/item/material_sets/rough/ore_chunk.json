@@ -1,0 +1,7 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "gregtech:items/material_sets/rough/ore_chunk",
+        "layer1": "gregtech:items/material_sets/rough/ore_chunk_overlay"
+    }
+}
