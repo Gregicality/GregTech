@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 @ApiStatus.Internal
@@ -59,5 +61,12 @@ public class RecipeMapScanner extends RecipeMap<SimpleRecipeBuilder> implements 
             if (recipe != null) return recipe;
         }
         return null;
+    }
+
+    @Override
+    @NotNull
+    public Iterator<Recipe> getRecipeIterator(long voltage, List<ItemStack> inputs, List<FluidStack> fluidInputs,
+                                              boolean exactVoltage) {
+        return Collections.singleton(this.findRecipe(voltage, inputs, fluidInputs, exactVoltage)).iterator();
     }
 }
