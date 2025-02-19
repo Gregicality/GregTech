@@ -356,6 +356,7 @@ public class CoverConveyor extends CoverBase implements CoverWithUI, ITickable, 
                 }
             }
         }
+
         return maxTransferAmount - itemsLeftToTransfer;
     }
 
