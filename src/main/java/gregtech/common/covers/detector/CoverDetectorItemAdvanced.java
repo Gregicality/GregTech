@@ -6,6 +6,7 @@ import gregtech.api.cover.CoverableView;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.widgets.*;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.RedstoneUtil;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.covers.filter.ItemFilterContainer;
@@ -13,7 +14,6 @@ import gregtech.common.covers.filter.ItemFilterContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -184,7 +184,7 @@ public class CoverDetectorItemAdvanced extends CoverDetectorItem implements Cove
     }
 
     @Override
-    public void writeInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.writeInitialSyncData(packetBuffer);
         packetBuffer.writeInt(this.min);
         packetBuffer.writeInt(this.max);
@@ -192,7 +192,7 @@ public class CoverDetectorItemAdvanced extends CoverDetectorItem implements Cove
     }
 
     @Override
-    public void readInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void readInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.readInitialSyncData(packetBuffer);
         this.min = packetBuffer.readInt();
         this.max = packetBuffer.readInt();

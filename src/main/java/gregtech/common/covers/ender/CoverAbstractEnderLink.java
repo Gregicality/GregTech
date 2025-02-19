@@ -8,6 +8,7 @@ import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuis;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.virtualregistry.EntryTypes;
 import gregtech.api.util.virtualregistry.VirtualEnderRegistry;
 import gregtech.api.util.virtualregistry.VirtualEntry;
@@ -249,12 +250,12 @@ public abstract class CoverAbstractEnderLink<T extends VirtualEntry> extends Cov
     }
 
     @Override
-    public void writeInitialSyncData(PacketBuffer packetBuffer) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         packetBuffer.writeString(this.playerUUID == null ? "null" : this.playerUUID.toString());
     }
 
     @Override
-    public void readInitialSyncData(PacketBuffer packetBuffer) {
+    public void readInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         // does client even need uuid info? just in case
         String uuidStr = packetBuffer.readString(36);
         this.playerUUID = uuidStr.equals("null") ? null : UUID.fromString(uuidStr);

@@ -4,6 +4,7 @@ import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.capability.IOpticalComputationProvider;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.pipenet.tile.IPipeTile;
 import gregtech.api.pipenet.tile.TileEntityPipeBase;
 import gregtech.api.recipes.Recipe;
@@ -14,7 +15,6 @@ import gregtech.common.pipelike.optical.net.OpticalNetHandler;
 import gregtech.common.pipelike.optical.net.OpticalPipeNet;
 import gregtech.common.pipelike.optical.net.WorldOpticalPipeNet;
 
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -186,7 +186,7 @@ public class TileEntityOpticalPipe extends TileEntityPipeBase<OpticalPipeType, O
     }
 
     @Override
-    public void receiveCustomData(int discriminator, PacketBuffer buf) {
+    public void receiveCustomData(int discriminator, @NotNull AdvancedPacketBuffer buf) {
         super.receiveCustomData(discriminator, buf);
         if (discriminator == GregtechDataCodes.PIPE_OPTICAL_ACTIVE) {
             this.isActive = buf.readBoolean();

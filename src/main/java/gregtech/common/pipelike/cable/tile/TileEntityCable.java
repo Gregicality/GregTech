@@ -4,6 +4,7 @@ import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.metatileentity.IDataInfoProvider;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.pipenet.block.BlockPipe;
 import gregtech.api.pipenet.block.material.TileEntityMaterialPipeBase;
 import gregtech.api.unification.material.properties.WireProperties;
@@ -20,7 +21,6 @@ import gregtech.common.pipelike.cable.net.WorldENet;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -305,7 +305,7 @@ public class TileEntityCable extends TileEntityMaterialPipeBase<Insulation, Wire
     }
 
     @Override
-    public void receiveCustomData(int discriminator, PacketBuffer buf) {
+    public void receiveCustomData(int discriminator, @NotNull AdvancedPacketBuffer buf) {
         if (discriminator == CABLE_TEMPERATURE) {
             setTemperature(buf.readVarInt());
         } else {

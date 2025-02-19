@@ -3,6 +3,7 @@ package gregtech.api.capability.impl;
 import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.metatileentity.MetaTileEntity;
+import gregtech.api.metatileentity.interfaces.ISyncedTileEntity;
 import gregtech.api.worldgen.bedrockFluids.BedrockFluidVeinHandler;
 import gregtech.common.ConfigHolder;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityFluidDrill;
@@ -281,7 +282,7 @@ public class FluidDrillLogic {
     /**
      * writes all needed values to InitialSyncData
      * This MUST be called and returned in the MetaTileEntity's
-     * {@link MetaTileEntity#writeInitialSyncData(PacketBuffer)} method
+     * {@link ISyncedTileEntity#writeInitialSyncData(gregtech.api.network.AdvancedPacketBuffer)} method
      */
     public void writeInitialSyncData(@NotNull PacketBuffer buf) {
         buf.writeBoolean(this.isActive);
@@ -294,7 +295,7 @@ public class FluidDrillLogic {
     /**
      * reads all needed values from InitialSyncData
      * This MUST be called and returned in the MetaTileEntity's
-     * {@link MetaTileEntity#receiveInitialSyncData(PacketBuffer)} method
+     * {@link ISyncedTileEntity#receiveInitialSyncData(gregtech.api.network.AdvancedPacketBuffer)} method
      */
     public void receiveInitialSyncData(@NotNull PacketBuffer buf) {
         setActive(buf.readBoolean());
@@ -307,7 +308,7 @@ public class FluidDrillLogic {
     /**
      * reads all needed values from CustomData
      * This MUST be called and returned in the MetaTileEntity's
-     * {@link MetaTileEntity#receiveCustomData(int, PacketBuffer)} method
+     * {@link ISyncedTileEntity#receiveCustomData(int, gregtech.api.network.AdvancedPacketBuffer)} method
      */
     public void receiveCustomData(int dataId, PacketBuffer buf) {
         if (dataId == GregtechDataCodes.WORKABLE_ACTIVE) {

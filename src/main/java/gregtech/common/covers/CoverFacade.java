@@ -5,6 +5,7 @@ import gregtech.api.cover.CoverBase;
 import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.cover.IFacadeCover;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.GTLog;
 import gregtech.client.renderer.handler.FacadeRenderer;
 import gregtech.common.covers.facade.FacadeHelper;
@@ -90,14 +91,14 @@ public class CoverFacade extends CoverBase implements IFacadeCover {
     }
 
     @Override
-    public void writeInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.writeInitialSyncData(packetBuffer);
         packetBuffer.writeShort(Item.getIdFromItem(facadeStack.getItem()));
         packetBuffer.writeShort(Items.FEATHER.getDamage(facadeStack));
     }
 
     @Override
-    public void readInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void readInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.readInitialSyncData(packetBuffer);
         Item item = Item.getItemById(packetBuffer.readShort());
         int itemDamage = packetBuffer.readShort();

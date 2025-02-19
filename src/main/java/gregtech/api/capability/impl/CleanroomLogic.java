@@ -2,6 +2,7 @@ package gregtech.api.capability.impl;
 
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.metatileentity.MetaTileEntity;
+import gregtech.api.metatileentity.interfaces.ISyncedTileEntity;
 import gregtech.api.metatileentity.multiblock.ICleanroomProvider;
 import gregtech.api.metatileentity.multiblock.IMaintenance;
 import gregtech.common.ConfigHolder;
@@ -205,7 +206,7 @@ public class CleanroomLogic {
     /**
      * writes all needed values to InitialSyncData
      * This MUST be called and returned in the MetaTileEntity's
-     * {@link MetaTileEntity#writeInitialSyncData(PacketBuffer)} method
+     * {@link ISyncedTileEntity#writeInitialSyncData(gregtech.api.network.AdvancedPacketBuffer)} method
      */
     public void writeInitialSyncData(@NotNull PacketBuffer buf) {
         buf.writeBoolean(this.isActive);
@@ -218,7 +219,7 @@ public class CleanroomLogic {
     /**
      * reads all needed values from InitialSyncData
      * This MUST be called and returned in the MetaTileEntity's
-     * {@link MetaTileEntity#receiveInitialSyncData(PacketBuffer)} method
+     * {@link ISyncedTileEntity#receiveInitialSyncData(gregtech.api.network.AdvancedPacketBuffer)} method
      */
     public void receiveInitialSyncData(@NotNull PacketBuffer buf) {
         setActive(buf.readBoolean());
@@ -231,7 +232,7 @@ public class CleanroomLogic {
     /**
      * reads all needed values from CustomData
      * This MUST be called and returned in the MetaTileEntity's
-     * {@link MetaTileEntity#receiveCustomData(int, PacketBuffer)} method
+     * {@link ISyncedTileEntity#receiveCustomData(int, gregtech.api.network.AdvancedPacketBuffer)} method
      */
     public void receiveCustomData(int dataId, PacketBuffer buf) {
         if (dataId == GregtechDataCodes.IS_WORKING) {

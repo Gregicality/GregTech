@@ -10,6 +10,7 @@ import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuis;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.GTTransferUtils;
 import gregtech.api.util.ItemStackHashStrategy;
 import gregtech.client.renderer.texture.Textures;
@@ -640,7 +641,7 @@ public class CoverConveyor extends CoverBase implements CoverWithUI, ITickable, 
     }
 
     @Override
-    public void writeInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.writeInitialSyncData(packetBuffer);
         packetBuffer.writeInt(transferRate);
         packetBuffer.writeByte(conveyorMode.ordinal());
@@ -650,7 +651,7 @@ public class CoverConveyor extends CoverBase implements CoverWithUI, ITickable, 
     }
 
     @Override
-    public void readInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void readInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.readInitialSyncData(packetBuffer);
         this.transferRate = packetBuffer.readInt();
         this.conveyorMode = ConveyorMode.VALUES[packetBuffer.readByte()];

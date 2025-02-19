@@ -14,6 +14,7 @@ import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.GTLog;
 import gregtech.api.util.Position;
 import gregtech.api.util.TextFormattingUtil;
@@ -240,7 +241,7 @@ public class CoverDigitalInterface extends CoverBase implements IFastRenderMetaT
     }
 
     @Override
-    public void writeInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.writeInitialSyncData(packetBuffer);
         packetBuffer.writeEnumValue(mode);
         packetBuffer.writeEnumValue(spin);
@@ -265,7 +266,7 @@ public class CoverDigitalInterface extends CoverBase implements IFastRenderMetaT
     }
 
     @Override
-    public void readInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void readInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.readInitialSyncData(packetBuffer);
         this.mode = packetBuffer.readEnumValue(MODE.class);
         this.spin = packetBuffer.readEnumValue(EnumFacing.class);

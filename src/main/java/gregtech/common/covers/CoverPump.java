@@ -10,6 +10,7 @@ import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuis;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.GTTransferUtils;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.renderer.texture.cube.SimpleSidedCubeRenderer;
@@ -309,14 +310,14 @@ public class CoverPump extends CoverBase implements CoverWithUI, ITickable, ICon
     }
 
     @Override
-    public void writeInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.writeInitialSyncData(packetBuffer);
         packetBuffer.writeByte(pumpMode.ordinal());
         getFluidFilterContainer().writeInitialSyncData(packetBuffer);
     }
 
     @Override
-    public void readInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void readInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         super.readInitialSyncData(packetBuffer);
         this.pumpMode = PumpMode.VALUES[packetBuffer.readByte()];
         getFluidFilterContainer().readInitialSyncData(packetBuffer);

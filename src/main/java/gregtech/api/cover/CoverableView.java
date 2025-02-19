@@ -1,7 +1,8 @@
 package gregtech.api.cover;
 
+import gregtech.api.network.AdvancedPacketBuffer;
+
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -87,7 +88,7 @@ public interface CoverableView extends ICapabilityProvider {
      */
     int getInputRedstoneSignal(@NotNull EnumFacing side, boolean ignoreCover);
 
-    void writeCoverData(@NotNull Cover cover, int discriminator, @NotNull Consumer<@NotNull PacketBuffer> buf);
+    void writeCoverData(@NotNull Cover cover, int discriminator, @NotNull Consumer<@NotNull AdvancedPacketBuffer> buf);
 
     /**
      * @return an ItemStack representation of the CoverableView, or {@link ItemStack#EMPTY} if not possible.

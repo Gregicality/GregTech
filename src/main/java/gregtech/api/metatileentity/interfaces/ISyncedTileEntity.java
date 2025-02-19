@@ -3,6 +3,7 @@ package gregtech.api.metatileentity.interfaces;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.cover.Cover;
 import gregtech.api.cover.CoverableView;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.GTLog;
 
 import net.minecraft.network.PacketBuffer;
@@ -10,8 +11,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
 import io.netty.buffer.ByteBuf;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -21,15 +22,13 @@ import java.util.function.Consumer;
  */
 public interface ISyncedTileEntity {
 
-    Consumer<PacketBuffer> NO_OP = buf -> {};
-    IntList datacodes = new IntArrayList();
-    ThreadLocal<Object> tracked = ThreadLocal.withInitial(() -> null);
+    Consumer<AdvancedPacketBuffer> NO_OP = buf -> {};
 
     /**
      * Used to sync data from Server -> Client.
      * Called during initial loading of the chunk or when many blocks change at once.
      * <p>
-     * Data is received in {@link #receiveInitialSyncData(PacketBuffer)}.
+     * Data is received in {@link #receiveInitialSyncData(AdvancedPacketBuffer)}.
      * <p>
      * Typically used to send server side data to the client on initial chunk loading.
      * <p>
@@ -39,15 +38,39 @@ public interface ISyncedTileEntity {
      * <p>
      * Equivalent to {@link TileEntity#getUpdateTag}.
      *
+     * @deprecated Replaced by {@link #writeInitialSyncData(AdvancedPacketBuffer)} for improved capability.
      * @param buf the buffer to write data to
      */
-    void writeInitialSyncData(@NotNull PacketBuffer buf);
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10")
+    default void writeInitialSyncData(@NotNull PacketBuffer buf) {}
+
+    /**
+     * Used to sync data from Server -> Client.
+     * Called during initial loading of the chunk or when many blocks change at once.
+     * <p>
+     * Data is received in {@link #receiveInitialSyncData(AdvancedPacketBuffer)}.
+     * <p>
+     * Typically used to send server side data to the client on initial chunk loading.
+     * <p>
+     * <em>Should be called automatically</em>.
+     * <p>
+     * This method is called <strong>Server-Side</strong>.
+     * <p>
+     * Equivalent to {@link TileEntity#getUpdateTag}.
+     *
+     * @apiNote will become non-default once {@link #writeInitialSyncData(PacketBuffer)} is removed.
+     * @param buf the buffer to write data to
+     */
+    default void writeInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
+        writeInitialSyncData((PacketBuffer) buf);
+    }
 
     /**
      * Used to receive Server -> Client sync data.
      * Called during initial loading of the chunk or when many blocks change at once.
      * <p>
-     * Data sent is from {@link #writeInitialSyncData(PacketBuffer)}.
+     * Data sent is from {@link #writeInitialSyncData(AdvancedPacketBuffer)}.
      * <p>
      * Typically used to receive server side data on initial chunk loading.
      * <p>
@@ -57,15 +80,39 @@ public interface ISyncedTileEntity {
      * <p>
      * Equivalent to {@link TileEntity#handleUpdateTag}.
      *
+     * @deprecated Replaced by {@link #receiveInitialSyncData(AdvancedPacketBuffer)} for improved capability.
      * @param buf the buffer to read data from
      */
-    void receiveInitialSyncData(@NotNull PacketBuffer buf);
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10")
+    default void receiveInitialSyncData(@NotNull PacketBuffer buf) {}
+
+    /**
+     * Used to receive Server -> Client sync data.
+     * Called during initial loading of the chunk or when many blocks change at once.
+     * <p>
+     * Data sent is from {@link #writeInitialSyncData(AdvancedPacketBuffer)}.
+     * <p>
+     * Typically used to receive server side data on initial chunk loading.
+     * <p>
+     * <em>Should be called automatically</em>.
+     * <p>
+     * This method is called <strong>Client-Side</strong>.
+     * <p>
+     * Equivalent to {@link TileEntity#handleUpdateTag}.
+     *
+     * @apiNote will become non-default once {@link #receiveInitialSyncData(PacketBuffer)} is removed.
+     * @param buf the buffer to read data from
+     */
+    default void receiveInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
+        receiveInitialSyncData((PacketBuffer) buf);
+    }
 
     /**
      * Used to send an anonymous Server -> Client packet.
      * Call to build up the packet to send to the client when it is re-synced.
      * <p>
-     * Data is received in {@link #receiveCustomData(int, PacketBuffer)};
+     * Data is received in {@link #receiveCustomData(int, AdvancedPacketBuffer)};
      * <p>
      * Typically used to signal to the client that a rendering update is needed
      * when sending a server-side state update.
@@ -80,12 +127,12 @@ public interface ISyncedTileEntity {
      * @param dataWriter    a consumer which writes packet data to a buffer.
      * @see GregtechDataCodes
      */
-    void writeCustomData(int discriminator, @NotNull Consumer<@NotNull PacketBuffer> dataWriter);
+    void writeCustomData(int discriminator, @NotNull Consumer<@NotNull AdvancedPacketBuffer> dataWriter);
 
     /**
      * Used to send an empty anonymous Server -> Client packet.
      * <p>
-     * Data is received in {@link #receiveCustomData(int, PacketBuffer)};
+     * Data is received in {@link #receiveCustomData(int, AdvancedPacketBuffer)};
      * <p>
      * Typically used to signal to the client that a rendering update is needed
      * when sending a server-side state update.
@@ -121,21 +168,19 @@ public interface ISyncedTileEntity {
      * @param buf           the buffer containing the packet data.
      * @see GregtechDataCodes
      */
-    void receiveCustomData(int discriminator, @NotNull PacketBuffer buf);
+    void receiveCustomData(int discriminator, @NotNull AdvancedPacketBuffer buf);
 
-    static void checkData(@NotNull ByteBuf buf) {
+    static void checkData(@NotNull ByteBuf buf, Object tracked) {
         if (buf.readableBytes() != 0) {
-            if (datacodes.isEmpty()) {
+            if (!(buf instanceof AdvancedPacketBuffer adv) || adv.getDatacodes().isEmpty()) {
                 GTLog.logger.error("Class {} failed to finish reading initialSyncData with {} bytes remaining",
-                        stringify(tracked.get()), buf.readableBytes());
+                        stringify(tracked), buf.readableBytes());
             } else {
                 GTLog.logger.error(
                         "Class {} failed to finish reading receiveCustomData at code path [{}] with {} bytes remaining",
-                        stringify(tracked.get()), getCodePath(), buf.readableBytes());
+                        stringify(tracked), getCodePath(adv.getDatacodes()), buf.readableBytes());
             }
         }
-
-        reset();
     }
 
     static String stringify(Object obj) {
@@ -162,26 +207,12 @@ public interface ISyncedTileEntity {
         return builder.toString();
     }
 
-    static void addCode(int code, Object trackedObject) {
-        datacodes.add(code);
-        track(trackedObject);
-    }
-
-    static void track(Object trackedObject) {
-        tracked.set(trackedObject);
-    }
-
-    static String getCodePath() {
+    static String getCodePath(IntList datacodes) {
         var builder = new StringBuilder();
         for (int i = 0; i < datacodes.size(); i++) {
             builder.append(GregtechDataCodes.getNameFor(datacodes.get(i)));
             if (i < datacodes.size() - 1) builder.append(" > ");
         }
         return builder.toString();
-    }
-
-    static void reset() {
-        datacodes.clear();
-        tracked.remove();
     }
 }

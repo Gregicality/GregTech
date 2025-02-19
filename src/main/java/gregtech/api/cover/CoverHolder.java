@@ -1,11 +1,11 @@
 package gregtech.api.cover;
 
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.GTUtility;
 import gregtech.client.utils.RenderUtil;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -91,7 +91,7 @@ public interface CoverHolder extends CoverableView {
         }
     }
 
-    void writeCustomData(int discriminator, @NotNull Consumer<@NotNull PacketBuffer> buf);
+    void writeCustomData(int discriminator, @NotNull Consumer<@NotNull AdvancedPacketBuffer> buf);
 
     /**
      * It is used to render cover's baseplate if this CoverHolder is not full block length.

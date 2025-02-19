@@ -1,5 +1,6 @@
 package gregtech.api.pipenet.block.material;
 
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.pipenet.block.BlockPipe;
 import gregtech.api.pipenet.tile.IPipeTile;
 import gregtech.api.pipenet.tile.TileEntityPipeBase;
@@ -81,19 +82,19 @@ public abstract class TileEntityMaterialPipeBase<PipeType extends Enum<PipeType>
     }
 
     @Override
-    public void writeInitialSyncData(PacketBuffer buf) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
         buf.writeVarInt(getPipeBlock().getMaterialRegistry().getIDForObject(pipeMaterial));
         super.writeInitialSyncData(buf);
     }
 
     @Override
-    public void receiveInitialSyncData(PacketBuffer buf) {
+    public void receiveInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
         this.pipeMaterial = getPipeBlock().getMaterialRegistry().getObjectById(buf.readVarInt());
         super.receiveInitialSyncData(buf);
     }
 
     @Override
-    public void receiveCustomData(int discriminator, PacketBuffer buf) {
+    public void receiveCustomData(int discriminator, @NotNull AdvancedPacketBuffer buf) {
         super.receiveCustomData(discriminator, buf);
         if (discriminator == UPDATE_PIPE_MATERIAL) {
             readPipeMaterial(buf);

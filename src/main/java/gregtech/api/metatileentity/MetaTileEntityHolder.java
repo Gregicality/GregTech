@@ -7,6 +7,7 @@ import gregtech.api.cover.Cover;
 import gregtech.api.gui.IUIHolder;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.registry.MTERegistry;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.GTLog;
 import gregtech.api.util.Mods;
 import gregtech.api.util.TextFormattingUtil;
@@ -18,7 +19,6 @@ import gregtech.core.network.packets.PacketRecoverMTE;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
@@ -304,7 +304,7 @@ public class MetaTileEntityHolder extends TickableTileEntityBase implements IGre
     }
 
     @Override
-    public void writeInitialSyncData(@NotNull PacketBuffer buf) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
         buf.writeString(getName());
         if (metaTileEntity != null) {
             buf.writeBoolean(true);
@@ -315,7 +315,7 @@ public class MetaTileEntityHolder extends TickableTileEntityBase implements IGre
     }
 
     @Override
-    public void receiveInitialSyncData(@NotNull PacketBuffer buf) {
+    public void receiveInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
         setCustomName(buf.readString(Short.MAX_VALUE));
         if (buf.readBoolean()) {
             receiveMTEInitializationData(buf);
@@ -323,7 +323,7 @@ public class MetaTileEntityHolder extends TickableTileEntityBase implements IGre
     }
 
     @Override
-    public void receiveCustomData(int discriminator, @NotNull PacketBuffer buffer) {
+    public void receiveCustomData(int discriminator, @NotNull AdvancedPacketBuffer buffer) {
         if (discriminator == INITIALIZE_MTE) {
             receiveMTEInitializationData(buffer);
         } else if (metaTileEntity != null) {
@@ -336,7 +336,7 @@ public class MetaTileEntityHolder extends TickableTileEntityBase implements IGre
      *
      * @param buf the buffer to read data from
      */
-    private void receiveMTEInitializationData(@NotNull PacketBuffer buf) {
+    private void receiveMTEInitializationData(@NotNull AdvancedPacketBuffer buf) {
         int networkId = buf.readVarInt();
         int metaTileEntityId = buf.readVarInt();
         MTERegistry registry = GregTechAPI.mteManager.getRegistry(networkId);

@@ -1,5 +1,6 @@
 package gregtech.api.cover;
 
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.client.utils.BloomEffectUtil;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +20,7 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Matrix4;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -268,11 +270,19 @@ public interface Cover {
 
     default void readFromNBT(@NotNull NBTTagCompound nbt) {}
 
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10")
     default void writeInitialSyncData(@NotNull PacketBuffer packetBuffer) {}
 
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10")
     default void readInitialSyncData(@NotNull PacketBuffer packetBuffer) {}
 
-    default void writeCustomData(int discriminator, @NotNull Consumer<@NotNull PacketBuffer> buf) {
+    default void writeInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {}
+
+    default void readInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {}
+
+    default void writeCustomData(int discriminator, @NotNull Consumer<@NotNull AdvancedPacketBuffer> buf) {
         getCoverableView().writeCoverData(this, discriminator, buf);
     }
 

@@ -1,11 +1,11 @@
 package gregtech.api.pipenet.tile;
 
 import gregtech.api.metatileentity.interfaces.INeighborCache;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.pipenet.block.BlockPipe;
 import gregtech.api.pipenet.block.IPipeType;
 import gregtech.api.unification.material.Material;
 
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -90,7 +90,7 @@ public interface IPipeTile<PipeType extends Enum<PipeType> & IPipeType<NodeDataT
 
     void notifyBlockUpdate();
 
-    void writeCoverCustomData(int id, Consumer<PacketBuffer> writer);
+    void writeCoverCustomData(int id, Consumer<AdvancedPacketBuffer> writer);
 
     void markAsDirty();
 

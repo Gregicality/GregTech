@@ -3,6 +3,7 @@ package gregtech.common.pipelike.laser.tile;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.ILaserContainer;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.pipenet.tile.IPipeTile;
 import gregtech.api.pipenet.tile.TileEntityPipeBase;
 import gregtech.api.util.TaskScheduler;
@@ -13,7 +14,6 @@ import gregtech.common.pipelike.laser.net.LaserPipeNet;
 import gregtech.common.pipelike.laser.net.WorldLaserPipeNet;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -182,7 +182,7 @@ public class TileEntityLaserPipe extends TileEntityPipeBase<LaserPipeType, Laser
     }
 
     @Override
-    public void receiveCustomData(int discriminator, PacketBuffer buf) {
+    public void receiveCustomData(int discriminator, @NotNull AdvancedPacketBuffer buf) {
         super.receiveCustomData(discriminator, buf);
         if (discriminator == GregtechDataCodes.PIPE_LASER_ACTIVE) {
             this.isActive = buf.readBoolean();
@@ -191,7 +191,7 @@ public class TileEntityLaserPipe extends TileEntityPipeBase<LaserPipeType, Laser
     }
 
     @Override
-    public void writeInitialSyncData(PacketBuffer buf) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
         super.writeInitialSyncData(buf);
         buf.writeBoolean(this.isActive);
 
@@ -203,7 +203,7 @@ public class TileEntityLaserPipe extends TileEntityPipeBase<LaserPipeType, Laser
     }
 
     @Override
-    public void receiveInitialSyncData(PacketBuffer buf) {
+    public void receiveInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
         super.receiveInitialSyncData(buf);
         this.isActive = buf.readBoolean();
         scheduleChunkForRenderUpdate();

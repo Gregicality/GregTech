@@ -6,6 +6,7 @@ import gregtech.api.cover.CoverDefinition;
 import gregtech.api.cover.CoverWithUI;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.mui.GTGuiTextures;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.GTLog;
 import gregtech.api.util.GTUtility;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
@@ -17,7 +18,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -86,7 +86,7 @@ public class CoverFluidFilter extends CoverBase implements CoverWithUI {
     }
 
     @Override
-    public void writeInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         packetBuffer.writeByte(this.filterMode.ordinal());
         packetBuffer.writeBoolean(this.fluidFilterContainer.hasFilter());
         if (this.fluidFilterContainer.hasFilter()) {
@@ -95,7 +95,7 @@ public class CoverFluidFilter extends CoverBase implements CoverWithUI {
     }
 
     @Override
-    public void readInitialSyncData(@NotNull PacketBuffer packetBuffer) {
+    public void readInitialSyncData(@NotNull AdvancedPacketBuffer packetBuffer) {
         this.filterMode = FluidFilterMode.VALUES[packetBuffer.readByte()];
         if (!packetBuffer.readBoolean()) return;
         try {

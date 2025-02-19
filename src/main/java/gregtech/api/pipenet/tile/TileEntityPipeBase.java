@@ -5,6 +5,8 @@ import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.cover.Cover;
 import gregtech.api.metatileentity.NeighborCacheTileEntityBase;
 import gregtech.api.metatileentity.SyncedTileEntityBase;
+import gregtech.api.metatileentity.interfaces.ISyncedTileEntity;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.pipenet.PipeNet;
 import gregtech.api.pipenet.WorldPipeNet;
 import gregtech.api.pipenet.block.BlockPipe;
@@ -440,7 +442,7 @@ public abstract class TileEntityPipeBase<PipeType extends Enum<PipeType> & IPipe
     }
 
     @Override
-    public void writeInitialSyncData(PacketBuffer buf) {
+    public void writeInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
         writePipeProperties(buf);
         buf.writeVarInt(connections);
         buf.writeVarInt(blockedConnections);
@@ -451,7 +453,7 @@ public abstract class TileEntityPipeBase<PipeType extends Enum<PipeType> & IPipe
     }
 
     @Override
-    public void receiveInitialSyncData(PacketBuffer buf) {
+    public void receiveInitialSyncData(@NotNull AdvancedPacketBuffer buf) {
         if (this.tickingPipe != null) {
             this.tickingPipe.receiveInitialSyncData(buf);
             return;
@@ -475,7 +477,7 @@ public abstract class TileEntityPipeBase<PipeType extends Enum<PipeType> & IPipe
     }
 
     @Override
-    public void receiveCustomData(int discriminator, PacketBuffer buf) {
+    public void receiveCustomData(int discriminator, @NotNull AdvancedPacketBuffer buf) {
         if (this.tickingPipe != null) {
             this.tickingPipe.receiveCustomData(discriminator, buf);
             return;
@@ -487,7 +489,11 @@ public abstract class TileEntityPipeBase<PipeType extends Enum<PipeType> & IPipe
             this.connections = buf.readVarInt();
             scheduleChunkForRenderUpdate();
         } else if (discriminator == SYNC_COVER_IMPLEMENTATION) {
-            this.coverableImplementation.readCustomData(buf.readVarInt(), buf);
+            int internalID = buf.readVarInt();
+            AdvancedPacketBuffer b = buf.readSubBuffer(internalID);
+            this.coverableImplementation.readCustomData(internalID, b);
+            ISyncedTileEntity.checkData(b, this.coverableImplementation);
+            buf.closeSubBuffer();
         } else if (discriminator == UPDATE_PIPE_TYPE) {
             readPipeProperties(buf);
             scheduleChunkForRenderUpdate();
@@ -507,7 +513,7 @@ public abstract class TileEntityPipeBase<PipeType extends Enum<PipeType> & IPipe
     }
 
     @Override
-    public void writeCoverCustomData(int id, Consumer<PacketBuffer> writer) {
+    public void writeCoverCustomData(int id, Consumer<AdvancedPacketBuffer> writer) {
         writeCustomData(SYNC_COVER_IMPLEMENTATION, buffer -> {
             buffer.writeVarInt(id);
             writer.accept(buffer);

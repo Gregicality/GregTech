@@ -1,10 +1,11 @@
 package gregtech.api.cover;
 
+import gregtech.api.metatileentity.interfaces.ISyncedTileEntity;
+import gregtech.api.network.AdvancedPacketBuffer;
 import gregtech.api.util.GTLog;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
@@ -23,7 +24,7 @@ public final class CoverSaveHandler {
      * @param buf           the buf to write to
      * @param coverableView the CoverableView containing the covers
      */
-    public static void writeInitialSyncData(@NotNull PacketBuffer buf, @NotNull CoverableView coverableView) {
+    public static void writeInitialSyncData(@NotNull AdvancedPacketBuffer buf, @NotNull CoverableView coverableView) {
         Cover[] covers = new Cover[EnumFacing.VALUES.length];
         int count = 0;
         for (EnumFacing facing : EnumFacing.VALUES) {
@@ -41,7 +42,8 @@ public final class CoverSaveHandler {
             Cover cover = covers[i];
             buf.writeByte(cover.getAttachedSide().ordinal());
             buf.writeVarInt(CoverDefinition.getNetworkIdForCover(cover.getDefinition()));
-            cover.writeInitialSyncData(buf);
+            cover.writeInitialSyncData(buf.openSubBuffer());
+            buf.writeSubBuffer();
         }
     }
 
@@ -51,7 +53,7 @@ public final class CoverSaveHandler {
      * @param buf         the buf to read from
      * @param coverHolder the CoverHolder containing the covers
      */
-    public static void receiveInitialSyncData(@NotNull PacketBuffer buf, @NotNull CoverHolder coverHolder) {
+    public static void receiveInitialSyncData(@NotNull AdvancedPacketBuffer buf, @NotNull CoverHolder coverHolder) {
         final int count = buf.readByte();
         if (count == 0) return;
 
@@ -60,14 +62,17 @@ public final class CoverSaveHandler {
             int id = buf.readVarInt();
             CoverDefinition definition = CoverDefinition.getCoverByNetworkId(id);
 
+            AdvancedPacketBuffer b = buf.readSubBuffer();
             if (definition == null) {
                 GTLog.logger.warn("Unable to find CoverDefinition for Network ID {} at position {}", id,
                         coverHolder.getPos());
             } else {
                 Cover cover = definition.createCover(coverHolder, facing);
-                cover.readInitialSyncData(buf);
+                cover.readInitialSyncData(b);
+                ISyncedTileEntity.checkData(b, cover);
                 coverHolder.addCover(facing, cover);
             }
+            buf.closeSubBuffer();
         }
     }
 
@@ -84,7 +89,8 @@ public final class CoverSaveHandler {
         coverHolder.writeCustomData(discriminator, buf -> {
             buf.writeByte(side.getIndex());
             buf.writeVarInt(CoverDefinition.getNetworkIdForCover(cover.getDefinition()));
-            cover.writeInitialSyncData(buf);
+            cover.writeInitialSyncData(buf.openSubBuffer());
+            buf.writeSubBuffer();
         });
     }
 
@@ -94,11 +100,12 @@ public final class CoverSaveHandler {
      * @param buf         the buffer to read from
      * @param coverHolder the CoverHolder the cover is placed on
      */
-    public static void readCoverPlacement(@NotNull PacketBuffer buf, @NotNull CoverHolder coverHolder) {
+    public static void readCoverPlacement(@NotNull AdvancedPacketBuffer buf, @NotNull CoverHolder coverHolder) {
         // cover placement event
         EnumFacing placementSide = EnumFacing.VALUES[buf.readByte()];
         int id = buf.readVarInt();
         CoverDefinition coverDefinition = CoverDefinition.getCoverByNetworkId(id);
+        AdvancedPacketBuffer b = buf.readSubBuffer();
         if (coverDefinition == null) {
             GTLog.logger.warn("Unable to find CoverDefinition for Network ID {} at position {}", id,
                     coverHolder.getPos());
@@ -106,8 +113,10 @@ public final class CoverSaveHandler {
             Cover cover = coverDefinition.createCover(coverHolder, placementSide);
             coverHolder.addCover(placementSide, cover);
 
-            cover.readInitialSyncData(buf);
+            cover.readInitialSyncData(b);
+            ISyncedTileEntity.checkData(b, cover);
         }
+        buf.closeSubBuffer();
         coverHolder.scheduleRenderUpdate();
     }
 
