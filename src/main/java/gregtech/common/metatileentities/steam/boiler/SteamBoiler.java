@@ -213,7 +213,7 @@ public abstract class SteamBoiler extends MetaTileEntity implements IDataInfoPro
     private void updateCurrentTemperature() {
         if (fuelMaxBurnTime > 0) {
             if (getOffsetTimer() % 12 == 0) {
-                if (fuelBurnTimeLeft % 2 == 0 && currentTemperature < getMaxTemperate())
+                if (currentTemperature < getMaxTemperate())
                     currentTemperature++;
                 fuelBurnTimeLeft -= isHighPressure ? 2 : 1;
                 if (fuelBurnTimeLeft <= 0) {
