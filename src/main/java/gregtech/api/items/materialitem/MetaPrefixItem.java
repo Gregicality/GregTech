@@ -3,23 +3,28 @@ package gregtech.api.items.materialitem;
 import gregtech.api.GTValues;
 import gregtech.api.damagesources.DamageSources;
 import gregtech.api.items.armor.ArmorMetaItem;
+import gregtech.api.items.metaitem.MetaItem.MetaValueItem.CosmicTexture;
 import gregtech.api.items.metaitem.StandardMetaItem;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Material;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.info.MaterialIconSet;
+import gregtech.api.unification.material.properties.CosmicProperty;
 import gregtech.api.unification.material.properties.DustProperty;
 import gregtech.api.unification.material.properties.MaterialToolProperty;
 import gregtech.api.unification.material.properties.PropertyKey;
 import gregtech.api.unification.material.registry.MaterialRegistry;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.UnificationEntry;
+import gregtech.api.util.Mods;
 import gregtech.common.creativetab.GTCreativeTabs;
 
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,23 +34,42 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import codechicken.lib.model.ModelRegistryHelper;
+import codechicken.lib.util.TransformUtils;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
+import morph.avaritia.api.ICosmicRenderItem;
+import morph.avaritia.api.IHaloRenderItem;
+import morph.avaritia.api.registration.IModelRegister;
+import morph.avaritia.client.render.item.CosmicHaloItemRender;
+import morph.avaritia.init.AvaritiaTextures;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
-public class MetaPrefixItem extends StandardMetaItem {
+import static gregtech.api.util.Mods.Avaritia;
+
+@Optional.Interface(
+                    modid = Mods.Names.AVARITIA,
+                    iface = "morph.avaritia.api.ICosmicRenderItem")
+@Optional.Interface(
+                    modid = Mods.Names.AVARITIA,
+                    iface = "morph.avaritia.api.IHaloRenderItem")
+@Optional.Interface(
+                    modid = Mods.Names.AVARITIA,
+                    iface = "morph.avaritia.api.registration.IModelRegister")
+@Optional.Interface(
+                    modid = Mods.Names.AVARITIA,
+                    iface = "morph.avaritia.init.AvaritiaTextures")
+public class MetaPrefixItem extends StandardMetaItem implements IHaloRenderItem, ICosmicRenderItem,
+                            IModelRegister {
 
     private final MaterialRegistry registry;
     private final OrePrefix prefix;
-
     public static final Map<OrePrefix, OrePrefix> purifyMap = new HashMap<>();
 
     static {
@@ -120,13 +144,24 @@ public class MetaPrefixItem extends StandardMetaItem {
         Map<Short, ModelResourceLocation> alreadyRegistered = new Short2ObjectOpenHashMap<>();
         for (short metaItem : metaItems.keySet()) {
             MaterialIconSet materialIconSet = getMaterial(metaItem).getMaterialIconSet();
-
             short registrationKey = (short) (prefix.id + materialIconSet.id);
             if (!alreadyRegistered.containsKey(registrationKey)) {
                 ResourceLocation resourceLocation = Objects.requireNonNull(prefix.materialIconType)
                         .getItemModelPath(materialIconSet);
                 ModelBakery.registerItemVariants(this, resourceLocation);
                 alreadyRegistered.put(registrationKey, new ModelResourceLocation(resourceLocation, "inventory"));
+
+                if (Avaritia.isModLoaded()) {
+                    ModelResourceLocation location = new ModelResourceLocation(resourceLocation, "inventory");
+                    IBakedModel wrapped = new CosmicHaloItemRender(TransformUtils.DEFAULT_ITEM,
+                            (modelRegistry) -> modelRegistry.getObject(location));
+                    ModelRegistryHelper.register(location, wrapped);
+
+                    String processedLocation = resourceLocation.toString().replace("gregtech:", "gregtech:items/");
+                    String processedIdentifier = resourceLocation.toString()
+                            .replace("gregtech:material_sets", "identifier");
+                    CosmicTexture.registerSpecialMaskIcon(processedIdentifier + "_mask", processedLocation + "_mask");
+                }
             }
             ModelResourceLocation resourceLocation = alreadyRegistered.get(registrationKey);
             metaItemsModels.put(metaItem, resourceLocation);
@@ -272,5 +307,103 @@ public class MetaPrefixItem extends StandardMetaItem {
         if (this.prefix.tooltipFunc != null) {
             lines.addAll(this.prefix.tooltipFunc.apply(getMaterial(itemStack)));
         }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean shouldDrawHalo(ItemStack stack) {
+        Material material = getMaterial(stack);
+        assert material != null;
+
+        CosmicProperty prop = material.getProperty(PropertyKey.COSMIC);
+
+        if (material.hasProperty(PropertyKey.COSMIC) && prop.getShouldDrawHalo()) {
+            return prop.getShouldDrawHalo();
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getHaloTexture(ItemStack stack) {
+        Material material = getMaterial(stack);
+        assert material != null;
+
+        CosmicProperty prop = material.getProperty(PropertyKey.COSMIC);
+
+        if (material.hasProperty(PropertyKey.COSMIC) && prop.getHaloTexture() != null) {
+            return CosmicTexture.haloTextures.get(prop.getHaloTexture());
+        } else {
+            return AvaritiaTextures.HALO;
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getHaloColour(ItemStack stack) {
+        Material material = getMaterial(stack);
+        assert material != null;
+
+        CosmicProperty prop = material.getProperty(PropertyKey.COSMIC);
+
+        if (material.hasProperty(PropertyKey.COSMIC) && prop.getHaloColour() != 0) {
+            return prop.getHaloColour();
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getHaloSize(ItemStack stack) {
+        Material material = getMaterial(stack);
+        assert material != null;
+
+        CosmicProperty prop = material.getProperty(PropertyKey.COSMIC);
+
+        if (material.hasProperty(PropertyKey.COSMIC) && prop.getHaloSize() != 0) {
+            return prop.getHaloSize();
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean shouldDrawPulse(ItemStack stack) {
+        Material material = getMaterial(stack);
+        assert material != null;
+
+        CosmicProperty prop = material.getProperty(PropertyKey.COSMIC);
+
+        if (material.hasProperty(PropertyKey.COSMIC) && prop.getHaloPulse()) {
+            return prop.getHaloPulse();
+        } else {
+            return false;
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getMaskTexture(ItemStack stack, EntityLivingBase player) {
+        Material material = getMaterial(stack);
+        assert material != null;
+        CosmicProperty prop = material.getProperty(PropertyKey.COSMIC);
+
+        if (material.hasProperty(PropertyKey.COSMIC) && prop.getMaskOpacity() != null) {
+            int meta = stack.getMetadata();
+            MaterialIconSet materialIconSet = getMaterial(meta).getMaterialIconSet();
+            ResourceLocation resourceLocation = Objects.requireNonNull(prefix.materialIconType)
+                    .getItemModelPath(materialIconSet);
+            String identifier = resourceLocation.toString().replace("gregtech:material_sets", "identifier");
+            return CosmicTexture.specialMaskTextures.get(identifier + "_mask");
+        } else {
+            return null;
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public float getMaskOpacity(ItemStack stack, EntityLivingBase player) {
+        return getMaterial(stack).getProperty(PropertyKey.COSMIC).getMaskOpacity();
     }
 }

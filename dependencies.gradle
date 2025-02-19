@@ -52,6 +52,7 @@ dependencies {
     compileOnly("curse.maven:journeymap-32274:5172461") // Journeymap 5.7.1p3
     compileOnly("curse.maven:voxelmap-225179:3029445") // VoxelMap 1.9.28
     compileOnly("curse.maven:xaeros-263420:5394758") // Xaero's Minimap 24.2.0
+    compileOnly rfg.deobf("curse.maven:avaritia-1-1x-unofficial-1165010:6108030") // Avaritia 3.3.0.42 (Must be 3.3.0.42 or newer to work)
     compileOnly rfg.deobf("curse.maven:opencomputers-223008:5274236") // OpenComputers 1.8.5+179e1c3
     compileOnly rfg.deobf("curse.maven:hwyla-253449:2568751") // HWYLA 1.8.26-B41
     compileOnly rfg.deobf("curse.maven:baubles-227083:2518667") // Baubles 1.5.2
@@ -62,7 +63,7 @@ dependencies {
 
     // Mods with Soft compat but which have no need to be in code, such as isModLoaded() checks and getModItem() recipes.
     // Uncomment any of these to test them in-game.
-
+    // runtimeOnlyNonPublishable rfg.deobf("curse.maven:avaritia-1-1x-unofficial-1165010:6108030") // Avaritia 3.3.0.42
     // runtimeOnlyNonPublishable rfg.deobf("curse.maven:beebetteratbees-244516:2627215") // BeeBetterAtBees 2.0.3 (recommended to enable when testing Forestry compat)
     // runtimeOnlyNonPublishable rfg.deobf("curse.maven:jei-bees-248370:2490058") // JEIBees 0.9.0.5 (recommended to enable when testing Forestry compat)
     // runtimeOnlyNonPublishable rfg.deobf("curse.maven:binnies-mods-223525:2916129") // Binnie 2.5.1.203

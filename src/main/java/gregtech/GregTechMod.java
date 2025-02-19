@@ -2,9 +2,12 @@ package gregtech;
 
 import gregtech.api.GTValues;
 import gregtech.api.GregTechAPI;
+import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.modules.ModuleContainerRegistryEvent;
 import gregtech.api.persistence.PersistentData;
+import gregtech.api.util.Mods;
 import gregtech.client.utils.BloomEffectUtil;
+import gregtech.client.utils.BloomEffectVintagiumUtil;
 import gregtech.modules.GregTechModules;
 import gregtech.modules.ModuleManager;
 
@@ -25,6 +28,10 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+
+import codechicken.lib.texture.TextureUtils;
+
+import static gregtech.api.util.Mods.Avaritia;
 
 @Mod(modid = GTValues.MODID,
      name = GTValues.MOD_NAME,
@@ -47,6 +54,9 @@ public class GregTechMod {
         FluidRegistry.enableUniversalBucket();
         if (FMLCommonHandler.instance().getSide().isClient()) {
             BloomEffectUtil.init();
+            if (Mods.Vintagium.isModLoaded()) {
+                BloomEffectVintagiumUtil.init();
+            }
         }
     }
 
@@ -64,6 +74,9 @@ public class GregTechMod {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         moduleManager.onPreInit(event);
+        if (Avaritia.isModLoaded()) {
+            TextureUtils.addIconRegister(new MetaItem.MetaValueItem.CosmicTexture());
+        }
     }
 
     @EventHandler
