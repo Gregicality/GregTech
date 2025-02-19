@@ -64,6 +64,7 @@ public class WidgetProspectingMap extends Widget {
     private long lastClicked;
 
     private final List<String> hoveredNames = new ArrayList<>();
+    private float hoveredOreHeight = 0.0f;
     private int color;
 
     public WidgetProspectingMap(int xPosition, int yPosition, int chunkRadius, WidgetOreList widgetOreList,
@@ -242,6 +243,7 @@ public class WidgetProspectingMap extends Widget {
         // draw tooltips
         if (this.isMouseOverElement(mouseX, mouseY) && texture != null) {
             this.hoveredNames.clear();
+            this.hoveredOreHeight = 0.0f;
             List<String> tooltips = new ArrayList<>();
             int cX = (mouseX - this.getPosition().x) / 16;
             int cZ = (mouseY - this.getPosition().y) / 16;
@@ -260,14 +262,16 @@ public class WidgetProspectingMap extends Widget {
             if (this.mode == ProspectorMode.ORE) { // draw ore
                 tooltips.add(I18n.format("terminal.prospector.ore"));
                 HashMap<String, Integer> oreInfo = new HashMap<>();
+                HashMap<String, Float> oreHeight = new HashMap<>();
                 for (int i = 0; i < 16; i++) {
                     for (int j = 0; j < 16; j++) {
                         if (texture.map[cX * 16 + i][cZ * 16 + j] != null) {
-                            texture.map[cX * 16 + i][cZ * 16 + j].values().forEach(dict -> {
+                            texture.map[cX * 16 + i][cZ * 16 + j].forEach((height, dict) -> {
                                 String name = OreDictUnifier.get(dict).getDisplayName();
                                 if (ProspectingTexture.SELECTED_ALL.equals(texture.getSelected()) ||
                                         texture.getSelected().equals(dict)) {
                                     oreInfo.put(name, oreInfo.getOrDefault(name, 0) + 1);
+                                    oreHeight.put(name, oreHeight.getOrDefault(name, 0.0f) + height.intValue());
                                     if (oreInfo.get(name) > maxAmount[0]) {
                                         maxAmount[0] = oreInfo.get(name);
                                         MaterialStack m = OreDictUnifier.getMaterial(OreDictUnifier.get(dict));
@@ -280,8 +284,19 @@ public class WidgetProspectingMap extends Widget {
                         }
                     }
                 }
+                oreHeight.forEach((name, height) -> {
+                    int count = oreInfo.getOrDefault(name, 0);
+                    float avgHeight = height / (count != 0 ? count : 1);
+                    oreHeight.put(name, avgHeight);
+                    hoveredOreHeight += avgHeight * count;
+                });
+                int totalCount = oreInfo.values().stream().reduce(0, Integer::sum);
+                if (totalCount != 0) {
+                    hoveredOreHeight /= totalCount;
+                }
                 oreInfo.forEach((name, count) -> {
-                    tooltips.add(name + " --- " + count);
+                    float height = oreHeight.getOrDefault(name, 0.0f);
+                    tooltips.add(name + " --- " + count + " at y: " + Math.round(height));
                     hoveredNames.add(name);
                 });
             } else if (this.mode == ProspectorMode.FLUID) {
@@ -327,8 +342,10 @@ public class WidgetProspectingMap extends Widget {
 
         int xPos = ((Minecraft.getMinecraft().player.chunkCoordX + xDiff) << 4) + 8;
         int zPos = ((Minecraft.getMinecraft().player.chunkCoordZ + zDiff) << 4) + 8;
+        int yPos = hoveredOreHeight != 0.0f ? Math.round(hoveredOreHeight) :
+                Minecraft.getMinecraft().world.getHeight(xPos, zPos);
 
-        BlockPos b = new BlockPos(xPos, Minecraft.getMinecraft().world.getHeight(xPos, zPos), zPos);
+        BlockPos b = new BlockPos(xPos, yPos, zPos);
         if (System.currentTimeMillis() - lastClicked < 400 && !hoveredNames.isEmpty()) {
             boolean added = false;
             trimHoveredNames();
@@ -405,7 +422,7 @@ public class WidgetProspectingMap extends Widget {
                 createVeinName(),
                 b.getX(),
                 b.getZ(),
-                Minecraft.getMinecraft().world.getHeight(b.getX(), b.getZ()),
+                b.getY(),
                 true,
                 c.getRed() / 255F,
                 c.getGreen() / 255F,
@@ -451,7 +468,7 @@ public class WidgetProspectingMap extends Widget {
         xaero.common.minimap.waypoints.WaypointWorld ww = minimapSession.getWaypointsManager().getCurrentWorld();
         xaero.common.minimap.waypoints.Waypoint xaeroWaypoint = new xaero.common.minimap.waypoints.Waypoint(
                 b.getX(),
-                Minecraft.getMinecraft().world.getHeight(b.getX(), b.getZ()),
+                b.getY(),
                 b.getZ(),
                 createVeinName(), hoveredNames.get(0).substring(0, 1), bestColorIndex);
 
