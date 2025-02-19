@@ -1161,6 +1161,9 @@ metaarmor.qts.nightvision.error=QuarkTech™ Suite: §cNot enough power!
 metaarmor.jetpack.hover.enable=Jetpack: Hover Mode Enabled
 metaarmor.jetpack.hover.disable=Jetpack: Hover Mode Disabled
 
+metaarmor.jetpack.cancel_inertia.enable=Jetpack: Inertia Cancellation Enabled
+metaarmor.jetpack.cancel_inertia.disable=Jetpack: Inertia Cancellation Disabled
+
 metaarmor.jetpack.emergency_hover_mode=Emergency Hover Mode Enabled!
 
 metaarmor.nms.share.enable=NanoMuscle™ Suite: Charging Enabled
@@ -1189,6 +1192,7 @@ metaarmor.hud.status.disabled=§cOFF
 metaarmor.hud.energy_lvl=Energy Level: %s
 metaarmor.hud.fuel_lvl=Fuel Level: %s
 metaarmor.hud.hover_mode=Hover Mode: %s
+metaarmor.hud.cancel_inertia_mode=Inertia Cancellation: %s
 mataarmor.hud.supply_mode=Supply Mode: %s
 metaarmor.hud.gravi_engine=GraviEngine: %s
 

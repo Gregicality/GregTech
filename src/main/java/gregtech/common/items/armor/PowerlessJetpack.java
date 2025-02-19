@@ -92,7 +92,7 @@ public class PowerlessJetpack implements ISpecialArmorLogic, IJetpack, IItemHUDP
         if (currentRecipe == null)
             findNewRecipe(stack);
 
-        performFlying(player, hover, stack);
+        performFlying(player, hover, false, stack);
 
         if (toggleTimer > 0)
             toggleTimer--;

@@ -59,7 +59,7 @@ public interface IJetpack {
 
     boolean hasEnergy(ItemStack stack);
 
-    default void performFlying(@NotNull EntityPlayer player, boolean hover, ItemStack stack) {
+    default void performFlying(@NotNull EntityPlayer player, boolean hover, boolean cancelInertia, ItemStack stack) {
         double currentAccel = getVerticalAcceleration() * (player.motionY < 0.3D ? 2.5D : 1.0D);
         double currentSpeedVertical = getVerticalSpeed() * (player.isInWater() ? 0.4D : 1.0D);
         boolean flyKeyDown = KeyBind.VANILLA_JUMP.isKeyDown(player);
@@ -89,14 +89,31 @@ public interface IJetpack {
                     float speedForward = (float) (player.isSprinting() ? speedSideways * getSprintSpeedModifier() :
                             speedSideways);
 
-                    if (KeyBind.VANILLA_FORWARD.isKeyDown(player))
+                    boolean anyKeyPressed = flyKeyDown || descendKeyDown;
+                    if (KeyBind.VANILLA_FORWARD.isKeyDown(player)) {
                         player.moveRelative(0, 0, speedForward, speedForward);
-                    if (KeyBind.VANILLA_BACKWARD.isKeyDown(player))
+                        anyKeyPressed = true;
+                    }
+                    if (KeyBind.VANILLA_BACKWARD.isKeyDown(player)) {
                         player.moveRelative(0, 0, -speedSideways, speedSideways * 0.8f);
-                    if (KeyBind.VANILLA_LEFT.isKeyDown(player))
+                        anyKeyPressed = true;
+                    }
+                    if (KeyBind.VANILLA_LEFT.isKeyDown(player)) {
                         player.moveRelative(speedSideways, 0, 0, speedSideways);
-                    if (KeyBind.VANILLA_RIGHT.isKeyDown(player))
+                        anyKeyPressed = true;
+                    }
+                    if (KeyBind.VANILLA_RIGHT.isKeyDown(player)) {
                         player.moveRelative(-speedSideways, 0, 0, speedSideways);
+                        anyKeyPressed = true;
+                    }
+
+                    /* hover check not needed, because of "flyKeyDown || hover && !player.onGround" check */
+                    if (!anyKeyPressed && cancelInertia) {
+                        player.motionX *= 0.75;
+                        player.motionY *= 0.75;
+                        player.motionZ *= 0.75;
+                    }
+
                     if (!player.getEntityWorld().isRemote) {
                         player.fallDistance = 0;
                     }

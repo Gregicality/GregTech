@@ -76,7 +76,7 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
             data.setBoolean("canShare", canShare);
         }
 
-        performFlying(player, hoverMode, item);
+        performFlying(player, hoverMode, false, item);
 
         // Charging mechanics
         if (canShare && !world.isRemote) {

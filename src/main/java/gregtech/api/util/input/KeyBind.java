@@ -38,6 +38,7 @@ public enum KeyBind {
     VANILLA_RIGHT(() -> () -> Minecraft.getMinecraft().gameSettings.keyBindRight),
     ARMOR_MODE_SWITCH("gregtech.key.armor_mode_switch", KeyConflictContext.IN_GAME, Keyboard.KEY_M),
     ARMOR_HOVER("gregtech.key.armor_hover", KeyConflictContext.IN_GAME, Keyboard.KEY_H),
+    ARMOR_CANCEL_INERTIA("gregtech.key.armor_cancel_inertia", KeyConflictContext.IN_GAME, Keyboard.KEY_I),
     ARMOR_CHARGING("gregtech.key.armor_charging", KeyConflictContext.IN_GAME, Keyboard.KEY_N),
     TOOL_AOE_CHANGE("gregtech.key.tool_aoe_change", KeyConflictContext.IN_GAME, Keyboard.KEY_V);
 
