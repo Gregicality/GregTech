@@ -166,6 +166,10 @@ gregtech.multiblock.primitive_water_pump.extra1=Biome Coefficient:/n  Ocean, Riv
 gregtech.multiblock.primitive_water_pump.extra2=Hatch Multipliers:/n  Pump Hatch: 1x/n  ULV Output Hatch: 2x/n  LV Output Hatch: 4x/n/nWhile raining in the Pump's Biome, the total water production will be increased by 50%%.
 gregtech.multiblock.processing_array.description=The Processing Array combines up to 16 single block machine(s) in a single multiblock, effectively easing automation.
 gregtech.multiblock.advanced_processing_array.description=The Processing Array combines up to 64 single block machine(s) in a single multiblock, effectively easing automation.
+gregtech.multiblock.fission_reactor.description=Fission Reactors use fuel rods placed together to create a sustained chain of fission reactions. These reactions generate heat (power) that may be soaked up by coolants, which can then be used inside turbines. For example, using distilled water as a coolant, each channel soaks up about 2 EU/t of heat per degree Kelvin and block of internal reactor depth.  The reactor can take on a variety of shapes. Its cross sections can be seen in JEI, and the reactor may extend 7 blocks up and down from the controller. Reactors can import and export fuel rods/coolants through special pairs of hatches on the top and bottom layers, respectively. Control rod hatches may also be placed on the top layer, and they give the user more control over the reactor. Inserting them more decreases the neutron multiplication rate "effective K" (shown as k_eff), a factor by which the power is continually multiplied by until it reaches the approximate max power. If k_eff is over 1, the reactor's power will eventually increase; if it's below 1, it will eventually decrease; and if it's around 1, it will stay stable. In fact, the reactor automatically shifts this over time, attempting to reach a stable equilibrium. This may be overridden manually, which you may want to do if the k_eff is over 1.05 to avoid it spiralling out of control and melting down. K_eff is also affected by neutron poisons inside the reactor, which will increase in concentration over time as the reactor runs (and still remain in a fairly high concentration for a while after). The rate at which k_eff "acts" is dependent on the mean generation time, which is how long it takes for the next generation of neutrons to be produced. This depends on the fuel rod (and can be seen in their tooltips), and it is mostly affected by delayed neutrons produced from decaying fission products. The power may then be modeled using an exponential function with a time constant of the mean generation time divided by (k_eff - 1). Control rods, fuel hatches, and coolant hatches all require special tubing beneath them to form correctly; check their tooltips to see which blocks to use. Once a reactor's hatches are filled, the reactor can be locked to begin operation, meaning that the types of items/fluids in the hatches can not be changed while the reactor operates. The placement of the fuel rods and coolant channels within the reactor is quite important. Neutrons produced by decaying atoms in the fuel rods can cause fissions in other fuel rods; therefore, reactors work far more effectively with more than one fuel rod channel. The chance that a neutron interacts with a fuel rod is increased if it is slowed down by a moderator, such as distilled water inside a coolant channel. As such, it can be helpful to put coolant channels between fuel rods to increase k_eff (and control rods do much the opposite). Fuel rods also decay at a rate proportional to the power; a 600 MJ fuel rod will deplete after 600 seconds of 1 MW, or alternatively 1 second of 600 MW. Note: if this multiblock receives maintenance problems, the coolant systems will occasionally seize up and stop working. However, coolant channels only operate when the hot coolant fluid is actually hotter than the reactor itself, and they can also only altogether export as much heat as the max power.
+gregtech.multiblock.gas_centrifuge.description=The Gas Centrifuge can help in the purification process of isotopes, especially those of uranium. By repeatedly putting uranium hexafluoride into a gas centrifuge, one can obtain highly enriched uranium hexafluoride, which has a purity high enough to make nuclear fuels. Each block of length makes it perform one more recipe in parallel.
+gregtech.multiblock.heat_exchanger.description=The Heat Exchanger can be used to take heat out from one fluid by either radiating it out into its surrounding environment or by transferring it into another fluid. This can be used with hot coolant from fission reactors to help generate steam for steam turbines.
+gregtech.multiblock.spent_fuel_pool.description=The Spent Fuel Pool takes hot depleted fuel rods fresh from a fission reactor and cools them down to be processed later. It only forms when full blocks of water are placed on top; what did you expect? Each block of length makes it perform 32 more recipes in parallel.
 
 item.invalid.name=Invalid item
 fluid.empty=Empty
@@ -2396,6 +2400,9 @@ recipemap.rock_breaker.name=Rock Breaker
 recipemap.primitive_blast_furnace.name=Primitive Blast Furnace
 recipemap.coke_oven.name=Coke Oven
 recipemap.research_station.name=Research Station
+recipemap.heat_exchanger.name=Heat Exchanger
+recipemap.gas_centrifuge.name=Gas Centrifuge
+recipemap.spent_fuel_pool.name=Spent Fuel Pool
 
 gregtech.recipe.category.arc_furnace_recycling=Arc Furnace Recycling
 gregtech.recipe.category.macerator_recycling=Macerator Recycling
@@ -2653,6 +2660,23 @@ tile.studs.green.name=Green Studs
 tile.studs.red.name=Red Studs
 tile.studs.black.name=Black Studs
 
+tile.panelling.white.name=White Panelling
+tile.panelling.orange.name=Orange Panelling
+tile.panelling.magenta.name=Magenta Panelling
+tile.panelling.light_blue.name=Light Blue Panelling
+tile.panelling.yellow.name=Yellow Panelling
+tile.panelling.lime.name=Lime Panelling
+tile.panelling.pink.name=Pink Panelling
+tile.panelling.gray.name=Gray Panelling
+tile.panelling.light_gray.name=Light Gray Panelling
+tile.panelling.cyan.name=Cyan Panelling
+tile.panelling.purple.name=Purple Panelling
+tile.panelling.blue.name=Blue Panelling
+tile.panelling.brown.name=Brown Panelling
+tile.panelling.green.name=Green Panelling
+tile.panelling.red.name=Red Panelling
+tile.panelling.black.name=Black Panelling
+
 # Lamps(ON)
 tile.gregtech_lamp.white.name=White Lamp
 tile.gregtech_lamp.orange.name=Orange Lamp
@@ -2794,6 +2818,11 @@ tile.battery_block.tooltip_empty=For filling space in your Power Substation
 # Long Distance Pipeline Blocks
 tile.long_distance_item_pipeline.name=Long Distance Item Pipe
 tile.long_distance_fluid_pipeline.name=Long Distance Fluid Pipe
+
+# Nuclear Blocks
+tile.nuclear_casing.spent_fuel_casing.name=Spent Fuel Casing
+tile.nuclear_casing.gas_centrifuge_heater.name=Gas Centrifuge Heater
+tile.nuclear_casing.gas_centrifuge_column.name=Gas Centrifuge Column
 
 # Creative tabs
 itemGroup.gregtech.main=GregTech
@@ -4991,6 +5020,16 @@ metaitem.cover.digital.mode.fluid.enabled=Fluid Mode enabled
 
 gregtech.machine.monitor_screen.name=Monitor Screen
 
+gregtech.machine.fission_reactor.name=Fission Reactor
+gregtech.machine.fission_reactor.tooltip.1=Check preview for allowed shapes.
+gregtech.machine.fission_reactor.tooltip.2=§cMay meltdown/explode if the temperature/pressure gets too high!
+gregtech.machine.fission_reactor.tooltip.3=§cPlease read the JEI info page! It is very important!
+
+
+gregtech.machine.heat_exchanger.name=Heat Exchanger
+gregtech.machine.spent_fuel_pool.name=Spent Fuel Pool
+gregtech.machine.gas_centrifuge.name=Gas Centrifuge
+
 
 # Multiblock Tooltips
 gregtech.machine.primitive_water_pump.tooltip=Endervoir at Home
@@ -5030,6 +5069,8 @@ gregtech.machine.fluid_drilling_rig.hv.tooltip=Does not perform Fracking
 gregtech.machine.fluid_drilling_rig.ev.tooltip=Well Drainer
 gregtech.machine.cleanroom.tooltip=Keeping those pesky particles out
 gregtech.machine.charcoal_pile.tooltip=Underground fuel bakery
+gregtech.machine.fission_reactor.tooltip=Blowy-uppy yumyum generator
+gregtech.machine.heat_exchanger.tooltip=Molecular hot potato player
 
 # Multiblock machine parts
 gregtech.machine.item_bus.import.tooltip=Item Input for Multiblocks
@@ -5505,6 +5546,10 @@ gregtech.universal.tooltip.base_production_fluid=§eBase Production: §f%,d L/t
 gregtech.universal.tooltip.produces_fluid=§eProduces: §f%,d L/t
 gregtech.universal.tooltip.terrain_resist=§eThis Machine will not explode when exposed to the Elements
 gregtech.universal.tooltip.requires_redstone=§4Requires Redstone power
+
+# Nuclear supporting multiblock special tooltips
+gregtech.spent_fuel_pool.tooltip.parallel=32 per block of pool length
+gregtech.gas_centrifuge.tooltip.parallel=1 + number of added columns
 
 gregtech.block.tooltip.no_mob_spawning=§bMobs cannot spawn on this block
 

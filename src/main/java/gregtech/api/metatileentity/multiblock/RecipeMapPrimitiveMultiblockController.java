@@ -20,13 +20,11 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RecipeMapPrimitiveMultiblockController extends MultiblockWithDisplayBase {
-
-    protected PrimitiveRecipeLogic recipeMapWorkable;
+public abstract class RecipeMapPrimitiveMultiblockController extends RecipeMapMultiblockController {
 
     public RecipeMapPrimitiveMultiblockController(ResourceLocation metaTileEntityId, RecipeMap<?> recipeMap) {
-        super(metaTileEntityId);
-        this.recipeMapWorkable = new PrimitiveRecipeLogic(this, recipeMap);
+        super(metaTileEntityId, recipeMap);
+        this.recipeMapWorkable = new PrimitiveRecipeLogic(this);
         initializeAbilities();
     }
 

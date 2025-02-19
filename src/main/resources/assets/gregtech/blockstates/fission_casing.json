@@ -1,0 +1,41 @@
+{
+  "forge_marker" : 1,
+  "defaults": {
+    "model" : "minecraft:cube_all",
+    "textures" : {
+      "all" : "gregtech:blocks/casings/solid/machine_casing_solid_steel"
+    }
+  },
+  "variants" : {
+    "variant=reactor_vessel" : {
+      "model" : "minecraft:cube_all",
+      "textures" : {
+        "all" : "gregtech:blocks/casings/fission/reactor_vessel"
+      }
+    },
+    "variant=fuel_channel" : {
+      "model" : "minecraft:cube_bottom_top",
+      "textures" : {
+        "top" : "gregtech:blocks/casings/fission/fuel_channel_top",
+        "bottom" : "gregtech:blocks/casings/fission/fuel_channel_top",
+        "side" : "gregtech:blocks/casings/fission/fuel_channel_side"
+      }
+    },
+    "variant=control_rod_channel" : {
+      "model" : "minecraft:cube_bottom_top",
+      "textures" : {
+        "top" : "gregtech:blocks/casings/fission/control_rod_channel_top",
+        "bottom" : "gregtech:blocks/casings/fission/control_rod_channel_top",
+        "side" : "gregtech:blocks/casings/fission/fuel_channel_side"
+      }
+    },
+    "variant=coolant_channel" : {
+      "model" : "minecraft:cube_bottom_top",
+      "textures" : {
+        "top" : "gregtech:blocks/casings/fission/coolant_channel_top",
+        "bottom" : "gregtech:blocks/casings/fission/coolant_channel_top",
+        "side" : "gregtech:blocks/casings/fission/fuel_channel_side"
+      }
+    }
+  }
+}
