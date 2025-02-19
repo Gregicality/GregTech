@@ -149,6 +149,7 @@ public class LargeTurbineWorkableHandler extends MultiblockFuelRecipeLogic {
             parallel = getParallel(recipe, holderEfficiency, turbineMaxVoltage);
 
             // Null check fluid here, since it can return null on first join into world or first form
+            ((RecipeMapMultiblockController) metaTileEntity).refreshAllBeforeConsumption();
             FluidStack inputFluid = getInputFluidStack();
             if (inputFluid == null || getInputFluidStack().amount < recipeFluidStack.amount * parallel) {
                 return false;

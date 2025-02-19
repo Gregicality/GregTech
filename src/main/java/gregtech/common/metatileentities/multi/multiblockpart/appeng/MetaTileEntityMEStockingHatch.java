@@ -6,6 +6,7 @@ import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.widgets.ImageCycleButtonWidget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.interfaces.IRefreshBeforeConsumption;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
 import gregtech.common.metatileentities.multi.multiblockpart.appeng.slot.ExportOnlyAEFluidList;
@@ -37,7 +38,7 @@ import java.util.function.Predicate;
 
 import static gregtech.api.capability.GregtechDataCodes.UPDATE_AUTO_PULL;
 
-public class MetaTileEntityMEStockingHatch extends MetaTileEntityMEInputHatch {
+public class MetaTileEntityMEStockingHatch extends MetaTileEntityMEInputHatch implements IRefreshBeforeConsumption {
 
     private static final int CONFIG_SIZE = 16;
     private boolean autoPull;
@@ -305,6 +306,14 @@ public class MetaTileEntityMEStockingHatch extends MetaTileEntityMEInputHatch {
         // set auto pull first to avoid issues with clearing the config after reading from the data stick
         this.setAutoPull(false);
         super.readConfigFromTag(tag);
+    }
+
+    @Override
+    public void refreshBeforeConsumption() {
+        if (isWorkingEnabled() && updateMEStatus()) {
+            if (autoPull) refreshList();
+            syncME();
+        }
     }
 
     private static class ExportOnlyAEStockingFluidSlot extends ExportOnlyAEFluidSlot {
