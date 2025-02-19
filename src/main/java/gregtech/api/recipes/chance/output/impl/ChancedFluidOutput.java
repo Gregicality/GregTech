@@ -15,9 +15,13 @@ public class ChancedFluidOutput extends BoostableChanceOutput<FluidStack> {
         super(ingredient, chance, chanceBoost);
     }
 
+    public ChancedFluidOutput(@NotNull FluidStack ingredient, int chance, int maxChance, int chanceBoost) {
+        super(ingredient, chance, maxChance, chanceBoost);
+    }
+
     @Override
     public @NotNull ChancedFluidOutput copy() {
-        return new ChancedFluidOutput(getIngredient().copy(), getChance(), getChanceBoost());
+        return new ChancedFluidOutput(getIngredient().copy(), getChance(), getMaxChance(), getChanceBoost());
     }
 
     @Override

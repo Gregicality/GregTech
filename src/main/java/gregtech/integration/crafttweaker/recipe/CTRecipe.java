@@ -1,8 +1,11 @@
 package gregtech.integration.crafttweaker.recipe;
 
 import gregtech.api.recipes.Recipe;
+import gregtech.api.recipes.RecipeContext;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.util.GTUtility;
+
+import net.minecraft.item.ItemStack;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
@@ -49,7 +52,9 @@ public class CTRecipe {
 
     @ZenMethod
     public List<IItemStack> getResultItemOutputs(@Optional(valueLong = 1) int tier) {
-        return this.backingRecipe.getResultItemOutputs(GTUtility.getTierByVoltage(getEUt()), tier, recipeMap)
+        return this.backingRecipe.getResultItemOutputs(
+                new RecipeContext<ItemStack>()
+                        .update(recipeMap.getChanceFunction(), GTUtility.getTierByVoltage(getEUt()), tier))
                 .stream()
                 .map(MCItemStack::new)
                 .collect(Collectors.toList());

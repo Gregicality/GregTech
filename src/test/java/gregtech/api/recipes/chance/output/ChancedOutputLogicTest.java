@@ -1,5 +1,6 @@
 package gregtech.api.recipes.chance.output;
 
+import gregtech.api.recipes.RecipeContext;
 import gregtech.api.recipes.chance.ChanceEntry;
 import gregtech.api.recipes.chance.boost.ChanceBoostFunction;
 
@@ -26,12 +27,15 @@ public class ChancedOutputLogicTest {
         }
     }
 
+    private static final RecipeContext<String> context = new RecipeContext<String>().update(ChanceBoostFunction.NONE, 0,
+            0);
+
     private static <I, T extends ChancedOutput<I>> void listsMatch(@NotNull List<T> original,
-                                                                   @Nullable List<T> rolled) {
+                                                                   @Nullable List<CalculatedOutput<I>> rolled) {
         MatcherAssert.assertThat(rolled, CoreMatchers.notNullValue());
         MatcherAssert.assertThat(rolled.size(), CoreMatchers.is(original.size()));
         for (int i = 0; i < original.size(); i++) {
-            MatcherAssert.assertThat(rolled.get(i).getIngredient(), CoreMatchers.is(original.get(i).getIngredient()));
+            MatcherAssert.assertThat(rolled.get(i).getIngrediet(), CoreMatchers.is(original.get(i).getIngredient()));
         }
     }
 
@@ -42,7 +46,7 @@ public class ChancedOutputLogicTest {
                 new TestChancedOutput("b", ChancedOutputLogic.getMaxChancedValue()),
                 new TestChancedOutput("c", ChancedOutputLogic.getMaxChancedValue()));
 
-        List<TestChancedOutput> list = ChancedOutputLogic.OR.roll(chanceEntries, ChanceBoostFunction.NONE, 0, 0);
+        var list = ChancedOutputLogic.OR.roll(chanceEntries, context);
         listsMatch(chanceEntries, list);
     }
 
@@ -53,7 +57,7 @@ public class ChancedOutputLogicTest {
                 new TestChancedOutput("b", ChancedOutputLogic.getMaxChancedValue()),
                 new TestChancedOutput("c", 0));
 
-        List<TestChancedOutput> list = ChancedOutputLogic.AND.roll(chanceEntries, ChanceBoostFunction.NONE, 0, 0);
+        var list = ChancedOutputLogic.AND.roll(chanceEntries, context);
         MatcherAssert.assertThat(list, CoreMatchers.nullValue());
 
         chanceEntries = ImmutableList.of(
@@ -61,7 +65,7 @@ public class ChancedOutputLogicTest {
                 new TestChancedOutput("b", ChancedOutputLogic.getMaxChancedValue()),
                 new TestChancedOutput("c", ChancedOutputLogic.getMaxChancedValue()));
 
-        list = ChancedOutputLogic.AND.roll(chanceEntries, ChanceBoostFunction.NONE, 0, 0);
+        list = ChancedOutputLogic.AND.roll(chanceEntries, context);
         listsMatch(chanceEntries, list);
     }
 
@@ -72,10 +76,19 @@ public class ChancedOutputLogicTest {
                 new TestChancedOutput("b", ChancedOutputLogic.getMaxChancedValue()),
                 new TestChancedOutput("c", ChancedOutputLogic.getMaxChancedValue()));
 
-        List<TestChancedOutput> list = ChancedOutputLogic.XOR.roll(chanceEntries, ChanceBoostFunction.NONE, 0, 0);
+        var list = ChancedOutputLogic.XOR.roll(chanceEntries, context);
         MatcherAssert.assertThat(list, CoreMatchers.notNullValue());
         MatcherAssert.assertThat(list.size(), CoreMatchers.is(1));
-        MatcherAssert.assertThat(list.get(0).getIngredient(), CoreMatchers.is(chanceEntries.get(0).getIngredient()));
+        boolean exists = false;
+        for (var e : chanceEntries) {
+            if (e.getIngredient().equals(list.get(0).getIngrediet()))
+                exists = true;
+        }
+        MatcherAssert.assertThat(exists, CoreMatchers.is(true));
+
+        // XOR does not always produce the first entry from the list
+        // MatcherAssert.assertThat(list.get(0).output.getIngredient(),
+        // CoreMatchers.is(chanceEntries.get(0).getIngredient()));
     }
 
     @Test
@@ -85,7 +98,7 @@ public class ChancedOutputLogicTest {
                 new TestChancedOutput("b", ChancedOutputLogic.getMaxChancedValue()),
                 new TestChancedOutput("c", ChancedOutputLogic.getMaxChancedValue()));
 
-        List<TestChancedOutput> list = ChancedOutputLogic.NONE.roll(chanceEntries, ChanceBoostFunction.NONE, 0, 0);
+        var list = ChancedOutputLogic.NONE.roll(chanceEntries, context);
         MatcherAssert.assertThat(list, CoreMatchers.nullValue());
     }
 }

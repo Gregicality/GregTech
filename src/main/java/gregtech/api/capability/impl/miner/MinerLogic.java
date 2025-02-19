@@ -4,6 +4,7 @@ import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.IMiner;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.recipes.Recipe;
+import gregtech.api.recipes.RecipeContext;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.ore.OrePrefix;
@@ -451,8 +452,9 @@ public class MinerLogic {
         Recipe recipe = map.findRecipe(Long.MAX_VALUE, Collections.singletonList(itemStack), Collections.emptyList());
         if (recipe != null && !recipe.getOutputs().isEmpty()) {
             drops.clear();
-            for (ItemStack outputStack : recipe.getResultItemOutputs(GTUtility.getTierByVoltage(recipe.getEUt()), tier,
-                    map)) {
+            var context = new RecipeContext<ItemStack>()
+                    .update(map.getChanceFunction(), GTUtility.getTierByVoltage(recipe.getEUt()), tier);
+            for (ItemStack outputStack : recipe.getResultItemOutputs(context)) {
                 outputStack = outputStack.copy();
                 if (OreDictUnifier.getPrefix(outputStack) == OrePrefix.crushed) {
                     if (fortuneLevel > 0) {

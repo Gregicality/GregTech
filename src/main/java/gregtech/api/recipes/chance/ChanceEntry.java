@@ -20,6 +20,8 @@ public interface ChanceEntry<T> {
      */
     int getChance();
 
+    int getMaxChance();
+
     /**
      * @return a copy of the chance entry
      */

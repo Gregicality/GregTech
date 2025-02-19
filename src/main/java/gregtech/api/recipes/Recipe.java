@@ -2,7 +2,6 @@ package gregtech.api.recipes;
 
 import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.recipes.category.GTRecipeCategory;
-import gregtech.api.recipes.chance.boost.ChanceBoostFunction;
 import gregtech.api.recipes.chance.output.ChancedOutputList;
 import gregtech.api.recipes.chance.output.ChancedOutputLogic;
 import gregtech.api.recipes.chance.output.impl.ChancedFluidOutput;
@@ -18,7 +17,6 @@ import gregtech.integration.groovy.GroovyScriptModule;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.ImmutableList;
@@ -464,37 +462,34 @@ public class Recipe {
      * The Recipe should be trimmed by calling {@link Recipe#getItemAndChanceOutputs(int)} before calling this method,
      * if trimming is required.
      *
-     * @param recipeTier  The Voltage Tier of the Recipe, used for chanced output calculation
-     * @param machineTier The Voltage Tier of the Machine, used for chanced output calculation
-     * @param recipeMap   The RecipeMap that the recipe is being performed upon, used for chanced output calculation
+     * @param context Context containing machine and recipe tier, the boost function, and the chance cache
      * @return A list of all resulting ItemStacks from the recipe, after chance has been applied to any chanced outputs
      */
-    public List<ItemStack> getResultItemOutputs(int recipeTier, int machineTier, RecipeMap<?> recipeMap) {
+    public List<ItemStack> getResultItemOutputs(RecipeContext<ItemStack> context) {
         List<ItemStack> outputs = new ArrayList<>(getOutputs());
-        ChanceBoostFunction function = recipeMap.getChanceFunction();
-        List<ChancedItemOutput> chancedOutputsList = getChancedOutputs().roll(function, recipeTier, machineTier);
+        var chancedOutputsList = getChancedOutputs().roll(context);
 
         if (chancedOutputsList == null) return outputs;
 
         Collection<ItemStack> resultChanced = new ArrayList<>();
-        for (ChancedItemOutput chancedOutput : chancedOutputsList) {
-            ItemStack stackToAdd = chancedOutput.getIngredient().copy();
-            for (ItemStack stackInList : resultChanced) {
-                int insertable = stackInList.getMaxStackSize() - stackInList.getCount();
-                if (insertable > 0 && ItemHandlerHelper.canItemStacksStack(stackInList, stackToAdd)) {
-                    if (insertable >= stackToAdd.getCount()) {
-                        stackInList.grow(stackToAdd.getCount());
-                        stackToAdd = ItemStack.EMPTY;
-                        break;
-                    } else {
-                        stackInList.grow(insertable);
-                        stackToAdd.shrink(insertable);
-                    }
-                }
-            }
-            if (!stackToAdd.isEmpty()) {
-                resultChanced.add(stackToAdd);
-            }
+        for (var chancedOutput : chancedOutputsList) {
+            ItemStack stackToAdd = chancedOutput.createStack((output, count) -> GTUtility.copy(count, output));
+            // for (ItemStack stackInList : resultChanced) {
+            // int insertable = stackInList.getMaxStackSize() - stackInList.getCount();
+            // if (insertable > 0 && ItemHandlerHelper.canItemStacksStack(stackInList, stackToAdd)) {
+            // if (insertable >= stackToAdd.getCount()) {
+            // stackInList.grow(stackToAdd.getCount());
+            // stackToAdd = ItemStack.EMPTY;
+            // break;
+            // } else {
+            // stackInList.grow(insertable);
+            // stackToAdd.shrink(insertable);
+            // }
+            // }
+            // }
+            // if (!stackToAdd.isEmpty()) {
+            // }
+            resultChanced.add(stackToAdd);
         }
 
         outputs.addAll(resultChanced);
@@ -659,22 +654,19 @@ public class Recipe {
      * The Recipe should be trimmed by calling {@link Recipe#getFluidAndChanceOutputs(int)} before calling this method,
      * if trimming is required.
      *
-     * @param recipeTier  The Voltage Tier of the Recipe, used for chanced output calculation
-     * @param machineTier The Voltage Tier of the Machine, used for chanced output calculation
-     * @param recipeMap   The RecipeMap that the recipe is being performed upon, used for chanced output calculation
+     * @param context Context containing machine and recipe tier, the boost function, and the chance cache
      * @return A list of all resulting ItemStacks from the recipe, after chance has been applied to any chanced outputs
      */
-    public List<FluidStack> getResultFluidOutputs(int recipeTier, int machineTier, RecipeMap<?> recipeMap) {
+    public List<FluidStack> getResultFluidOutputs(RecipeContext<FluidStack> context) {
         List<FluidStack> outputs = new ArrayList<>(GTUtility.copyFluidList(getFluidOutputs()));
 
-        ChanceBoostFunction function = recipeMap.getChanceFunction();
-        List<ChancedFluidOutput> chancedOutputsList = getChancedFluidOutputs().roll(function, recipeTier, machineTier);
+        var chancedOutputsList = getChancedFluidOutputs().roll(context);
 
         if (chancedOutputsList == null) return outputs;
 
         Collection<FluidStack> resultChanced = new ArrayList<>();
-        for (ChancedFluidOutput chancedOutput : chancedOutputsList) {
-            FluidStack stackToAdd = chancedOutput.getIngredient().copy();
+        for (var chancedOutput : chancedOutputsList) {
+            FluidStack stackToAdd = chancedOutput.createStack(FluidStack::new);
             for (FluidStack stackInList : resultChanced) {
                 int insertable = stackInList.amount;
                 if (insertable > 0 && stackInList.getFluid() == stackToAdd.getFluid()) {

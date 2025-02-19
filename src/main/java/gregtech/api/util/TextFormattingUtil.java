@@ -55,6 +55,10 @@ public class TextFormattingUtil {
         return NUMBER_FORMAT.format(number);
     }
 
+    public static String formatPercent(double number) {
+        return String.format("%,.2f", number);
+    }
+
     /** Allows for formatting Long, Integer, Short, Byte, Number, AtomicInteger, AtomicLong, and BigInteger. */
     public static String formatNumbers(Object number) {
         return NUMBER_FORMAT.format(number);

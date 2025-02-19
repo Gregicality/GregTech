@@ -339,7 +339,7 @@ public class ReactorRecipes {
                 .circuitMeta(1)
                 .input(gem, Charcoal)
                 .fluidInputs(Oxygen.getFluid(1000))
-                .chancedOutput(dust, Ash, 1111, 0)
+                .chancedOutput(dust, Ash, "1/9", 0)
                 .fluidOutputs(CarbonMonoxide.getFluid(1000))
                 .duration(80).EUt(VA[ULV]).buildAndRegister();
 
@@ -347,7 +347,7 @@ public class ReactorRecipes {
                 .circuitMeta(1)
                 .input(gem, Coal)
                 .fluidInputs(Oxygen.getFluid(1000))
-                .chancedOutput(dust, Ash, 1111, 0)
+                .chancedOutput(dust, Ash, "1/9", 0)
                 .fluidOutputs(CarbonMonoxide.getFluid(1000))
                 .duration(80).EUt(VA[ULV]).buildAndRegister();
 
@@ -355,7 +355,7 @@ public class ReactorRecipes {
                 .circuitMeta(1)
                 .input(dust, Charcoal)
                 .fluidInputs(Oxygen.getFluid(1000))
-                .chancedOutput(dust, Ash, 1111, 0)
+                .chancedOutput(dust, Ash, "1/9", 0)
                 .fluidOutputs(CarbonMonoxide.getFluid(1000))
                 .duration(80).EUt(VA[ULV]).buildAndRegister();
 
@@ -364,7 +364,7 @@ public class ReactorRecipes {
                 .input(dust, Coal)
                 .circuitMeta(1)
                 .fluidInputs(Oxygen.getFluid(1000))
-                .chancedOutput(dust, Ash, 1111, 0)
+                .chancedOutput(dust, Ash, "1/9", 0)
                 .fluidOutputs(CarbonMonoxide.getFluid(1000))
                 .buildAndRegister();
 
@@ -409,7 +409,7 @@ public class ReactorRecipes {
                 .circuitMeta(2)
                 .input(gem, Charcoal)
                 .fluidInputs(Oxygen.getFluid(2000))
-                .chancedOutput(dust, Ash, 1111, 0)
+                .chancedOutput(dust, Ash, "1/9", 0)
                 .fluidOutputs(CarbonDioxide.getFluid(1000))
                 .duration(80).EUt(VA[ULV]).buildAndRegister();
 
@@ -417,7 +417,7 @@ public class ReactorRecipes {
                 .circuitMeta(2)
                 .input(gem, Coal)
                 .fluidInputs(Oxygen.getFluid(2000))
-                .chancedOutput(dust, Ash, 1111, 0)
+                .chancedOutput(dust, Ash, "1/9", 0)
                 .fluidOutputs(CarbonDioxide.getFluid(1000))
                 .duration(80).EUt(VA[ULV]).buildAndRegister();
 
@@ -425,7 +425,7 @@ public class ReactorRecipes {
                 .circuitMeta(2)
                 .input(dust, Charcoal)
                 .fluidInputs(Oxygen.getFluid(2000))
-                .chancedOutput(dust, Ash, 1111, 0)
+                .chancedOutput(dust, Ash, "1/9", 0)
                 .fluidOutputs(CarbonDioxide.getFluid(1000))
                 .duration(80).EUt(VA[ULV]).buildAndRegister();
 
@@ -433,7 +433,7 @@ public class ReactorRecipes {
                 .circuitMeta(2)
                 .input(dust, Coal)
                 .fluidInputs(Oxygen.getFluid(2000))
-                .chancedOutput(dust, Ash, 1111, 0)
+                .chancedOutput(dust, Ash, "1/9", 0)
                 .fluidOutputs(CarbonDioxide.getFluid(1000))
                 .duration(80).EUt(VA[ULV]).buildAndRegister();
 

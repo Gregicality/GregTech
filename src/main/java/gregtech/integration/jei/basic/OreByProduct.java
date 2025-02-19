@@ -8,6 +8,7 @@ import gregtech.api.unification.material.info.MaterialFlags;
 import gregtech.api.unification.material.properties.OreProperty;
 import gregtech.api.unification.material.properties.PropertyKey;
 import gregtech.api.unification.ore.OrePrefix;
+import gregtech.api.util.TextFormattingUtil;
 import gregtech.client.utils.TooltipHelper;
 import gregtech.common.metatileentities.MetaTileEntities;
 
@@ -287,9 +288,10 @@ public class OreByProduct implements IRecipeWrapper {
     public void addTooltip(int slotIndex, boolean input, Object ingredient, List<String> tooltip) {
         if (chances.containsKey(slotIndex)) {
             ChancedItemOutput entry = chances.get(slotIndex);
-            double chance = entry.getChance() / 100.0;
+            double chance = 100 * (double) entry.getChance() / entry.getMaxChance();
+            String percent = TextFormattingUtil.formatPercent(chance);
             double boost = entry.getChanceBoost() / 100.0;
-            tooltip.add(TooltipHelper.BLINKING_CYAN + I18n.format("gregtech.recipe.chance", chance, boost));
+            tooltip.add(TooltipHelper.BLINKING_CYAN + I18n.format("gregtech.recipe.chance", percent, boost));
         }
     }
 
