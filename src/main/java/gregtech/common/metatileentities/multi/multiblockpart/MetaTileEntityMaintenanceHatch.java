@@ -14,10 +14,7 @@ import gregtech.api.items.toolitem.ToolClasses;
 import gregtech.api.items.toolitem.ToolHelper;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
-import gregtech.api.metatileentity.multiblock.IMaintenance;
-import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
-import gregtech.api.metatileentity.multiblock.MultiblockAbility;
-import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
+import gregtech.api.metatileentity.multiblock.*;
 import gregtech.api.util.GTUtility;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.utils.TooltipHelper;
@@ -516,8 +513,8 @@ public class MetaTileEntityMaintenanceHatch extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public void registerAbilities(List<IMaintenanceHatch> abilityList) {
-        abilityList.add(this);
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.add(this);
     }
 
     @Override

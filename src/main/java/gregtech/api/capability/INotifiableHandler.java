@@ -2,6 +2,8 @@ package gregtech.api.capability;
 
 import gregtech.api.metatileentity.MetaTileEntity;
 
+import net.minecraftforge.items.IItemHandler;
+
 /**
  * For Item and Fluid handlers capable of notifying entities when
  * their contents change
@@ -30,4 +32,12 @@ public interface INotifiableHandler {
     void addNotifiableMetaTileEntity(MetaTileEntity metaTileEntity);
 
     void removeNotifiableMetaTileEntity(MetaTileEntity metaTileEntity);
+
+    default int size() {
+        if (this instanceof IItemHandler handler)
+            return handler.getSlots();
+        else if (this instanceof IMultipleTankHandler tankHandler)
+            return tankHandler.getTanks();
+        return 1;
+    }
 }

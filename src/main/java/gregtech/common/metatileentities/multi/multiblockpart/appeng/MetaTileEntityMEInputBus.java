@@ -15,6 +15,7 @@ import gregtech.api.gui.widgets.GhostCircuitSlotWidget;
 import gregtech.api.gui.widgets.SlotWidget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
@@ -330,8 +331,8 @@ public class MetaTileEntityMEInputBus extends MetaTileEntityAEHostablePart<IAEIt
     }
 
     @Override
-    public void registerAbilities(List<IItemHandlerModifiable> list) {
-        list.add(this.actualImportItems);
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.add(this.actualImportItems);
     }
 
     @Override

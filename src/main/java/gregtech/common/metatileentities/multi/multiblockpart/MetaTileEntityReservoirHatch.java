@@ -1,16 +1,20 @@
 package gregtech.common.metatileentities.multi.multiblockpart;
 
 import gregtech.api.GTValues;
+import gregtech.api.capability.IGhostSlotConfigurable;
 import gregtech.api.capability.impl.FilteredItemHandler;
 import gregtech.api.capability.impl.FluidTankList;
+import gregtech.api.capability.impl.GhostCircuitItemStackHandler;
 import gregtech.api.capability.impl.NotifiableFluidTank;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.mui.sync.GTFluidSyncHandler;
+import gregtech.api.mui.widget.GhostCircuitSlotWidget;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.mui.widget.GTFluidSlot;
 
@@ -46,17 +50,24 @@ import com.cleanroommc.modularui.widgets.SlotGroupWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MetaTileEntityReservoirHatch extends MetaTileEntityMultiblockNotifiablePart
-                                          implements IMultiblockAbilityPart<IFluidTank> {
+                                          implements IMultiblockAbilityPart<IFluidTank>,
+                                          IGhostSlotConfigurable {
 
     private static final int FLUID_AMOUNT = 2_000_000_000;
     private final InfiniteWaterTank fluidTank;
+    private GhostCircuitItemStackHandler circuitInventory;
 
     public MetaTileEntityReservoirHatch(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId, GTValues.EV, false);
         this.fluidTank = new InfiniteWaterTank(getInventorySize(), this);
+        if (this.hasGhostCircuitInventory()) {
+            this.circuitInventory = new GhostCircuitItemStackHandler(this);
+            this.circuitInventory.addNotifiableMetaTileEntity(this);
+        }
         initializeInventory();
     }
 
@@ -114,13 +125,17 @@ public class MetaTileEntityReservoirHatch extends MetaTileEntityMultiblockNotifi
     }
 
     @Override
-    public MultiblockAbility<IFluidTank> getAbility() {
-        return MultiblockAbility.IMPORT_FLUIDS;
+    public @NotNull List<MultiblockAbility<?>> getAbilities() {
+        return Arrays.asList(MultiblockAbility.IMPORT_FLUIDS, MultiblockAbility.IMPORT_ITEMS);
     }
 
     @Override
-    public void registerAbilities(List<IFluidTank> abilityList) {
-        abilityList.add(fluidTank);
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        if (abilityInstances.isKey(MultiblockAbility.IMPORT_FLUIDS))
+            abilityInstances.add(fluidTank);
+        else if (abilityInstances.isKey(MultiblockAbility.IMPORT_ITEMS)) {
+            abilityInstances.add(circuitInventory);
+        }
     }
 
     @Override
@@ -172,7 +187,11 @@ public class MetaTileEntityReservoirHatch extends MetaTileEntityMultiblockNotifi
                         .slotGroup("item_inv")
                         .accessibility(false, true))
                         .background(GTGuiTextures.SLOT, GTGuiTextures.OUT_SLOT_OVERLAY)
-                        .pos(90, 53));
+                        .pos(90, 53))
+                .child(new GhostCircuitSlotWidget()
+                        .slot(circuitInventory, 0)
+                        .background(GTGuiTextures.SLOT, GTGuiTextures.INT_CIRCUIT_OVERLAY)
+                        .pos(124, 62));
     }
 
     @Override
@@ -186,6 +205,22 @@ public class MetaTileEntityReservoirHatch extends MetaTileEntityMultiblockNotifi
     public void addToolUsages(ItemStack stack, @Nullable World world, List<String> tooltip, boolean advanced) {
         tooltip.add(I18n.format("gregtech.tool_action.screwdriver.access_covers"));
         super.addToolUsages(stack, world, tooltip, advanced);
+    }
+
+    @Override
+    public boolean hasGhostCircuitInventory() {
+        return true;
+    }
+
+    @Override
+    public void setGhostCircuitConfig(int config) {
+        if (this.circuitInventory.getCircuitValue() == config) {
+            return;
+        }
+        this.circuitInventory.setCircuitValue(config);
+        if (!getWorld().isRemote) {
+            markDirty();
+        }
     }
 
     private static class InfiniteWaterTank extends NotifiableFluidTank {

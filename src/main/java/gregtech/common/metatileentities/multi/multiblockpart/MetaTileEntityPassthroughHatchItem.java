@@ -8,6 +8,7 @@ import gregtech.api.capability.impl.NotifiableItemStackHandler;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.IPassthroughHatch;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
@@ -220,8 +221,8 @@ public class MetaTileEntityPassthroughHatchItem extends MetaTileEntityMultiblock
     }
 
     @Override
-    public void registerAbilities(@NotNull List<IPassthroughHatch> abilityList) {
-        abilityList.add(this);
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.add(this);
     }
 
     @NotNull

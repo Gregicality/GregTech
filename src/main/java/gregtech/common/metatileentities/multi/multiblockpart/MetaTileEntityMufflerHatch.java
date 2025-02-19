@@ -6,10 +6,7 @@ import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.metatileentity.ITieredMetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
-import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
-import gregtech.api.metatileentity.multiblock.MultiblockAbility;
-import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
-import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
+import gregtech.api.metatileentity.multiblock.*;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.util.GTTransferUtils;
 import gregtech.api.util.GTUtility;
@@ -160,8 +157,8 @@ public class MetaTileEntityMufflerHatch extends MetaTileEntityMultiblockPart imp
     }
 
     @Override
-    public void registerAbilities(List<IMufflerHatch> abilityList) {
-        abilityList.add(this);
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.add(this);
     }
 
     @Override

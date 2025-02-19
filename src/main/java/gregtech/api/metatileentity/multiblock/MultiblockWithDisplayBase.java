@@ -546,7 +546,8 @@ public abstract class MultiblockWithDisplayBase extends MultiblockControllerBase
         for (IFluidTank tank : this.getAbilities(MultiblockAbility.IMPORT_FLUIDS)) {
             this.getNotifiedFluidInputList().add((IFluidHandler) tank);
         }
-        this.getNotifiedItemInputList().addAll(this.getAbilities(MultiblockAbility.IMPORT_ITEMS));
+        this.getNotifiedItemInputList()
+                .addAll(this.getAbilities(MultiblockAbility.IMPORT_ITEMS));
 
         markDirty();
     }

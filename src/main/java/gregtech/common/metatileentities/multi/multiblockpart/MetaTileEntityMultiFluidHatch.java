@@ -7,6 +7,7 @@ import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.capability.impl.NotifiableFluidTank;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.mui.GTGuis;
@@ -37,6 +38,7 @@ import com.cleanroommc.modularui.network.NetworkUtils;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widgets.layout.Grid;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -199,8 +201,8 @@ public class MetaTileEntityMultiFluidHatch extends MetaTileEntityMultiblockNotif
     }
 
     @Override
-    public void registerAbilities(List<IFluidTank> abilityList) {
-        abilityList.addAll(fluidTankList.getFluidTanks());
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.addAll(fluidTankList.getFluidTanks());
     }
 
     @Override
