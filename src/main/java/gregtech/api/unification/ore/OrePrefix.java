@@ -325,6 +325,30 @@ public class OrePrefix {
     public static final OrePrefix circuit = new OrePrefix("circuit", -1, null, null, ENABLE_UNIFICATION, null);
     public static final OrePrefix component = new OrePrefix("component", -1, null, null, ENABLE_UNIFICATION, null);
 
+    // Nuclear stuff, introduced by Zalgo and Bruberu
+    public static final OrePrefix fuelRod = new OrePrefix("fuelRod", -1, null, MaterialIconType.fuelRod, 0,
+            hasFissionProperty,
+            mat -> Collections.singletonList(I18n.format("metaitem.nuclear.tooltip.radioactive")));
+    public static final OrePrefix fuelRodDepleted = new OrePrefix("fuelRodDepleted", -1, null,
+            MaterialIconType.fuelRodDepleted, 0, hasFissionProperty,
+            mat -> Collections.singletonList(I18n.format("metaitem.nuclear.tooltip.radioactive")));
+    public static final OrePrefix fuelRodHotDepleted = new OrePrefix("fuelRodHotDepleted", -1, null,
+            MaterialIconType.fuelRodHotDepleted, 0, hasFissionProperty,
+            mat -> Collections.singletonList(I18n.format("metaitem.nuclear.tooltip.radioactive")));
+    public static final OrePrefix fuelPellet = new OrePrefix("fuelPellet", -1, null,
+            MaterialIconType.fuelPellet, 0, hasFissionProperty,
+            mat -> Collections.singletonList(I18n.format("metaitem.nuclear.tooltip.radioactive")));
+    public static final OrePrefix fuelPelletDepleted = new OrePrefix("fuelPelletDepleted", -1, null,
+            MaterialIconType.fuelPelletDepleted, 0, hasFissionProperty,
+            mat -> Collections.singletonList(I18n.format("metaitem.nuclear.tooltip.radioactive")));
+
+    public static final OrePrefix dustSpentFuel = new OrePrefix("dustSpentFuel", -1, null,
+            MaterialIconType.dustSpentFuel, 0, hasFissionProperty);
+    public static final OrePrefix dustBredFuel = new OrePrefix("dustBredFuel", -1, null,
+            MaterialIconType.dustBredFuel, 0, hasFissionProperty);
+    public static final OrePrefix dustFissionByproduct = new OrePrefix("dustFissionByproduct", -1, null,
+            MaterialIconType.dustFissionByproduct, 0, hasFissionProperty);
+
     public static class Flags {
 
         public static final long ENABLE_UNIFICATION = 1;
@@ -342,6 +366,7 @@ public class OrePrefix {
         public static final Predicate<Material> hasIngotProperty = mat -> mat.hasProperty(PropertyKey.INGOT);
         public static final Predicate<Material> hasBlastProperty = mat -> mat.hasProperty(PropertyKey.BLAST);
         public static final Predicate<Material> hasRotorProperty = mat -> mat.hasProperty(PropertyKey.ROTOR);
+        public static final Predicate<Material> hasFissionProperty = mat -> mat.hasProperty(PropertyKey.FISSION_FUEL);
     }
 
     public static void init() {
