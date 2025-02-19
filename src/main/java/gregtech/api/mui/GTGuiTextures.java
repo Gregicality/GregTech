@@ -8,6 +8,8 @@ import com.cleanroommc.modularui.drawable.UITexture;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * GT MUI textures.<br>
  * Marked experimental as some of these textures may disappear or be renamed at some point
@@ -43,7 +45,12 @@ public class GTGuiTextures {
     /** @apiNote You may want {@link GTGuiTextures#getLogo} instead. */
     public static final UITexture GREGTECH_LOGO_XMAS = fullImage("textures/gui/icon/gregtech_logo_xmas.png");
     public static final UITexture GREGTECH_LOGO_DARK = fullImage("textures/gui/icon/gregtech_logo_dark.png");
-    // todo blinking GT logos
+    public static final IDrawable GREGTECH_LOGO_BLINKING_YELLOW = animated(
+            "textures/gui/icon/gregtech_logo_blinking_yellow.png",
+            17, 34, true, 60);
+    public static final IDrawable GREGTECH_LOGO_BLINKING_RED = animated(
+            "textures/gui/icon/gregtech_logo_blinking_red.png",
+            17, 34, true, 36);
 
     public static final UITexture INDICATOR_NO_ENERGY = fullImage("textures/gui/base/indicator_no_energy.png");
     public static final UITexture INDICATOR_NO_STEAM_BRONZE = fullImage(
@@ -117,6 +124,17 @@ public class GTGuiTextures {
 
     // todo primitive display?
 
+    // FUSION
+    public static final UITexture FUSION_REACTOR_MK1_TITLE = fullImage(
+            "textures/gui/widget/fusion_reactor_mk1_title.png");
+    public static final UITexture FUSION_REACTOR_MK2_TITLE = fullImage(
+            "textures/gui/widget/fusion_reactor_mk2_title.png");
+    public static final UITexture FUSION_REACTOR_MK3_TITLE = fullImage(
+            "textures/gui/widget/fusion_reactor_mk3_title.png");
+    public static final UITexture FUSION_DIAGRAM = fullImage("textures/gui/widget/fusion_reactor_diagram.png");
+    public static final UITexture FUSION_LEGEND = fullImage("textures/gui/widget/fusion_reactor_legend.png");
+    public static final UITexture FUSION_PROGRESS = fullImage("textures/gui/progress_bar/fusion_diagram/stitched.png");
+
     // SLOTS
     public static final UITexture SLOT = new UITexture.Builder()
             .location(GTValues.MODID, "textures/gui/base/slot.png")
@@ -155,6 +173,25 @@ public class GTGuiTextures {
             .name(IDs.STANDARD_FLUID_SLOT)
             .canApplyTheme()
             .build();
+
+    // HPCA Component icons
+    public static final UITexture BLANK_TRANSPARENT = fullImage("textures/gui/base/blank_transparent.png");
+    public static final UITexture HPCA_COMPONENT_OUTLINE = fullImage("textures/gui/widget/hpca/component_outline.png");
+    public static final UITexture HPCA_ICON_EMPTY_COMPONENT = fullImage("textures/gui/widget/hpca/empty_component.png");
+    public static final UITexture HPCA_ICON_ADVANCED_COMPUTATION_COMPONENT = fullImage(
+            "textures/gui/widget/hpca/advanced_computation_component.png");
+    public static final UITexture HPCA_ICON_BRIDGE_COMPONENT = fullImage(
+            "textures/gui/widget/hpca/bridge_component.png");
+    public static final UITexture HPCA_ICON_COMPUTATION_COMPONENT = fullImage(
+            "textures/gui/widget/hpca/computation_component.png");
+    public static final UITexture HPCA_ICON_ACTIVE_COOLER_COMPONENT = fullImage(
+            "textures/gui/widget/hpca/active_cooler_component.png");
+    public static final UITexture HPCA_ICON_HEAT_SINK_COMPONENT = fullImage(
+            "textures/gui/widget/hpca/heat_sink_component.png");
+    public static final UITexture HPCA_ICON_DAMAGED_ADVANCED_COMPUTATION_COMPONENT = fullImage(
+            "textures/gui/widget/hpca/damaged_advanced_computation_component.png");
+    public static final UITexture HPCA_ICON_DAMAGED_COMPUTATION_COMPONENT = fullImage(
+            "textures/gui/widget/hpca/damaged_computation_component.png");
 
     public static final UITexture[] BUTTON_BLACKLIST = slice("textures/gui/widget/button_blacklist.png",
             16, 32, 16, 16, true);
@@ -362,8 +399,42 @@ public class GTGuiTextures {
     public static final UITexture BUTTON_CROSS = fullImage("textures/gui/widget/button_cross.png");
     public static final UITexture BUTTON_REDSTONE_ON = fullImage("textures/gui/widget/button_redstone_on.png");
     public static final UITexture BUTTON_REDSTONE_OFF = fullImage("textures/gui/widget/button_redstone_off.png");
-    public static final UITexture BUTTON_THROTTLE_PLUS = fullImage("textures/gui/widget/button_throttle_plus.png");
-    public static final UITexture BUTTON_THROTTLE_MINUS = fullImage("textures/gui/widget/button_throttle_minus.png");
+
+    /**
+     * 0 = OFF <br />
+     * 1 = ON <br />
+     */
+    public static final UITexture[] BUTTON_POWER = slice("textures/gui/widget/button_power.png",
+            18, 36, 18, 18, true);
+
+    public static final UITexture BUTTON_POWER_DETAIL = fullImage("textures/gui/widget/button_power_detail.png", true);
+
+    /**
+     * 0 = DISABLED <br />
+     * 1 = ITEM VOID <br />
+     * 2 = FLUID VOID <br />
+     * 3 = VOID BOTH <br />
+     **/
+    public static final UITexture[] MULTIBLOCK_VOID = slice("textures/gui/widget/button_void_multiblock.png",
+            18, 72, 18, 18, true);
+
+    public static final UITexture BUTTON_VOID_NONE = fullImage("textures/gui/widget/button_void_none.png", true);
+
+    /**
+     * 0 = DISABLED <br />
+     * 1 = ENABLED <br />
+     */
+    public static final UITexture[] BUTTON_DISTINCT_BUSES = slice("textures/gui/widget/button_distinct_buses.png",
+            18, 36, 18, 18, true);
+    public static final UITexture BUTTON_NO_DISTINCT_BUSES = fullImage(
+            "textures/gui/widget/button_no_distinct_buses.png", true);
+    public static final UITexture BUTTON_NO_FLEX = fullImage("textures/gui/widget/button_no_flex.png", true);
+    public static final UITexture BUTTON_MULTI_MAP = fullImage("textures/gui/widget/button_multi_map.png", true);
+    public static final UITexture BUTTON_MINER_MODES = fullImage("textures/gui/widget/button_miner_modes.png", true);
+    public static final UITexture BUTTON_THROTTLE_MINUS = fullImage("textures/gui/widget/button_throttle_minus.png",
+            true); // TODO new texture
+    public static final UITexture BUTTON_THROTTLE_PLUS = fullImage("textures/gui/widget/button_throttle_plus.png",
+            true); // TODO remove this
 
     // PROGRESS BARS
     public static final UITexture PROGRESS_BAR_ARC_FURNACE = progressBar(
@@ -466,9 +537,9 @@ public class GTGuiTextures {
             .adaptable(1)
             .build();
     public static final UITexture PROGRESS_BAR_BOILER_FUEL_BRONZE = progressBar(
-            "textures/gui/progress_bar/progress_bar_boiler_fuel_bronze.png", 18, 36);
+            "textures/gui/progress_bar/progress_bar_boiler_fuel_bronze.png", 18, 36, true);
     public static final UITexture PROGRESS_BAR_BOILER_FUEL_STEEL = progressBar(
-            "textures/gui/progress_bar/progress_bar_boiler_fuel_steel.png", 18, 36);
+            "textures/gui/progress_bar/progress_bar_boiler_fuel_steel.png", 18, 36, true);
     public static final UITexture PROGRESS_BAR_BOILER_HEAT = progressBar(
             "textures/gui/progress_bar/progress_bar_boiler_heat.png", true);
     public static final UITexture PROGRESS_BAR_ASSEMBLY_LINE = progressBar(
@@ -480,9 +551,9 @@ public class GTGuiTextures {
     public static final UITexture PROGRESS_BAR_DISTILLATION_TOWER = progressBar(
             "textures/gui/progress_bar/progress_bar_distillation_tower.png", 66, 116, true);
     public static final UITexture PROGRESS_BAR_SOLAR_BRONZE = progressBar(
-            "textures/gui/progress_bar/progress_bar_solar_bronze.png", 10, 20);
+            "textures/gui/progress_bar/progress_bar_solar_bronze.png", 10, 20, true);
     public static final UITexture PROGRESS_BAR_SOLAR_STEEL = progressBar(
-            "textures/gui/progress_bar/progress_bar_solar_steel.png", 10, 20);
+            "textures/gui/progress_bar/progress_bar_solar_steel.png", 10, 20, true);
     public static final UITexture PROGRESS_BAR_RESEARCH_STATION_1 = progressBar(
             "textures/gui/progress_bar/progress_bar_research_station_1.png", 54, 10, true);
     public static final UITexture PROGRESS_BAR_RESEARCH_STATION_2 = progressBar(
@@ -490,25 +561,25 @@ public class GTGuiTextures {
     public static final UITexture PROGRESS_BAR_RESEARCH_STATION_BASE = fullImage(
             "textures/gui/progress_bar/progress_bar_research_station_base.png", true);
     public static final UITexture PROGRESS_BAR_FUSION_ENERGY = progressBar(
-            "textures/gui/progress_bar/progress_bar_fusion_energy.png", 94, 14);
+            "textures/gui/progress_bar/progress_bar_fusion_energy.png", 94, 14, true);
     public static final UITexture PROGRESS_BAR_FUSION_HEAT = progressBar(
-            "textures/gui/progress_bar/progress_bar_fusion_heat.png", 94, 14);
+            "textures/gui/progress_bar/progress_bar_fusion_heat.png", 94, 14, true);
     public static final UITexture PROGRESS_BAR_MULTI_ENERGY_YELLOW = progressBar(
-            "textures/gui/progress_bar/progress_bar_multi_energy_yellow.png", 190, 14);
+            "textures/gui/progress_bar/progress_bar_multi_energy_yellow.png", 190, 14, true);
     public static final UITexture PROGRESS_BAR_HPCA_COMPUTATION = progressBar(
-            "textures/gui/progress_bar/progress_bar_hpca_computation.png", 94, 14);
+            "textures/gui/progress_bar/progress_bar_hpca_computation.png", 94, 14, true);
     public static final UITexture PROGRESS_BAR_LCE_FUEL = progressBar(
-            "textures/gui/progress_bar/progress_bar_lce_fuel.png", 62, 14);
+            "textures/gui/progress_bar/progress_bar_lce_fuel.png", 62, 14, true);
     public static final UITexture PROGRESS_BAR_LCE_LUBRICANT = progressBar(
-            "textures/gui/progress_bar/progress_bar_lce_lubricant.png", 62, 14);
+            "textures/gui/progress_bar/progress_bar_lce_lubricant.png", 62, 14, true);
     public static final UITexture PROGRESS_BAR_LCE_OXYGEN = progressBar(
-            "textures/gui/progress_bar/progress_bar_lce_oxygen.png", 62, 14);
+            "textures/gui/progress_bar/progress_bar_lce_oxygen.png", 62, 14, true);
     public static final UITexture PROGRESS_BAR_TURBINE_ROTOR_SPEED = progressBar(
-            "textures/gui/progress_bar/progress_bar_turbine_rotor_speed.png", 62, 14);
+            "textures/gui/progress_bar/progress_bar_turbine_rotor_speed.png", 62, 14, true);
     public static final UITexture PROGRESS_BAR_TURBINE_ROTOR_DURABILITY = progressBar(
-            "textures/gui/progress_bar/progress_bar_turbine_rotor_durability.png", 62, 14);
+            "textures/gui/progress_bar/progress_bar_turbine_rotor_durability.png", 62, 14, true);
     public static final UITexture PROGRESS_BAR_FLUID_RIG_DEPLETION = progressBar(
-            "textures/gui/progress_bar/progress_bar_fluid_rig_depletion.png", 190, 14);
+            "textures/gui/progress_bar/progress_bar_fluid_rig_depletion.png", 190, 14, true);
 
     // MISC
 
@@ -545,6 +616,15 @@ public class GTGuiTextures {
         return slices;
     }
 
+    private static UITexture[] slice(String path, int imageWidth, int imageHeight, boolean canApplyTheme) {
+        int sliceSize = Math.min(imageWidth, imageHeight);
+        return slice(path, imageWidth, imageHeight, sliceSize, sliceSize, canApplyTheme);
+    }
+
+    private static IDrawable animated(String path, int imageWidth, int imageHeight, boolean canApplyTheme, int rate) {
+        return dynamic(slice(path, imageWidth, imageHeight, canApplyTheme), rate);
+    }
+
     private static UITexture progressBar(String path) {
         return progressBar(path, 20, 40, false);
     }
@@ -572,5 +652,18 @@ public class GTGuiTextures {
             if (logo != null) return logo;
         }
         return GTValues.XMAS.get() ? GREGTECH_LOGO_XMAS : GREGTECH_LOGO;
+    }
+
+    public static IDrawable dynamic(UITexture[] textures, int rate) {
+        AtomicInteger index = new AtomicInteger();
+        AtomicInteger tick = new AtomicInteger();
+        // todo something is wrong with this
+        // also this method is client only so that could cause problems too
+        return (context, x, y, width, height, widgetTheme) -> {
+            int a = tick.getAndIncrement() % rate; // this makes rate per frame ?
+            int i = a == 0 ? index.incrementAndGet() : index.get();
+            index.set(i % textures.length);
+            textures[index.get()].draw(context, x, y, width, height, widgetTheme);
+        };
     }
 }

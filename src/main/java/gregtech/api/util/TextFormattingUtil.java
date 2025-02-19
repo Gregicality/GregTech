@@ -1,5 +1,6 @@
 package gregtech.api.util;
 
+import java.math.BigInteger;
 import java.text.NumberFormat;
 
 public class TextFormattingUtil {
@@ -13,9 +14,23 @@ public class TextFormattingUtil {
             1_000_000_000_000_000_000L
     };
 
-    private static final char[] metricSuffixChars = {
-            'k', 'M', 'G', 'T', 'P', 'E'
+    private static final BigInteger[] metricBigSuffixValues = {
+            BigInteger.TEN.pow(3),
+            BigInteger.TEN.pow(6),
+            BigInteger.TEN.pow(9),
+            BigInteger.TEN.pow(12),
+            BigInteger.TEN.pow(15),
+            BigInteger.TEN.pow(18),
+            BigInteger.TEN.pow(21),
+            BigInteger.TEN.pow(24),
+            BigInteger.TEN.pow(27),
+            BigInteger.TEN.pow(30)
     };
+
+    private static final char[] metricSuffixChars = {
+            'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y', 'R', 'Q'
+    };
+
     private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance();
 
     public static String formatLongToCompactString(long value, int precision) {
@@ -36,11 +51,34 @@ public class TextFormattingUtil {
         long suffixValue = metricSuffixValues[i];
         stb.append(value / suffixValue);
 
-        long truncatedDigit = value % suffixValue / (suffixValue / 10);
+        long truncatedDigit = value % suffixValue / (suffixValue / (long) Math.pow(10, precision - 3));
         if (truncatedDigit > 0) {
             stb.append('.').append(truncatedDigit);
         }
         return stb.append(metricSuffixChars[i]).toString();
+    }
+
+    public static String formatBigIntToCompactString(BigInteger value, int precision) {
+        if (BigInteger.ZERO.equals(value) || value.abs().compareTo(BigInteger.TEN.pow(precision)) < 0) {
+            return value.toString(); // deal with easy case
+        }
+
+        StringBuilder stb = new StringBuilder();
+        if (value.signum() == -1) {
+            stb.append('-');
+            value = value.abs();
+        }
+
+        int c = 0;
+        while (value.compareTo(metricBigSuffixValues[c]) >= 0) {
+            c++;
+        }
+
+        return stb.append(value.divide(metricBigSuffixValues[c - 1]))
+                .append('.')
+                .append(value.toString(), 4, precision + 1)
+                .append(metricSuffixChars[c - 1])
+                .toString();
     }
 
     public static String formatLongToCompactString(long value) {

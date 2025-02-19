@@ -133,7 +133,7 @@ public class MetaTileEntityReservoirHatch extends MetaTileEntityMultiblockNotifi
         guiSyncManager.registerSlotGroup("item_inv", 2);
 
         GTFluidSyncHandler tankSyncHandler = GTFluidSlot.sync(this.fluidTank)
-                .showAmount(false)
+                .showAmountOnSlot(false)
                 .accessibility(true, false);
 
         // TODO: Change the position of the name when it's standardized.

@@ -6,10 +6,13 @@ import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.resources.TextureArea;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 
 import net.minecraft.util.ResourceLocation;
+
+import com.cleanroommc.modularui.drawable.UITexture;
 
 public class MetaTileEntityHPCAComputation extends MetaTileEntityHPCAComponent implements IHPCAComputationProvider {
 
@@ -47,6 +50,16 @@ public class MetaTileEntityHPCAComputation extends MetaTileEntityHPCAComponent i
     }
 
     @Override
+    public UITexture getComponentIcon2() {
+        if (isDamaged()) {
+            return advanced ? GTGuiTextures.HPCA_ICON_DAMAGED_ADVANCED_COMPUTATION_COMPONENT :
+                    GTGuiTextures.HPCA_ICON_DAMAGED_COMPUTATION_COMPONENT;
+        }
+        return advanced ? GTGuiTextures.HPCA_ICON_ADVANCED_COMPUTATION_COMPONENT :
+                GTGuiTextures.HPCA_ICON_COMPUTATION_COMPONENT;
+    }
+
+    @Override
     public SimpleOverlayRenderer getFrontActiveOverlay() {
         if (isDamaged())
             return advanced ? Textures.HPCA_ADVANCED_DAMAGED_ACTIVE_OVERLAY : Textures.HPCA_DAMAGED_ACTIVE_OVERLAY;
@@ -77,5 +90,10 @@ public class MetaTileEntityHPCAComputation extends MetaTileEntityHPCAComponent i
     @Override
     public boolean canBeDamaged() {
         return true;
+    }
+
+    @Override
+    public String getTileName() {
+        return getMetaFullName();
     }
 }

@@ -140,8 +140,8 @@ public class MetaTileEntityCrate extends MetaTileEntity {
     }
 
     @Override
-    public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager guiSyncManager) {
-        guiSyncManager.registerSlotGroup("item_inv", rowSize);
+    public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager panelSyncManager) {
+        panelSyncManager.registerSlotGroup("item_inv", rowSize);
 
         int rows = inventorySize / rowSize;
         List<List<IWidget>> widgets = new ArrayList<>();

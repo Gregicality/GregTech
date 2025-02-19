@@ -5,10 +5,13 @@ import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.resources.TextureArea;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 
 import net.minecraft.util.ResourceLocation;
+
+import com.cleanroommc.modularui.drawable.UITexture;
 
 public class MetaTileEntityHPCABridge extends MetaTileEntityHPCAComponent {
 
@@ -42,6 +45,11 @@ public class MetaTileEntityHPCABridge extends MetaTileEntityHPCAComponent {
     }
 
     @Override
+    public UITexture getComponentIcon2() {
+        return GTGuiTextures.HPCA_ICON_BRIDGE_COMPONENT;
+    }
+
+    @Override
     public SimpleOverlayRenderer getFrontActiveOverlay() {
         return Textures.HPCA_BRIDGE_ACTIVE_OVERLAY;
     }
@@ -54,5 +62,10 @@ public class MetaTileEntityHPCABridge extends MetaTileEntityHPCAComponent {
     @Override
     public boolean canBeDamaged() {
         return false;
+    }
+
+    @Override
+    public String getTileName() {
+        return getMetaFullName();
     }
 }

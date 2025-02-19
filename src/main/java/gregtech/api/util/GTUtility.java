@@ -58,6 +58,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -876,6 +877,8 @@ public class GTUtility {
     }
 
     @Contract("null -> null")
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10")
     public static TextComponentTranslation getFluidTranslation(@Nullable FluidStack stack) {
         if (stack == null) return null;
         if (stack.getFluid() instanceof GTFluid.GTMaterialFluid materialFluid) {
@@ -886,6 +889,8 @@ public class GTUtility {
     }
 
     @Contract("null -> null")
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10")
     public static TextComponentTranslation getFluidTranslation(@Nullable Fluid fluid) {
         if (fluid == null) return null;
         if (fluid instanceof GTFluid.GTMaterialFluid materialFluid) {
@@ -894,6 +899,7 @@ public class GTUtility {
         return new TextComponentTranslation(fluid.getUnlocalizedName());
     }
 
+    @Deprecated
     public static @NotNull Pair<DoubleSupplier, DoubleSupplier> createPairedSupplier(int ticksPerCycle, int width,
                                                                                      double splitPoint) {
         AtomicDouble tracker = new AtomicDouble(0.0);

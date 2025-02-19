@@ -60,7 +60,8 @@ public class SimpleFluidFilter extends BaseFilter {
                         .key('F', i -> new GTFluidSlot()
                                 .syncHandler(GTFluidSlot.sync(filterReader.getFluidTank(i))
                                         .phantom(true)
-                                        .showAmount(getFilterReader()::shouldShowAmount)))
+                                        .showAmountOnSlot(getFilterReader()::shouldShowAmount)
+                                        .showAmountInTooltip(getFilterReader()::shouldShowAmount)))
                         .build().marginRight(4))
                 .child(createBlacklistUI());
     }

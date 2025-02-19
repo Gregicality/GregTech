@@ -12,7 +12,9 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import com.cleanroommc.modularui.api.drawable.IKey;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -62,6 +64,8 @@ public class GTFluid extends Fluid implements AttributedFluid {
             return this.material;
         }
 
+        @Deprecated
+        @ApiStatus.ScheduledForRemoval(inVersion = "2.10")
         public @NotNull TextComponentTranslation toTextComponentTranslation() {
             TextComponentTranslation localizedName;
             String customMaterialTranslation = "fluid." + material.getUnlocalizedName();
@@ -75,6 +79,23 @@ public class GTFluid extends Fluid implements AttributedFluid {
             if (translationKey != null) {
                 return new TextComponentTranslation(translationKey, localizedName);
             }
+            return localizedName;
+        }
+
+        public @NotNull IKey toIKey() {
+            IKey localizedName;
+            String customMaterialTranslation = "fluid." + material.getUnlocalizedName();
+
+            if (net.minecraft.util.text.translation.I18n.canTranslate(customMaterialTranslation)) {
+                localizedName = IKey.lang(customMaterialTranslation);
+            } else {
+                localizedName = IKey.lang(material.getUnlocalizedName());
+            }
+
+            if (translationKey != null) {
+                return IKey.lang(translationKey, localizedName);
+            }
+
             return localizedName;
         }
 
