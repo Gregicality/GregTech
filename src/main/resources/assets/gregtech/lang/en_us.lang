@@ -5342,6 +5342,8 @@ gregtech.machine.passthrough_hatch_item.name=Item Passthrough Hatch
 gregtech.machine.passthrough_hatch_item.tooltip=Sends Items from one Side to the other
 gregtech.machine.passthrough_hatch_fluid.name=Fluid Passthrough Hatch
 gregtech.machine.passthrough_hatch_fluid.tooltip=Sends Fluids from one Side to the other
+gregtech.machine.passthrough_hatch_laser.name=Laser Passthrough Hatch
+gregtech.machine.passthrough_hatch_laser.tooltip=Sends Laser Power from one Side to the other
 
 gregtech.machine.reservoir_hatch.name=Reservoir Hatch
 gregtech.machine.reservoir_hatch.tooltip=Not a Sink
