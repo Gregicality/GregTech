@@ -5517,6 +5517,7 @@ gregtech.recipe.amperage=Amperage: %,d
 gregtech.recipe.not_consumed=Does not get consumed in the process
 gregtech.recipe.chance=Chance: %s%% +%s%%/tier
 gregtech.recipe.chance_logic=Chance: %s%% +%s%%/tier (%s)
+gregtech.recipe.chance_total=At %s§r: %f%%
 gregtech.chance_logic.or=OR
 gregtech.chance_logic.and=AND
 gregtech.chance_logic.xor=XOR
@@ -5656,6 +5657,9 @@ gregtech.jei.fluid.max_hover=The maximum yield that any fluid vein of this fluid
 gregtech.jei.fluid.dep_chance_hover=The percentage chance for the vein to be depleted upon harvest
 gregtech.jei.fluid.dep_amount_hover=The amount the vein will be depleted by
 gregtech.jei.fluid.dep_yield_hover=The maximum yield of the vein when it is fully depleted
+
+gregtech.jei.overclock_button=§rThe speed of the recipe at %s
+gregtech.jei.overclock_warn=Results may not be fully accurate for some recipes!
 
 gregtech.jei.materials.average_mass=Average mass: %,d
 gregtech.jei.materials.average_protons=Average protons: %,d

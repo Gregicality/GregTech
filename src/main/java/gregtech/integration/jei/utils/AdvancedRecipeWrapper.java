@@ -16,6 +16,7 @@ import java.util.List;
 public abstract class AdvancedRecipeWrapper implements IRecipeWrapper {
 
     protected final List<JeiButton> buttons = new ArrayList<>();
+    protected final List<JeiInteractableText> jeiTexts = new ArrayList<>();
 
     public AdvancedRecipeWrapper() {
         initExtras();
@@ -41,6 +42,19 @@ public abstract class AdvancedRecipeWrapper implements IRecipeWrapper {
                 GlStateManager.disableLighting();
             }
         }
+
+        for (JeiInteractableText text : jeiTexts) {
+            text.render(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
+            if (text.isHovering(mouseX, mouseY)) {
+                List<String> tooltip = new ArrayList<>();
+                text.buildTooltip(tooltip);
+                if (tooltip.isEmpty()) continue;
+                int width = (int) (minecraft.displayWidth / 2f + recipeWidth / 2f);
+                GuiUtils.drawHoveringText(tooltip, mouseX, mouseY, width, minecraft.displayHeight,
+                        Math.min(150, width - mouseX - 5), minecraft.fontRenderer);
+                GlStateManager.disableLighting();
+            }
+        }
     }
 
     @Override
@@ -48,6 +62,14 @@ public abstract class AdvancedRecipeWrapper implements IRecipeWrapper {
         for (JeiButton button : buttons) {
             if (button.isHovering(mouseX, mouseY) &&
                     button.getClickAction().click(minecraft, mouseX, mouseY, mouseButton)) {
+                Minecraft.getMinecraft().getSoundHandler()
+                        .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
+            }
+        }
+        for (JeiInteractableText text : jeiTexts) {
+            if (text.isHovering(mouseX, mouseY) &&
+                    text.getTextClickAction().click(minecraft, text, mouseX, mouseY, mouseButton)) {
                 Minecraft.getMinecraft().getSoundHandler()
                         .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 return true;
