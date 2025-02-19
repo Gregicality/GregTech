@@ -356,6 +356,11 @@ public class RecipeMap<R extends RecipeBuilder<R>> {
         return this;
     }
 
+    public RecipeMap<R> disallowEmptyOutput() {
+        this.allowEmptyOutput = false;
+        return this;
+    }
+
     public RecipeMap<R> setSmallRecipeMap(RecipeMap<?> recipeMap) {
         this.smallRecipeMap = recipeMap;
         return this;
