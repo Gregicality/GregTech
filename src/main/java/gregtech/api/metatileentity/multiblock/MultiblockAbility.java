@@ -120,8 +120,4 @@ public class MultiblockAbility<T> {
         }
         return null;
     }
-
-    public String getType() {
-        return this.clazz.getSimpleName();
-    }
 }

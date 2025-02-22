@@ -386,6 +386,11 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
         }
     }
 
+    /**
+     * Checks if a multiblock ability at a given block pos should be added to the ability instances
+     * 
+     * @return true if the ability should be added to this multiblocks ability instances
+     */
     protected <T> boolean checkAbilityPart(MultiblockAbility<T> ability, BlockPos pos) {
         return true;
     }

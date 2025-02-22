@@ -1,14 +1,15 @@
 package gregtech.api.capability;
 
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
-public interface IDualHandler {
+public interface IDualHandler extends IItemHandlerModifiable, IMultipleTankHandler {
 
     boolean hasFluidTanks();
 
     boolean hasItemHandlers();
 
-    IMultipleTankHandler getFluidTanks();
+    IMultipleTankHandler getDelegateTank();
 
-    IItemHandler getItemHandlers();
+    IItemHandler getDelegatItemHandler();
 }
