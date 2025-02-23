@@ -464,7 +464,6 @@ public class MetaTileEntityQuantumStorageController extends MetaTileEntity imple
         return this.handler;
     }
 
-    // todo use DualHandler instead once the multis ability pr is merged
     private class QuantumControllerHandler extends DualHandler {
 
         private static final IItemHandlerModifiable EMPTY_ITEM = new ItemStackHandler(0);
