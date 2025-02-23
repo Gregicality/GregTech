@@ -39,8 +39,8 @@ public class DualHandler implements IDualHandler, INotifiableHandler {
         this.isExport = isExport;
 
         List<ITankEntry> list = new ArrayList<>();
-        for (var tank : this.fluidDelegate) {
-            list.add(new DualEntry(this, tank));
+        for (ITankEntry tank : this.fluidDelegate) {
+            list.add(wrap(tank));
         }
         this.unwrapped = list;
     }
@@ -49,6 +49,10 @@ public class DualHandler implements IDualHandler, INotifiableHandler {
                        @NotNull IFluidTank fluidTank,
                        boolean isExport) {
         this(itemDelegate, new FluidTankList(false, fluidTank), isExport);
+    }
+
+    private DualEntry wrap(ITankEntry entry) {
+        return entry instanceof DualEntry ? (DualEntry) entry : new DualEntry(this, entry);
     }
 
     public boolean isExport() {
