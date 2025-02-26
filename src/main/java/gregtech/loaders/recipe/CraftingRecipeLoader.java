@@ -223,32 +223,146 @@ public class CraftingRecipeLoader {
         ModHandler.addShapedRecipe("shape_extruder_rotor", SHAPE_EXTRUDER_ROTOR.getStackForm(), "   ", " S ", "x  ",
                 'S', SHAPE_EMPTY.getStackForm());
 
-        ModHandler.addShapedRecipe("shape_mold_rotor", SHAPE_MOLD_ROTOR.getStackForm(), "  h", " S ", "   ", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_gear_small", SHAPE_MOLD_GEAR_SMALL.getStackForm(), "   ", "   ", "h S",
+        ModHandler.addShapedRecipe("shape_mold_rotor", SHAPE_MOLD_ROTOR.getStackForm(),
+                "  h",
+                " S ",
+                "   ",
                 'S', SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_name", SHAPE_MOLD_NAME.getStackForm(), "  S", "   ", "h  ", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_anvil", SHAPE_MOLD_ANVIL.getStackForm(), "  S", "   ", " h ", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_cylinder", SHAPE_MOLD_CYLINDER.getStackForm(), "  S", "   ", "  h", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_nugget", SHAPE_MOLD_NUGGET.getStackForm(), "S h", "   ", "   ", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_block", SHAPE_MOLD_BLOCK.getStackForm(), "   ", "hS ", "   ", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_ball", SHAPE_MOLD_BALL.getStackForm(), "   ", " S ", "h  ", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_ingot", SHAPE_MOLD_INGOT.getStackForm(), "   ", " S ", " h ", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_bottle", SHAPE_MOLD_BOTTLE.getStackForm(), "   ", " S ", "  h", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_credit", SHAPE_MOLD_CREDIT.getStackForm(), "h  ", " S ", "   ", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_gear", SHAPE_MOLD_GEAR.getStackForm(), "   ", " Sh", "   ", 'S',
-                SHAPE_EMPTY.getStackForm());
-        ModHandler.addShapedRecipe("shape_mold_plate", SHAPE_MOLD_PLATE.getStackForm(), " h ", " S ", "   ", 'S',
-                SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_gear_small", SHAPE_MOLD_GEAR_SMALL.getStackForm(),
+                "   ",
+                "   ",
+                "h S",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_name", SHAPE_MOLD_NAME.getStackForm(),
+                "  S",
+                "   ",
+                "h  ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_anvil", SHAPE_MOLD_ANVIL.getStackForm(),
+                "  S",
+                "   ",
+                " h ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_cylinder", SHAPE_MOLD_CYLINDER.getStackForm(),
+                "  S",
+                "   ",
+                "  h",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_nugget", SHAPE_MOLD_NUGGET.getStackForm(),
+                "S h",
+                "   ",
+                "   ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_block", SHAPE_MOLD_BLOCK.getStackForm(),
+                "   ",
+                "hS ",
+                "   ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_ball", SHAPE_MOLD_BALL.getStackForm(),
+                "   ",
+                " S ",
+                "h  ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_ingot", SHAPE_MOLD_INGOT.getStackForm(),
+                "   ",
+                " S ",
+                " h ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_bottle", SHAPE_MOLD_BOTTLE.getStackForm(),
+                "   ",
+                " S ",
+                "  h",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_credit", SHAPE_MOLD_CREDIT.getStackForm(),
+                "h  ",
+                " S ",
+                "   ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_gear", SHAPE_MOLD_GEAR.getStackForm(),
+                "   ",
+                " Sh",
+                "   ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_plate", SHAPE_MOLD_PLATE.getStackForm(),
+                " h ",
+                " S ",
+                "   ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_ring", SHAPE_MOLD_RING.getStackForm(),
+                "   ",
+                " h ",
+                " S ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_bolt", SHAPE_MOLD_BOLT.getStackForm(),
+                "h  ",
+                "   ",
+                "S  ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_rod", SHAPE_MOLD_ROD.getStackForm(),
+                " h ",
+                "   ",
+                "S  ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_rod_long", SHAPE_MOLD_ROD_LONG.getStackForm(),
+                "  h",
+                "   ",
+                "S  ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_screw", SHAPE_MOLD_SCREW.getStackForm(),
+                "   ",
+                "h  ",
+                "S  ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_round", SHAPE_MOLD_ROUND.getStackForm(),
+                "   ",
+                " h ",
+                "S  ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_turbine_blade", SHAPE_MOLD_TURBINE_BLADE.getStackForm(),
+                "   ",
+                "  h",
+                "S  ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_pipe_tiny", SHAPE_MOLD_PIPE_TINY.getStackForm(),
+                "   ",
+                "   ",
+                "Sh ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_pipe_small", SHAPE_MOLD_PIPE_SMALL.getStackForm(),
+                "   ",
+                "   ",
+                "S h",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_pipe_normal", SHAPE_MOLD_PIPE_NORMAL.getStackForm(),
+                "   ",
+                "   ",
+                " Sh",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_pipe_large", SHAPE_MOLD_PIPE_LARGE.getStackForm(),
+                "   ",
+                "   ",
+                "hS ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_pipe_huge", SHAPE_MOLD_PIPE_HUGE.getStackForm(),
+                "   ",
+                "  h",
+                " S ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_bun", SHAPE_MOLD_BUN.getStackForm(),
+                "   ",
+                "h  ",
+                " S ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_bread", SHAPE_MOLD_BREAD.getStackForm(),
+                "h  ",
+                "   ",
+                " S ",
+                'S', SHAPE_EMPTY.getStackForm());
+        ModHandler.addShapedRecipe("shape_mold_baguette", SHAPE_MOLD_BAGUETTE.getStackForm(),
+                "   ",
+                "  h",
+                " S ",
+                'S', SHAPE_EMPTY.getStackForm());
 
         ///////////////////////////////////////////////////
         // Credits //

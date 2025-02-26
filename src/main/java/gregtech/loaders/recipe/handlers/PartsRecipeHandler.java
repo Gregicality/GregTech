@@ -86,6 +86,15 @@ public class PartsRecipeHandler {
                         .buildAndRegister();
             }
         }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_BOLT)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L / 8))
+                    .output(boltPrefix, material)
+                    .EUt(VA[ULV]).duration(6)
+                    .buildAndRegister();
+        }
     }
 
     public static void processScrew(OrePrefix screwPrefix, Material material, DustProperty property) {
@@ -101,6 +110,15 @@ public class PartsRecipeHandler {
         ModHandler.addShapedRecipe(String.format("screw_%s", material),
                 screwStack, "fX", "X ",
                 'X', new UnificationEntry(OrePrefix.bolt, material));
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_SCREW)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L / 8))
+                    .output(screwPrefix, material)
+                    .EUt(VA[ULV]).duration(7)
+                    .buildAndRegister();
+        }
     }
 
     public static void processFoil(OrePrefix foilPrefix, Material material, IngotProperty property) {
@@ -364,6 +382,15 @@ public class PartsRecipeHandler {
                     .EUt(6 * getVoltageMultiplier(material))
                     .buildAndRegister();
         }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_RING)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L / 4))
+                    .output(ringPrefix, material)
+                    .EUt(VA[ULV]).duration(3)
+                    .buildAndRegister();
+        }
     }
 
     public static void processSpringSmall(OrePrefix springPrefix, Material material, IngotProperty property) {
@@ -459,6 +486,15 @@ public class PartsRecipeHandler {
                     "s ", " X",
                     'X', new UnificationEntry(OrePrefix.stick, material));
         }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_ROD)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L / 2))
+                    .output(stickPrefix, material)
+                    .EUt(VA[ULV]).duration(10)
+                    .buildAndRegister();
+        }
     }
 
     public static void processLongStick(OrePrefix longStickPrefix, Material material, DustProperty property) {
@@ -519,6 +555,15 @@ public class PartsRecipeHandler {
                         .buildAndRegister();
             }
         }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_ROD_LONG)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L))
+                    .output(longStickPrefix, material)
+                    .EUt(VA[ULV]).duration(20)
+                    .buildAndRegister();
+        }
     }
 
     public static void processTurbine(OrePrefix toolPrefix, Material material, IngotProperty property) {
@@ -549,6 +594,15 @@ public class PartsRecipeHandler {
                     'P', new UnificationEntry(OrePrefix.plateDouble, material),
                     'S', new UnificationEntry(OrePrefix.screw, material));
         }
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_TURBINE_BLADE)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L * 10 + L / 4))
+                    .output(toolPrefix, material)
+                    .EUt(VA[ULV]).duration(50)
+                    .buildAndRegister();
+        }
     }
 
     public static void processRound(OrePrefix roundPrefix, Material material, IngotProperty property) {
@@ -567,6 +621,15 @@ public class PartsRecipeHandler {
                 .input(nugget, material)
                 .output(round, material)
                 .buildAndRegister();
+
+        if (material.hasFluid() && material.getProperty(PropertyKey.FLUID).solidifiesFrom() != null) {
+            RecipeMaps.FLUID_SOLIDFICATION_RECIPES.recipeBuilder()
+                    .notConsumable(MetaItems.SHAPE_MOLD_ROUND)
+                    .fluidInputs(material.getProperty(PropertyKey.FLUID).solidifiesFrom(L / 9))
+                    .output(roundPrefix, material)
+                    .EUt(VA[ULV]).duration(5)
+                    .buildAndRegister();
+        }
     }
 
     private static int getVoltageMultiplier(Material material) {
