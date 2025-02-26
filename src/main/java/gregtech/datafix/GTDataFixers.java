@@ -2,8 +2,10 @@ package gregtech.datafix;
 
 import gregtech.api.GTValues;
 import gregtech.api.GregTechAPI;
+import gregtech.datafix.impl.V2PostMTEReallocFixer;
 import gregtech.datafix.migration.impl.MigrateMTEBlockTE;
 import gregtech.datafix.migration.impl.MigrateMTEItems;
+import gregtech.datafix.migration.lib.MTEDataMigrator;
 import gregtech.datafix.migration.lib.MTERegistriesMigrator;
 import gregtech.datafix.walker.WalkItemStackLike;
 
@@ -18,6 +20,9 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.IntStream;
+
+import static gregtech.api.GTValues.*;
+import static gregtech.common.metatileentities.MetaTileEntities.*;
 
 public final class GTDataFixers {
 
@@ -57,6 +62,10 @@ public final class GTDataFixers {
                 MTERegistriesMigrator migrator = GregTechAPI.MIGRATIONS.registriesMigrator();
                 fixer.registerFix(GTFixType.ITEM_STACK_LIKE, new MigrateMTEItems(migrator));
                 fixer.registerFix(FixTypes.CHUNK, new MigrateMTEBlockTE(migrator));
+            }
+            case V2_POST_ID_REALLOC -> {
+                MTEDataMigrator dataMigrator = new MTEDataMigrator(fixer, version.ordinal());
+                V2PostMTEReallocFixer.apply(dataMigrator);
             }
             default -> {}
         }

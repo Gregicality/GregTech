@@ -15,15 +15,12 @@ import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 import gregtech.client.utils.PipelineUtil;
-import gregtech.common.metatileentities.MetaTileEntities;
 
 import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -172,42 +169,6 @@ public class MetaTileEntityEnergyHatch extends MetaTileEntityMultiblockPart
     @Override
     public boolean canRenderFrontFaceX() {
         return isExportHatch;
-    }
-
-    @Override
-    public void getSubItems(CreativeTabs creativeTab, NonNullList<ItemStack> subItems) {
-        // override here is gross, but keeps things in order despite
-        // IDs being out of order, due to EV 4A and UEV+ 4A+ hatches being added later
-        if (this == MetaTileEntities.ENERGY_INPUT_HATCH[0]) {
-            for (MetaTileEntityEnergyHatch hatch : MetaTileEntities.ENERGY_INPUT_HATCH) {
-                if (hatch != null) subItems.add(hatch.getStackForm());
-            }
-            for (MetaTileEntityEnergyHatch hatch : MetaTileEntities.ENERGY_OUTPUT_HATCH) {
-                if (hatch != null) subItems.add(hatch.getStackForm());
-            }
-            for (MetaTileEntityEnergyHatch hatch : MetaTileEntities.ENERGY_INPUT_HATCH_4A) {
-                if (hatch != null) subItems.add(hatch.getStackForm());
-            }
-            for (MetaTileEntityEnergyHatch hatch : MetaTileEntities.ENERGY_INPUT_HATCH_16A) {
-                if (hatch != null) subItems.add(hatch.getStackForm());
-            }
-            for (MetaTileEntityEnergyHatch hatch : MetaTileEntities.ENERGY_OUTPUT_HATCH_4A) {
-                if (hatch != null) subItems.add(hatch.getStackForm());
-            }
-            for (MetaTileEntityEnergyHatch hatch : MetaTileEntities.ENERGY_OUTPUT_HATCH_16A) {
-                if (hatch != null) subItems.add(hatch.getStackForm());
-            }
-            for (MetaTileEntityEnergyHatch hatch : MetaTileEntities.SUBSTATION_ENERGY_INPUT_HATCH) {
-                if (hatch != null) subItems.add(hatch.getStackForm());
-            }
-            for (MetaTileEntityEnergyHatch hatch : MetaTileEntities.SUBSTATION_ENERGY_OUTPUT_HATCH) {
-                if (hatch != null) subItems.add(hatch.getStackForm());
-            }
-        } else if (this.getClass() != MetaTileEntityEnergyHatch.class &&
-                this.getClass() != MetaTileEntitySubstationEnergyHatch.class) {
-                    // let subclasses fall through this override
-                    super.getSubItems(creativeTab, subItems);
-                }
     }
 
     @Override

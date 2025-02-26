@@ -14,7 +14,12 @@ public enum GTDataVersion {
     /**
      * Version of data after multiple MTE registries were possible
      */
-    V1_POST_MTE;
+    V1_POST_MTE,
+    /**
+     * Version of data after MTE IDs were reallocated
+     */
+    V2_POST_ID_REALLOC,
+    ;
 
     static final @NotNull GTDataVersion @NotNull [] VALUES = values();
 

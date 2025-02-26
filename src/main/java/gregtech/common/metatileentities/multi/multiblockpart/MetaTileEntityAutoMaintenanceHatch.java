@@ -6,13 +6,9 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.client.renderer.texture.Textures;
-import gregtech.common.ConfigHolder;
-import gregtech.common.metatileentities.MetaTileEntities;
 
 import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.World;
@@ -111,14 +107,5 @@ public class MetaTileEntityAutoMaintenanceHatch extends MetaTileEntityMultiblock
     @Override
     public boolean canPartShare() {
         return false;
-    }
-
-    @Override
-    public void getSubItems(CreativeTabs creativeTab, NonNullList<ItemStack> subItems) {
-        if (ConfigHolder.machines.enableMaintenance) {
-            super.getSubItems(creativeTab, subItems);
-            // keeps things in order despite IDs being out of order, due to the Cleaning Hatch being added later
-            subItems.add(MetaTileEntities.CLEANING_MAINTENANCE_HATCH.getStackForm());
-        }
     }
 }

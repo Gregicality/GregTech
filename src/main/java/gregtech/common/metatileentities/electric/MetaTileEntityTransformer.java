@@ -8,17 +8,14 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 import gregtech.client.utils.PipelineUtil;
-import gregtech.common.metatileentities.MetaTileEntities;
 
 import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -283,21 +280,5 @@ public class MetaTileEntityTransformer extends TieredMetaTileEntity {
         tooltip.add(I18n.format("gregtech.tool_action.wrench.set_facing"));
         tooltip.add(I18n.format("gregtech.tool_action.soft_mallet.toggle_mode"));
         super.addToolUsages(stack, world, tooltip, advanced);
-    }
-
-    @Override
-    public void getSubItems(CreativeTabs creativeTab, NonNullList<ItemStack> subItems) {
-        // fix JEI ordering
-        if (this == MetaTileEntities.TRANSFORMER[0]) {
-            for (var transformer : MetaTileEntities.TRANSFORMER) {
-                if (transformer != null) subItems.add(transformer.getStackForm());
-            }
-            for (var transformer : MetaTileEntities.HI_AMP_TRANSFORMER) {
-                if (transformer != null) subItems.add(transformer.getStackForm());
-            }
-            for (var transformer : MetaTileEntities.POWER_TRANSFORMER) {
-                if (transformer != null) subItems.add(transformer.getStackForm());
-            }
-        }
     }
 }
