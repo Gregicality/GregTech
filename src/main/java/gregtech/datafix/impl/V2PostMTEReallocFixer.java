@@ -15,40 +15,26 @@ public final class V2PostMTEReallocFixer {
 
     public static void apply(@NotNull MTEDataMigrator dataMigrator) {
         // item/fluid input/output buses
-        for (int i = 0; i < UEV; i++) {
+        for (int i = 0; i <= UHV; i++) {
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1150 + i, 11000 + i); // item in
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1165 + i, 11015 + i); // item out
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1180 + i, 11030 + i); // fluid in
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1195 + i, 11045 + i); // fluid out
         }
-        for (int i = 0; i < ITEM_IMPORT_BUS.length - GTValues.UEV; i++) {
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1860 + i, 11000 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1865 + i, 11015 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1870 + i, 11030 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1875 + i, 11045 + UEV + i);
-        }
         // energy hatches
+        for (int i = 0; i < ENERGY_INPUT_HATCH.length; i++) {
+            dataMigrator.migrateMTEMeta(GTValues.MODID, 1210 + i, 11120 + i); // 2A IN
+            dataMigrator.migrateMTEMeta(GTValues.MODID, 1225 + i, 11135 + i); // 2A OUT
+        }
         dataMigrator.migrateMTEMeta(GTValues.MODID, 1399, 11150 + EV); // 4A EV IN
         dataMigrator.migrateMTEMeta(GTValues.MODID, 1400, 11165 + EV); // 4A EV OUT
         for (int i = 0; i < IV; i++) {
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1210 + i, 11120 + i); // 2A IN
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1225 + i, 11135 + i); // 2A OUT
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1240 + i, 11150 + IV + i); // 4A IN
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1245 + i, 11180 + IV + i); // 16A IN
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1250 + i, 11165 + IV + i); // 4A OUT
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1255 + i, 11195 + IV + i); // 16A OUT
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1260 + i, 11210 + IV + i); // 64A IN
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1265 + i, 11225 + IV + i); // 64A OUT
-        }
-        for (int i = 0; i < (MAX - UEV); i++) {
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1210 + i, 11120 + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1225 + i, 11135 + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1820 + i, 11150 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1825 + i, 11180 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1830 + i, 11165 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1835 + i, 11195 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1840 + i, 11210 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1845 + i, 11225 + UEV + i);
         }
         // lasers
         for (int i = 0; i < UV; i++) {
@@ -64,17 +50,11 @@ public final class V2PostMTEReallocFixer {
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1640 + i, 11450 + HV + i);
         }
         // quad/nonuple hatches
-        for (int i = 0; i < UEV; i++) {
+        for (int i = 0; i < (UHV - IV + 1); i++) {
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1780 + i, 11060 + IV + i); // 4x in
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1785 + i, 11075 + IV + i); // 9x in
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1790 + i, 11090 + IV + i); // 4x out
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1795 + i, 11105 + IV + i); // 9x out
-        }
-        for (int i = 0; i < (QUADRUPLE_IMPORT_HATCH.length - UEV); i++) {
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1800 + i, 11060 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1805 + i, 11075 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1810 + i, 11090 + UEV + i);
-            dataMigrator.migrateMTEMeta(GTValues.MODID, 1815 + i, 11105 + UEV + i);
         }
         // EV quad and nonuple import/export hatches
         dataMigrator.migrateMTEMeta(GTValues.MODID, 1190, 11060 + EV);
@@ -133,12 +113,12 @@ public final class V2PostMTEReallocFixer {
         dataMigrator.migrateMTEMeta(GTValues.MODID, 1596, 11523);
         dataMigrator.migrateMTEMeta(GTValues.MODID, 1598, 11524);
         // AE2 hatches
-        dataMigrator.migrateMTEMeta(GTValues.MODID, 1745, 11511);
-        dataMigrator.migrateMTEMeta(GTValues.MODID, 1746, 11512);
-        dataMigrator.migrateMTEMeta(GTValues.MODID, 1747, 11513);
-        dataMigrator.migrateMTEMeta(GTValues.MODID, 1748, 11514);
-        dataMigrator.migrateMTEMeta(GTValues.MODID, 1752, 11515);
-        dataMigrator.migrateMTEMeta(GTValues.MODID, 1753, 11516);
+        dataMigrator.migrateMTEMeta(GTValues.MODID, 1745, 11533);
+        dataMigrator.migrateMTEMeta(GTValues.MODID, 1746, 11532);
+        dataMigrator.migrateMTEMeta(GTValues.MODID, 1747, 11526);
+        dataMigrator.migrateMTEMeta(GTValues.MODID, 1748, 11525);
+        dataMigrator.migrateMTEMeta(GTValues.MODID, 1752, 11527);
+        dataMigrator.migrateMTEMeta(GTValues.MODID, 1753, 11528);
         // transformers
         for (int i = 0; i < TRANSFORMER.length; i++) {
             dataMigrator.migrateMTEMeta(GTValues.MODID, 1270 + i, 1000 + i);
