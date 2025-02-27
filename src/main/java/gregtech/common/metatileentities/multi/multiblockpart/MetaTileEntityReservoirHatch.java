@@ -11,6 +11,7 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
+import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
 import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuis;
 import gregtech.api.mui.sync.GTFluidSyncHandler;
@@ -21,6 +22,7 @@ import gregtech.common.mui.widget.GTFluidSlot;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -64,16 +66,19 @@ public class MetaTileEntityReservoirHatch extends MetaTileEntityMultiblockNotifi
     public MetaTileEntityReservoirHatch(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId, GTValues.EV, false);
         this.fluidTank = new InfiniteWaterTank(getInventorySize(), this);
-        if (this.hasGhostCircuitInventory()) {
-            this.circuitInventory = new GhostCircuitItemStackHandler(this);
-            this.circuitInventory.addNotifiableMetaTileEntity(this);
-        }
         initializeInventory();
     }
 
     @Override
     public MetaTileEntity createMetaTileEntity(IGregTechTileEntity tileEntity) {
         return new MetaTileEntityReservoirHatch(metaTileEntityId);
+    }
+
+    @Override
+    protected void initializeInventory() {
+        super.initializeInventory();
+        this.circuitInventory = new GhostCircuitItemStackHandler(this);
+        this.circuitInventory.addNotifiableMetaTileEntity(this);
     }
 
     @Override
@@ -221,6 +226,42 @@ public class MetaTileEntityReservoirHatch extends MetaTileEntityMultiblockNotifi
         if (!getWorld().isRemote) {
             markDirty();
         }
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound data) {
+        this.circuitInventory.write(data);
+        return super.writeToNBT(data);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound data) {
+        this.circuitInventory.read(data);
+        super.readFromNBT(data);
+    }
+
+    @Override
+    public void writeInitialSyncData(PacketBuffer buf) {
+        super.writeInitialSyncData(buf);
+        buf.writeVarInt(this.circuitInventory.getCircuitValue());
+    }
+
+    @Override
+    public void receiveInitialSyncData(PacketBuffer buf) {
+        super.receiveInitialSyncData(buf);
+        setGhostCircuitConfig(buf.readVarInt());
+    }
+
+    @Override
+    public void addToMultiBlock(MultiblockControllerBase controllerBase) {
+        super.addToMultiBlock(controllerBase);
+        this.circuitInventory.addNotifiableMetaTileEntity(controllerBase);
+    }
+
+    @Override
+    public void removeFromMultiBlock(MultiblockControllerBase controllerBase) {
+        super.removeFromMultiBlock(controllerBase);
+        this.circuitInventory.removeNotifiableMetaTileEntity(controllerBase);
     }
 
     private static class InfiniteWaterTank extends NotifiableFluidTank {
