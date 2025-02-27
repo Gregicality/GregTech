@@ -3,7 +3,6 @@ package gregtech.common.metatileentities.storage;
 import gregtech.api.GTValues;
 import gregtech.api.capability.DualHandler;
 import gregtech.api.capability.GregtechDataCodes;
-import gregtech.api.capability.IDualHandler;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.IQuantumController;
@@ -444,9 +443,9 @@ public class MetaTileEntityQuantumStorageController extends MetaTileEntity imple
     public <T> T getCapability(@NotNull Capability<T> capability, EnumFacing side) {
         if (isPowered()) {
             if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && handler.hasItemHandlers()) {
-                return (T) handler.getDelegatItemHandler();
+                return (T) handler.getItemDelegate();
             } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && handler.hasFluidTanks()) {
-                return (T) handler.getDelegateTank();
+                return (T) handler.getFluidDelegate();
             }
         }
 
@@ -460,7 +459,7 @@ public class MetaTileEntityQuantumStorageController extends MetaTileEntity imple
     }
 
     @Override
-    public IDualHandler getHandler() {
+    public DualHandler getHandler() {
         return this.handler;
     }
 
@@ -501,16 +500,14 @@ public class MetaTileEntityQuantumStorageController extends MetaTileEntity imple
             this.dirty = true;
         }
 
-        @Override
         public boolean hasItemHandlers() {
             if (dirty) rebuildCache();
-            return super.hasItemHandlers();
+            return getSlots() > 0;
         }
 
-        @Override
         public boolean hasFluidTanks() {
             if (dirty) rebuildCache();
-            return super.hasFluidTanks();
+            return getTanks() > 0;
         }
     }
 }

@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DualHandler implements IDualHandler, INotifiableHandler {
+public class DualHandler implements IItemHandlerModifiable, IMultipleTankHandler, INotifiableHandler {
 
     @NotNull
     private static final ItemStackHashStrategy strategy = ItemStackHashStrategy.comparingAll();
@@ -166,24 +165,12 @@ public class DualHandler implements IDualHandler, INotifiableHandler {
         this.notifiableEntities.remove(metaTileEntity);
     }
 
-    @Override
-    public boolean hasFluidTanks() {
-        return getTanks() > 0;
+    public @NotNull IItemHandlerModifiable getItemDelegate() {
+        return itemDelegate;
     }
 
-    @Override
-    public boolean hasItemHandlers() {
-        return getSlots() > 0;
-    }
-
-    @Override
-    public IMultipleTankHandler getDelegateTank() {
-        return this.fluidDelegate;
-    }
-
-    @Override
-    public IItemHandler getDelegatItemHandler() {
-        return this.itemDelegate;
+    public @NotNull IMultipleTankHandler getFluidDelegate() {
+        return fluidDelegate;
     }
 
     public static class DualEntry implements ITankEntry, INotifiableHandler {
