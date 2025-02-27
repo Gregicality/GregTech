@@ -59,6 +59,8 @@ dependencies {
     compileOnly rfg.deobf("curse.maven:chisel-235279:2915375") // Chisel 1.0.2.45
     compileOnly rfg.deobf("curse.maven:littletiles-257818:4750222") // LittleTiles 1.5.82-1.12.2
     compileOnly rfg.deobf("curse.maven:creativecore-257814:4722163") // Creative Core 1.10.71
+    devOnlyNonPublishable rfg.deobf("curse.maven:exnihilo-274456:2817545") // Ex Nihilo Creatio 0.4.7.2
+    devOnlyNonPublishable rfg.deobf("curse.maven:forgelin-248453:2785465") // Forgelin 1.8.4
 
     // Mods with Soft compat but which have no need to be in code, such as isModLoaded() checks and getModItem() recipes.
     // Uncomment any of these to test them in-game.
