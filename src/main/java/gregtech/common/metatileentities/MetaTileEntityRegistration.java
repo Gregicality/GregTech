@@ -881,7 +881,8 @@ final class MetaTileEntityRegistration {
         // 9x Import hatch 11075-11089
         // 4x Export hatch 11090-11204
         // 9x Export hatch 11205-11219
-        for (int i = GTValues.EV; i < MetaTileEntities.QUADRUPLE_IMPORT_HATCH.length; i++) {
+        endPos = GregTechAPI.isHighTier() ? MetaTileEntities.QUADRUPLE_IMPORT_HATCH.length : GTValues.UHV + 1;
+        for (int i = GTValues.EV; i < endPos; i++) {
             String tierName = GTValues.VN[i].toLowerCase();
             MetaTileEntities.QUADRUPLE_IMPORT_HATCH[i] = MetaTileEntities.registerMetaTileEntity(11060 + i,
                     new MetaTileEntityMultiFluidHatch(gregtechId("fluid_hatch.import_4x." + tierName), i, 4, false));
