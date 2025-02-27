@@ -1041,18 +1041,19 @@ final class MetaTileEntityRegistration {
 
         // ME Hatches, IDs 11525-11539
         if (Mods.AppliedEnergistics2.isModLoaded()) {
-            MetaTileEntities.FLUID_EXPORT_HATCH_ME = MetaTileEntities.registerMetaTileEntity(11525,
-                    new MetaTileEntityMEOutputHatch(gregtechId("me_export_fluid_hatch")));
-            MetaTileEntities.ITEM_EXPORT_BUS_ME = MetaTileEntities.registerMetaTileEntity(11526,
-                    new MetaTileEntityMEOutputBus(gregtechId("me_export_item_bus")));
-            MetaTileEntities.FLUID_IMPORT_HATCH_ME = MetaTileEntities.registerMetaTileEntity(11527,
-                    new MetaTileEntityMEInputHatch(gregtechId("me_import_fluid_hatch")));
-            MetaTileEntities.ITEM_IMPORT_BUS_ME = MetaTileEntities.registerMetaTileEntity(11528,
+            MetaTileEntities.ITEM_IMPORT_BUS_ME = MetaTileEntities.registerMetaTileEntity(11525,
                     new MetaTileEntityMEInputBus(gregtechId("me_import_item_bus")));
-            MetaTileEntities.STOCKING_BUS_ME = MetaTileEntities.registerMetaTileEntity(11529,
+            MetaTileEntities.FLUID_IMPORT_HATCH_ME = MetaTileEntities.registerMetaTileEntity(11526,
+                    new MetaTileEntityMEInputHatch(gregtechId("me_import_fluid_hatch")));
+            MetaTileEntities.STOCKING_BUS_ME = MetaTileEntities.registerMetaTileEntity(11527,
                     new MetaTileEntityMEStockingBus(gregtechId("me_stocking_item_bus")));
-            MetaTileEntities.STOCKING_HATCH_ME = MetaTileEntities.registerMetaTileEntity(11530,
+            MetaTileEntities.STOCKING_HATCH_ME = MetaTileEntities.registerMetaTileEntity(11528,
                     new MetaTileEntityMEStockingHatch(gregtechId("me_stocking_fluid_hatch")));
+            // slots left for CRIB and CRIBuffer in the future for nicer sorting order
+            MetaTileEntities.ITEM_EXPORT_BUS_ME = MetaTileEntities.registerMetaTileEntity(11532,
+                    new MetaTileEntityMEOutputBus(gregtechId("me_export_item_bus")));
+            MetaTileEntities.FLUID_EXPORT_HATCH_ME = MetaTileEntities.registerMetaTileEntity(11533,
+                    new MetaTileEntityMEOutputHatch(gregtechId("me_export_fluid_hatch")));
         }
     }
 }
