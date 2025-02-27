@@ -94,12 +94,12 @@ public final class MTEDataMigrator extends AbstractMTEMigrator {
      * @param postMeta the new metadata for the MTE's ItemBlock
      */
     public void migrateMTEMeta(@NotNull String modid, int preMeta, int postMeta) {
-        itemBlockMeta.computeIfAbsent(modid, k -> {
+        var mappings = itemBlockMeta.computeIfAbsent(modid, k -> {
             var map = new Short2ShortOpenHashMap();
             map.defaultReturnValue((short) -1);
-            map.put((short) preMeta, (short) postMeta);
             return map;
         });
+        mappings.put((short) preMeta, (short) postMeta);
     }
 
     @Override
