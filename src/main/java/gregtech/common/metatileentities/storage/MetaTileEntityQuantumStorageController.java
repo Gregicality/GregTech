@@ -1,9 +1,10 @@
 package gregtech.common.metatileentities.storage;
 
 import gregtech.api.GTValues;
+import gregtech.api.capability.DualHandler;
 import gregtech.api.capability.GregtechDataCodes;
-import gregtech.api.capability.IDualHandler;
 import gregtech.api.capability.IEnergyContainer;
+import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.IQuantumController;
 import gregtech.api.capability.IQuantumStorage;
 import gregtech.api.capability.impl.EnergyContainerList;
@@ -33,6 +34,8 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemStackHandler;
 
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.ColourMultiplier;
@@ -331,7 +334,7 @@ public class MetaTileEntityQuantumStorageController extends MetaTileEntity imple
             }
             storage.setDisconnected();
         }
-        handler.rebuildCache();
+        handler.markDirty();
         onHandlerUpdate();
         calculateEnergyUsage();
         markDirty();
@@ -440,9 +443,9 @@ public class MetaTileEntityQuantumStorageController extends MetaTileEntity imple
     public <T> T getCapability(@NotNull Capability<T> capability, EnumFacing side) {
         if (isPowered()) {
             if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && handler.hasItemHandlers()) {
-                return (T) handler.getItemHandlers();
+                return (T) handler.getItemDelegate();
             } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && handler.hasFluidTanks()) {
-                return (T) handler.getFluidTanks();
+                return (T) handler.getFluidDelegate();
             }
         }
 
@@ -456,22 +459,23 @@ public class MetaTileEntityQuantumStorageController extends MetaTileEntity imple
     }
 
     @Override
-    public IDualHandler getHandler() {
+    public DualHandler getHandler() {
         return this.handler;
     }
 
-    // todo use DualHandler instead once the multis ability pr is merged
-    private class QuantumControllerHandler implements IDualHandler {
+    private class QuantumControllerHandler extends DualHandler {
 
-        // IFluidHandler saved values
-        private FluidTankList fluidTanks;
+        private static final IItemHandlerModifiable EMPTY_ITEM = new ItemStackHandler(0);
+        private static final IMultipleTankHandler EMPTY_TANK = new FluidTankList(false);
+        private boolean dirty = true;
 
-        // IItemHandler saved values
-        private ItemHandlerList itemHandlers;
+        public QuantumControllerHandler() {
+            super(EMPTY_ITEM, EMPTY_TANK, true);
+        }
 
         private void invalidate() {
-            fluidTanks = new FluidTankList(false);
-            itemHandlers = new ItemHandlerList(Collections.emptyList());
+            fluidDelegate = EMPTY_TANK;
+            itemDelegate = EMPTY_ITEM;
         }
 
         private void rebuildCache() {
@@ -487,34 +491,23 @@ public class MetaTileEntityQuantumStorageController extends MetaTileEntity imple
             }
 
             // todo allow this "allowSameFluidFill" to be configured in this controller?
-            this.fluidTanks = new FluidTankList(false, fluidTankList);
-            this.itemHandlers = new ItemHandlerList(itemHandlerList);
+            this.fluidDelegate = new FluidTankList(false, fluidTankList);
+            this.itemDelegate = new ItemHandlerList(itemHandlerList);
+            this.dirty = false;
         }
 
-        @Override
-        public boolean hasFluidTanks() {
-            return getFluidTanks().getTanks() > 0;
+        public void markDirty() {
+            this.dirty = true;
         }
 
-        @Override
         public boolean hasItemHandlers() {
-            return !getItemHandlers().getBackingHandlers().isEmpty();
+            if (dirty) rebuildCache();
+            return getSlots() > 0;
         }
 
-        @Override
-        public FluidTankList getFluidTanks() {
-            if (fluidTanks == null) {
-                rebuildCache();
-            }
-            return fluidTanks;
-        }
-
-        @Override
-        public ItemHandlerList getItemHandlers() {
-            if (itemHandlers == null) {
-                rebuildCache();
-            }
-            return itemHandlers;
+        public boolean hasFluidTanks() {
+            if (dirty) rebuildCache();
+            return getTanks() > 0;
         }
     }
 }

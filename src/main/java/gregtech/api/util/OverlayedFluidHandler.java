@@ -1,7 +1,6 @@
 package gregtech.api.util;
 
 import gregtech.api.capability.IMultipleTankHandler;
-import gregtech.api.capability.IMultipleTankHandler.MultiFluidTankEntry;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
@@ -22,9 +21,9 @@ public class OverlayedFluidHandler {
 
     public OverlayedFluidHandler(@NotNull IMultipleTankHandler tank) {
         this.overlayedTanks = new ArrayList<>();
-        MultiFluidTankEntry[] entries = tank.getFluidTanks().toArray(new MultiFluidTankEntry[0]);
+        var entries = tank.getFluidTanks().toArray(new IMultipleTankHandler.ITankEntry[0]);
         Arrays.sort(entries, IMultipleTankHandler.ENTRY_COMPARATOR);
-        for (MultiFluidTankEntry fluidTank : entries) {
+        for (var fluidTank : entries) {
             for (IFluidTankProperties property : fluidTank.getTankProperties()) {
                 this.overlayedTanks.add(new OverlayedTank(property, fluidTank.allowSameFluidFill()));
             }

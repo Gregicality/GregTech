@@ -1,7 +1,6 @@
 package gregtech.api.capability.impl;
 
 import gregtech.Bootstrap;
-import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.util.OverlayedFluidHandler;
 
@@ -409,7 +408,7 @@ public class FluidTankListTest {
                         "expected: " + this.tank.getTanks() + ", provided: " + optionalFluidStacks.length);
             }
             for (int i = 0; i < optionalFluidStacks.length; i++) {
-                IMultipleTankHandler.MultiFluidTankEntry tank = this.tank.getTankAt(i);
+                var tank = this.tank.getTankAt(i);
                 if (!eq(tank.getFluid(), optionalFluidStacks[i])) {
                     throw new AssertionError("Contents of the tank don't match expected state.\n" +
                             "Expected: [\n  " + Arrays.stream(optionalFluidStacks)

@@ -1,6 +1,6 @@
 package gregtech.common.metatileentities.storage;
 
-import gregtech.api.capability.IDualHandler;
+import gregtech.api.capability.DualHandler;
 import gregtech.api.capability.IQuantumController;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.metatileentity.MetaTileEntity;
@@ -24,7 +24,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-public class MetaTileEntityQuantumProxy extends MetaTileEntityQuantumStorage<IDualHandler> {
+public class MetaTileEntityQuantumProxy extends MetaTileEntityQuantumStorage<DualHandler> {
 
     public MetaTileEntityQuantumProxy(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId);
@@ -89,7 +89,7 @@ public class MetaTileEntityQuantumProxy extends MetaTileEntityQuantumStorage<IDu
     }
 
     @Override
-    public IDualHandler getTypeValue() {
+    public DualHandler getTypeValue() {
         var controller = getPoweredController();
         if (controller == null) return null;
         return controller.getHandler();

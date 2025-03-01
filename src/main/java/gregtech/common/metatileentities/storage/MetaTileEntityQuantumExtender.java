@@ -1,7 +1,7 @@
 package gregtech.common.metatileentities.storage;
 
+import gregtech.api.capability.DualHandler;
 import gregtech.api.capability.GregtechDataCodes;
-import gregtech.api.capability.IDualHandler;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
@@ -21,7 +21,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-public class MetaTileEntityQuantumExtender extends MetaTileEntityQuantumStorage<IDualHandler> {
+public class MetaTileEntityQuantumExtender extends MetaTileEntityQuantumStorage<DualHandler> {
 
     public MetaTileEntityQuantumExtender(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId);
@@ -69,7 +69,7 @@ public class MetaTileEntityQuantumExtender extends MetaTileEntityQuantumStorage<
     }
 
     @Override
-    public IDualHandler getTypeValue() {
+    public DualHandler getTypeValue() {
         return null;
     }
 

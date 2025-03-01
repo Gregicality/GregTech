@@ -7,6 +7,7 @@ import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
@@ -45,6 +46,7 @@ import com.cleanroommc.modularui.value.sync.SyncHandlers;
 import com.cleanroommc.modularui.widgets.ItemSlot;
 import com.cleanroommc.modularui.widgets.RichTextWidget;
 import com.cleanroommc.modularui.widgets.SlotGroupWidget;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -128,8 +130,8 @@ public class MetaTileEntitySteamHatch extends MetaTileEntityMultiblockPart
     }
 
     @Override
-    public void registerAbilities(List<IFluidTank> abilityList) {
-        abilityList.addAll(this.importFluids.getFluidTanks());
+    public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+        abilityInstances.addAll(this.importFluids.getFluidTanks());
     }
 
     @Override
