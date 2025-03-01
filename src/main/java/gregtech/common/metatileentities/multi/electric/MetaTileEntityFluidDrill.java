@@ -8,12 +8,13 @@ import gregtech.api.capability.IWorkable;
 import gregtech.api.capability.impl.EnergyContainerList;
 import gregtech.api.capability.impl.FluidDrillLogic;
 import gregtech.api.capability.impl.FluidTankList;
-import gregtech.api.gui.GuiTextures;
-import gregtech.api.gui.resources.TextureArea;
 import gregtech.api.metatileentity.ITieredMetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.*;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIFactory;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.PatternMatchContext;
@@ -21,7 +22,7 @@ import gregtech.api.pattern.TraceabilityPredicate;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.util.GTTransferUtils;
 import gregtech.api.util.GTUtility;
-import gregtech.api.util.TextComponentUtil;
+import gregtech.api.util.KeyUtil;
 import gregtech.api.util.TextFormattingUtil;
 import gregtech.api.worldgen.bedrockFluids.BedrockFluidVeinHandler;
 import gregtech.client.renderer.ICubeRenderer;
@@ -36,7 +37,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -48,6 +48,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.value.sync.IntSyncValue;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.widgets.ProgressWidget;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +60,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MetaTileEntityFluidDrill extends MultiblockWithDisplayBase
-                                      implements ITieredMetaTileEntity, IWorkable, IProgressBarMultiblock {
+                                      implements ITieredMetaTileEntity, IWorkable, ProgressBarMultiblock {
 
     private final FluidDrillLogic minerLogic;
     private final int tier;
@@ -110,7 +114,7 @@ public class MetaTileEntityFluidDrill extends MultiblockWithDisplayBase
     }
 
     @Override
-    protected BlockPattern createStructurePattern() {
+    protected @NotNull BlockPattern createStructurePattern() {
         return FactoryBlockPattern.start()
                 .aisle("XXX", "#F#", "#F#", "#F#", "###", "###", "###")
                 .aisle("XXX", "FCF", "FCF", "FCF", "#F#", "#F#", "#F#")
@@ -159,59 +163,48 @@ public class MetaTileEntityFluidDrill extends MultiblockWithDisplayBase
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed())
-                .setWorkingStatus(minerLogic.isWorkingEnabled(), minerLogic.isActive())
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        builder.setWorkingStatus(minerLogic.isWorkingEnabled(), minerLogic.isActive())
                 .setWorkingStatusKeys(
                         "gregtech.multiblock.idling",
                         "gregtech.multiblock.work_paused",
                         "gregtech.multiblock.miner.drilling")
                 .addEnergyUsageLine(energyContainer)
-                .addCustom(tl -> {
+                .addCustom((list, syncer) -> {
                     if (isStructureFormed()) {
-                        if (minerLogic.getDrilledFluid() != null) {
+                        if (syncer.syncBoolean(minerLogic.getDrilledFluid() != null)) {
                             // Fluid name
                             Fluid drilledFluid = minerLogic.getDrilledFluid();
-                            ITextComponent fluidInfo = TextComponentUtil
-                                    .setColor(GTUtility.getFluidTranslation(drilledFluid), TextFormatting.GREEN);
-                            tl.add(TextComponentUtil.translationWithColor(
-                                    TextFormatting.GRAY,
-                                    "gregtech.multiblock.fluid_rig.drilled_fluid",
+                            IKey fluidInfo = KeyUtil.fluid(drilledFluid).style(TextFormatting.GREEN);
+
+                            // todo should this check if fluid info is empty?
+                            list.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.fluid_rig.drilled_fluid",
                                     fluidInfo));
 
-                            // Fluid amount
-                            ITextComponent amountInfo = TextComponentUtil.stringWithColor(
-                                    TextFormatting.BLUE,
+                            IKey amountInfo = KeyUtil.lang(TextFormatting.BLUE,
                                     TextFormattingUtil.formatNumbers(
                                             minerLogic.getFluidToProduce() * 20L / FluidDrillLogic.MAX_PROGRESS) +
                                             " L/s");
-                            tl.add(TextComponentUtil.translationWithColor(
-                                    TextFormatting.GRAY,
-                                    "gregtech.multiblock.fluid_rig.fluid_amount",
+                            list.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.fluid_rig.fluid_amount",
                                     amountInfo));
                         } else {
-                            ITextComponent noFluid = TextComponentUtil.translationWithColor(TextFormatting.RED,
+                            IKey noFluid = KeyUtil.lang(TextFormatting.RED,
                                     "gregtech.multiblock.fluid_rig.no_fluid_in_area");
-                            tl.add(TextComponentUtil.translationWithColor(
-                                    TextFormatting.GRAY,
-                                    "gregtech.multiblock.fluid_rig.drilled_fluid",
+                            list.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.fluid_rig.drilled_fluid",
                                     noFluid));
                         }
                     }
                 })
-                .addWorkingStatusLine()
-                .addProgressLine(minerLogic.getProgressPercent());
+                .addProgressLine(minerLogic.getProgressPercent())
+                .addWorkingStatusLine();
     }
 
     @Override
-    protected void addWarningText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed(), false)
-                .addLowPowerLine(isStructureFormed() && !drainEnergy(true))
-                .addCustom(tl -> {
-                    if (isStructureFormed() && minerLogic.isInventoryFull()) {
-                        tl.add(TextComponentUtil.translationWithColor(
-                                TextFormatting.YELLOW,
-                                "gregtech.machine.miner.invfull"));
+    protected void configureWarningText(MultiblockUIBuilder builder) {
+        builder.addLowPowerLine(isStructureFormed() && !drainEnergy(true))
+                .addCustom((list, syncer) -> {
+                    if (isStructureFormed() && syncer.syncBoolean(minerLogic.isInventoryFull())) {
+                        list.add(KeyUtil.lang(TextFormatting.YELLOW, "gregtech.machine.miner.invfull"));
                     }
                 });
     }
@@ -367,50 +360,53 @@ public class MetaTileEntityFluidDrill extends MultiblockWithDisplayBase
     }
 
     @Override
-    protected boolean shouldShowVoidingModeButton() {
+    public boolean shouldShowVoidingModeButton() {
         return false;
-    }
-
-    @Override
-    public boolean showProgressBar() {
-        return tier > GTValues.MV; // only show for T2/3 fluid rigs
-    }
-
-    @Override
-    public double getFillPercentage(int index) {
-        int numOperationsLeft = BedrockFluidVeinHandler.getOperationsRemaining(getWorld(), minerLogic.getChunkX(),
-                minerLogic.getChunkZ());
-        int maxOperations = BedrockFluidVeinHandler.MAXIMUM_VEIN_OPERATIONS;
-        return 1.0 * numOperationsLeft / maxOperations;
-    }
-
-    @Override
-    public TextureArea getProgressBarTexture(int index) {
-        return GuiTextures.PROGRESS_BAR_FLUID_RIG_DEPLETION;
-    }
-
-    @Override
-    public void addBarHoverText(List<ITextComponent> hoverList, int index) {
-        int numOperationsLeft = BedrockFluidVeinHandler.getOperationsRemaining(getWorld(), minerLogic.getChunkX(),
-                minerLogic.getChunkZ());
-        int maxOperations = BedrockFluidVeinHandler.MAXIMUM_VEIN_OPERATIONS;
-        int percentage = (int) Math.round(1.0 * numOperationsLeft / maxOperations * 100);
-        TextFormatting color = percentage > 40 ? TextFormatting.GREEN :
-                percentage > 10 ? TextFormatting.YELLOW : TextFormatting.RED;
-
-        if (numOperationsLeft == 0) {
-            hoverList.add(TextComponentUtil.translationWithColor(TextFormatting.RED,
-                    "gregtech.multiblock.fluid_rig.vein_depleted"));
-        } else {
-            ITextComponent veinInfo = TextComponentUtil.stringWithColor(color, percentage + "%");
-            hoverList.add(TextComponentUtil.translationWithColor(
-                    TextFormatting.GRAY,
-                    "gregtech.multiblock.fluid_rig.vein_depletion",
-                    veinInfo));
-        }
     }
 
     public boolean allowsExtendedFacing() {
         return false;
+    }
+
+    @Override
+    public int getProgressBarCount() {
+        // only show for T2/3 fluid rigs
+        return tier > GTValues.MV ? 1 : 0;
+    }
+
+    @Override
+    public @NotNull ProgressWidget createProgressBar(PanelSyncManager panelSyncManager, int index) {
+        IntSyncValue operationsValue = new IntSyncValue(() -> BedrockFluidVeinHandler.getOperationsRemaining(getWorld(),
+                minerLogic.getChunkX(), minerLogic.getChunkZ()));
+        panelSyncManager.syncValue("operations_remaining", operationsValue);
+
+        return new ProgressWidget()
+                .progress(() -> operationsValue.getIntValue() * 1.0 / BedrockFluidVeinHandler.MAXIMUM_VEIN_OPERATIONS)
+                .texture(GTGuiTextures.PROGRESS_BAR_FLUID_RIG_DEPLETION, MultiblockUIFactory.Bars.FULL_WIDTH)
+                .tooltipAutoUpdate(true)
+                .tooltipBuilder(t -> {
+                    if (isStructureFormed()) {
+                        if (operationsValue.getIntValue() == 0) {
+                            t.addLine(IKey.lang("gregtech.multiblock.fluid_rig.vein_depleted"));
+                        } else {
+                            t.addLine(KeyUtil.string(() -> {
+                                int percent = (int) Math.round(100.0 * operationsValue.getIntValue() /
+                                        BedrockFluidVeinHandler.MAXIMUM_VEIN_OPERATIONS);
+                                if (percent > 40) {
+                                    return TextFormatting.GREEN + IKey
+                                            .lang("gregtech.multiblock.fluid_rig.vein_depletion.high", percent).get();
+                                } else if (percent > 10) {
+                                    return TextFormatting.YELLOW + IKey
+                                            .lang("gregtech.multiblock.fluid_rig.vein_depletion.medium", percent).get();
+                                } else {
+                                    return TextFormatting.RED + IKey
+                                            .lang("gregtech.multiblock.fluid_rig.vein_depletion.low", percent).get();
+                                }
+                            }));
+                        }
+                    } else {
+                        t.addLine(IKey.lang("gregtech.multiblock.invalid_structure"));
+                    }
+                });
     }
 }

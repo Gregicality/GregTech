@@ -6,10 +6,13 @@ import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.resources.TextureArea;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 
 import net.minecraft.util.ResourceLocation;
+
+import com.cleanroommc.modularui.drawable.UITexture;
 
 public class MetaTileEntityHPCACooler extends MetaTileEntityHPCAComponent implements IHPCACoolantProvider {
 
@@ -41,6 +44,11 @@ public class MetaTileEntityHPCACooler extends MetaTileEntityHPCAComponent implem
     }
 
     @Override
+    public UITexture getComponentIcon2() {
+        return advanced ? GTGuiTextures.HPCA_ICON_ACTIVE_COOLER_COMPONENT : GTGuiTextures.HPCA_ICON_HEAT_SINK_COMPONENT;
+    }
+
+    @Override
     public SimpleOverlayRenderer getFrontActiveOverlay() {
         return advanced ? Textures.HPCA_ACTIVE_COOLER_ACTIVE_OVERLAY : getFrontOverlay();
     }
@@ -68,5 +76,10 @@ public class MetaTileEntityHPCACooler extends MetaTileEntityHPCAComponent implem
     @Override
     public int getMaxCoolantPerTick() {
         return advanced ? 8 : 0;
+    }
+
+    @Override
+    public String getTileName() {
+        return getMetaFullName();
     }
 }

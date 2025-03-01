@@ -20,8 +20,8 @@ import gregtech.api.metatileentity.multiblock.ICleanroomProvider;
 import gregtech.api.metatileentity.multiblock.ICleanroomReceiver;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
-import gregtech.api.metatileentity.multiblock.MultiblockDisplayText;
 import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.MultiblockShapeInfo;
@@ -30,8 +30,8 @@ import gregtech.api.pattern.PatternStringError;
 import gregtech.api.pattern.TraceabilityPredicate;
 import gregtech.api.util.BlockInfo;
 import gregtech.api.util.GTUtility;
+import gregtech.api.util.KeyUtil;
 import gregtech.api.util.Mods;
-import gregtech.api.util.TextComponentUtil;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.utils.TooltipHelper;
@@ -62,7 +62,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -75,6 +74,7 @@ import appeng.core.features.AEFeature;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -484,54 +484,43 @@ public class MetaTileEntityCleanroom extends MultiblockWithDisplayBase
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed())
-                .setWorkingStatus(cleanroomLogic.isWorkingEnabled(), cleanroomLogic.isActive())
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        builder.setWorkingStatus(cleanroomLogic.isWorkingEnabled(), cleanroomLogic.isActive())
                 .addEnergyUsageLine(energyContainer)
-                .addCustom(tl -> {
+                .addEnergyUsageExactLine(isClean() ? 4 : GTValues.VA[getEnergyTier()])
+                .addCustom((list, syncer) -> {
                     // Cleanliness status line
                     if (isStructureFormed()) {
-                        ITextComponent cleanState;
-                        if (isClean()) {
-                            cleanState = TextComponentUtil.translationWithColor(
-                                    TextFormatting.GREEN,
-                                    "gregtech.multiblock.cleanroom.clean_state",
-                                    this.cleanAmount);
+                        IKey cleanState;
+                        if (syncer.syncBoolean(isClean())) { // is this method actually synced?
+                            cleanState = KeyUtil.lang(TextFormatting.GREEN, "gregtech.multiblock.cleanroom.clean_state",
+                                    cleanAmount);
                         } else {
-                            cleanState = TextComponentUtil.translationWithColor(
-                                    TextFormatting.DARK_RED,
-                                    "gregtech.multiblock.cleanroom.dirty_state",
-                                    this.cleanAmount);
+                            cleanState = KeyUtil.lang(TextFormatting.DARK_RED,
+                                    "gregtech.multiblock.cleanroom.dirty_state", cleanAmount);
                         }
 
-                        tl.add(TextComponentUtil.translationWithColor(
-                                TextFormatting.GRAY,
-                                "gregtech.multiblock.cleanroom.clean_status",
+                        list.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.cleanroom.clean_status",
                                 cleanState));
                     }
                 })
-                .addCustom(tl -> {
-                    if (!cleanroomLogic.isVoltageHighEnough()) {
-                        ITextComponent energyNeeded = new TextComponentString(
-                                GTValues.VNF[cleanroomFilter.getMinTier()]);
-                        tl.add(TextComponentUtil.translationWithColor(TextFormatting.YELLOW,
-                                "gregtech.multiblock.cleanroom.low_tier", energyNeeded));
-                    }
-                })
-                .addEnergyUsageExactLine(isClean() ? 4 : GTValues.VA[getEnergyTier()])
-                .addWorkingStatusLine()
-                .addProgressLine(getProgressPercent() / 100.0);
+                .addProgressLine(getProgressPercent() / 100.0)
+                .addWorkingStatusLine();
     }
 
     @Override
-    protected void addWarningText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed(), false)
-                .addLowPowerLine(!drainEnergy(true))
-                .addCustom(tl -> {
-                    if (isStructureFormed() && !isClean()) {
-                        tl.add(TextComponentUtil.translationWithColor(
-                                TextFormatting.YELLOW,
+    protected void configureWarningText(MultiblockUIBuilder builder) {
+        builder.addLowPowerLine(!drainEnergy(true))
+                .addCustom((list, syncer) -> {
+                    if (isStructureFormed() && !syncer.syncBoolean(isClean())) {
+                        list.add(KeyUtil.lang(TextFormatting.YELLOW,
                                 "gregtech.multiblock.cleanroom.warning_contaminated"));
+                    }
+
+                    if (!syncer.syncBoolean(cleanroomLogic.isVoltageHighEnough())) {
+                        IKey energyNeeded = IKey.str(GTValues.VNF[cleanroomFilter.getMinTier()]);
+                        list.add(KeyUtil.lang(TextFormatting.YELLOW, "gregtech.multiblock.cleanroom.low_tier",
+                                energyNeeded));
                     }
                 })
                 .addMaintenanceProblemLines(getMaintenanceProblems());
@@ -780,7 +769,7 @@ public class MetaTileEntityCleanroom extends MultiblockWithDisplayBase
     }
 
     @Override
-    protected boolean shouldShowVoidingModeButton() {
+    public boolean shouldShowVoidingModeButton() {
         return false;
     }
 }

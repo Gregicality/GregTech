@@ -86,8 +86,8 @@ public class MetaTileEntitySteamItemBus extends MetaTileEntityItemBus {
     }
 
     @Override
-    public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager guiSyncManager) {
-        guiSyncManager.registerSlotGroup("item_inv", 2);
+    public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager panelSyncManager) {
+        panelSyncManager.registerSlotGroup("item_inv", 2);
 
         List<List<IWidget>> widgets = new ArrayList<>();
         for (int i = 0; i < 2; i++) {

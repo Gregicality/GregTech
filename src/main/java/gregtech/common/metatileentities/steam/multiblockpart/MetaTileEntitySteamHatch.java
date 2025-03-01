@@ -142,7 +142,7 @@ public class MetaTileEntitySteamHatch extends MetaTileEntityMultiblockPart
         guiSyncManager.registerSlotGroup("item_inv", 2);
 
         GTFluidSyncHandler tankSyncHandler = GTFluidSlot.sync(this.importFluids.getTankAt(0))
-                .showAmount(false);
+                .showAmountOnSlot(false);
 
         return GTGuis.createPanel(this, 176, 166)
                 .child(IKey.lang(getMetaFullName()).asWidget().pos(5, 5))

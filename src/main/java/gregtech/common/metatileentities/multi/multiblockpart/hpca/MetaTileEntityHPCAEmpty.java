@@ -44,4 +44,9 @@ public class MetaTileEntityHPCAEmpty extends MetaTileEntityHPCAComponent {
     public boolean canBeDamaged() {
         return false;
     }
+
+    @Override
+    public String getTileName() {
+        return getMetaFullName();
+    }
 }

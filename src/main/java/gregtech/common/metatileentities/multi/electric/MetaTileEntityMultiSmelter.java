@@ -6,9 +6,9 @@ import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
-import gregtech.api.metatileentity.multiblock.MultiblockDisplayText;
 import gregtech.api.metatileentity.multiblock.ParallelLogicType;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.PatternMatchContext;
@@ -19,8 +19,7 @@ import gregtech.api.recipes.logic.OCResult;
 import gregtech.api.recipes.machines.RecipeMapFurnace;
 import gregtech.api.recipes.properties.RecipePropertyStorage;
 import gregtech.api.util.GTUtility;
-import gregtech.api.util.TextComponentUtil;
-import gregtech.api.util.TextFormattingUtil;
+import gregtech.api.util.KeyUtil;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.blocks.BlockMetalCasing.MetalCasingType;
@@ -31,14 +30,12 @@ import gregtech.core.sound.GTSoundEvents;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import com.cleanroommc.modularui.api.drawable.IKey;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 import static gregtech.api.recipes.logic.OverclockingLogic.standardOC;
 
@@ -58,46 +55,39 @@ public class MetaTileEntityMultiSmelter extends RecipeMapMultiblockController {
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed())
-                .setWorkingStatus(recipeMapWorkable.isWorkingEnabled(), recipeMapWorkable.isActive())
-                .addEnergyUsageLine(recipeMapWorkable.getEnergyContainer())
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        builder.setWorkingStatus(recipeMapWorkable.isWorkingEnabled(), recipeMapWorkable.isActive())
+                .addEnergyUsageLine(getEnergyContainer())
                 .addEnergyTierLine(GTUtility.getTierByVoltage(recipeMapWorkable.getMaxVoltage()))
-                .addCustom(tl -> {
-                    if (isStructureFormed()) {
-                        // Heating coil discount
-                        if (heatingCoilDiscount > 1) {
-                            ITextComponent coilDiscount = TextComponentUtil.stringWithColor(
-                                    TextFormatting.AQUA,
-                                    TextFormattingUtil.formatNumbers(100.0 / heatingCoilDiscount) + "%");
+                .addCustom((richText, syncer) -> {
+                    if (!isStructureFormed()) return;
 
-                            ITextComponent base = TextComponentUtil.translationWithColor(
-                                    TextFormatting.GRAY,
-                                    "gregtech.multiblock.multi_furnace.heating_coil_discount",
-                                    coilDiscount);
+                    if (heatingCoilDiscount > 1) {
+                        IKey coilDiscount = KeyUtil.number(TextFormatting.AQUA,
+                                (long) (100.0 / heatingCoilDiscount), "%");
 
-                            ITextComponent hoverText = TextComponentUtil.translationWithColor(
-                                    TextFormatting.GRAY,
-                                    "gregtech.multiblock.multi_furnace.heating_coil_discount_hover");
+                        IKey base = KeyUtil.lang(TextFormatting.GRAY,
+                                "gregtech.multiblock.multi_furnace.heating_coil_discount",
+                                coilDiscount);
 
-                            TextComponentUtil.setHover(base, hoverText);
-                            tl.add(base);
-                        }
+                        IKey hoverText = KeyUtil.lang(TextFormatting.GRAY,
+                                "gregtech.multiblock.multi_furnace.heating_coil_discount_hover");
 
-                        // Custom parallels line so we can have a hover text
-                        if (recipeMapWorkable.getParallelLimit() > 1) {
-                            ITextComponent parallels = TextComponentUtil.stringWithColor(
-                                    TextFormatting.DARK_PURPLE,
-                                    TextFormattingUtil.formatNumbers(recipeMapWorkable.getParallelLimit()));
-                            ITextComponent bodyText = TextComponentUtil.translationWithColor(
-                                    TextFormatting.GRAY,
-                                    "gregtech.multiblock.parallel",
-                                    parallels);
-                            ITextComponent hoverText = TextComponentUtil.translationWithColor(
-                                    TextFormatting.GRAY,
-                                    "gregtech.multiblock.multi_furnace.parallel_hover");
-                            tl.add(TextComponentUtil.setHover(bodyText, hoverText));
-                        }
+                        richText.add(KeyUtil.setHover(base, hoverText));
+                    }
+
+                    if (recipeMapWorkable.getParallelLimit() > 0) {
+                        IKey parallels = KeyUtil.number(TextFormatting.DARK_PURPLE,
+                                recipeMapWorkable.getParallelLimit());
+
+                        IKey bodyText = KeyUtil.lang(TextFormatting.GRAY,
+                                "gregtech.multiblock.parallel",
+                                parallels);
+
+                        IKey hoverText = KeyUtil.lang(TextFormatting.GRAY,
+                                "gregtech.multiblock.multi_furnace.parallel_hover");
+
+                        richText.add(KeyUtil.setHover(bodyText, hoverText));
                     }
                 })
                 .addWorkingStatusLine()
@@ -107,14 +97,9 @@ public class MetaTileEntityMultiSmelter extends RecipeMapMultiblockController {
     @Override
     protected void formStructure(PatternMatchContext context) {
         super.formStructure(context);
-        Object coilType = context.get("CoilType");
-        if (coilType instanceof IHeatingCoilBlockStats) {
-            this.heatingCoilLevel = ((IHeatingCoilBlockStats) coilType).getLevel();
-            this.heatingCoilDiscount = ((IHeatingCoilBlockStats) coilType).getEnergyDiscount();
-        } else {
-            this.heatingCoilLevel = CoilType.CUPRONICKEL.getLevel();
-            this.heatingCoilDiscount = CoilType.CUPRONICKEL.getEnergyDiscount();
-        }
+        IHeatingCoilBlockStats coilType = context.getOrDefault("CoilType", CoilType.CUPRONICKEL);
+        this.heatingCoilLevel = coilType.getLevel();
+        this.heatingCoilDiscount = coilType.getEnergyDiscount();
     }
 
     @Override

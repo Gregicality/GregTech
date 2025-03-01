@@ -14,15 +14,16 @@ import gregtech.api.gui.resources.TextureArea;
 import gregtech.api.gui.widgets.ImageCycleButtonWidget;
 import gregtech.api.gui.widgets.ImageWidget;
 import gregtech.api.gui.widgets.IndicatorImageWidget;
-import gregtech.api.gui.widgets.ProgressWidget;
 import gregtech.api.metatileentity.IFastRenderMetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockDisplayText;
-import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIFactory;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.MultiblockShapeInfo;
@@ -73,6 +74,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.value.sync.DoubleSyncValue;
+import com.cleanroommc.modularui.widgets.ProgressWidget;
+import com.cleanroommc.modularui.widgets.layout.Column;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
 import org.jetbrains.annotations.NotNull;
@@ -368,18 +373,18 @@ public class MetaTileEntityFusionReactor extends RecipeMapMultiblockController
         builder.image(4, 4, 190, 138, GuiTextures.DISPLAY);
 
         // Energy Bar
-        builder.widget(new ProgressWidget(
+        builder.widget(new gregtech.api.gui.widgets.ProgressWidget(
                 () -> energyContainer.getEnergyCapacity() > 0 ?
                         1.0 * energyContainer.getEnergyStored() / energyContainer.getEnergyCapacity() : 0,
                 4, 144, 94, 7,
-                GuiTextures.PROGRESS_BAR_FUSION_ENERGY, ProgressWidget.MoveType.HORIZONTAL)
+                GuiTextures.PROGRESS_BAR_FUSION_ENERGY, gregtech.api.gui.widgets.ProgressWidget.MoveType.HORIZONTAL)
                         .setHoverTextConsumer(this::addEnergyBarHoverText));
 
         // Heat Bar
-        builder.widget(new ProgressWidget(
+        builder.widget(new gregtech.api.gui.widgets.ProgressWidget(
                 () -> energyContainer.getEnergyCapacity() > 0 ? 1.0 * heat / energyContainer.getEnergyCapacity() : 0,
                 100, 144, 94, 7,
-                GuiTextures.PROGRESS_BAR_FUSION_HEAT, ProgressWidget.MoveType.HORIZONTAL)
+                GuiTextures.PROGRESS_BAR_FUSION_HEAT, gregtech.api.gui.widgets.ProgressWidget.MoveType.HORIZONTAL)
                         .setHoverTextConsumer(this::addHeatBarHoverText));
 
         // Indicator Widget
@@ -417,7 +422,7 @@ public class MetaTileEntityFusionReactor extends RecipeMapMultiblockController
         // Voiding Mode Button
         builder.widget(new ImageCycleButtonWidget(173, 189, 18, 18, GuiTextures.BUTTON_VOID_MULTIBLOCK,
                 4, this::getVoidingMode, this::setVoidingMode)
-                        .setTooltipHoverString(MultiblockWithDisplayBase::getVoidingModeTooltip));
+                        .setTooltipHoverString(this::getVoidingModeTooltip));
 
         // Distinct Buses Unavailable Image
         builder.widget(new ImageWidget(173, 171, 18, 18, GuiTextures.BUTTON_NO_DISTINCT_BUSES)
@@ -429,6 +434,54 @@ public class MetaTileEntityFusionReactor extends RecipeMapMultiblockController
         // Player Inventory
         builder.bindPlayerInventory(entityPlayer.inventory, 153);
         return builder;
+    }
+
+    @Override
+    protected MultiblockUIFactory createUIFactory() {
+        IDrawable title;
+        if (tier == GTValues.LuV) {
+            // MK1
+            title = GTGuiTextures.FUSION_REACTOR_MK1_TITLE;
+        } else if (tier == GTValues.ZPM) {
+            // MK2
+            title = GTGuiTextures.FUSION_REACTOR_MK2_TITLE;
+        } else {
+            // MK3
+            title = GTGuiTextures.FUSION_REACTOR_MK3_TITLE;
+        }
+
+        DoubleSyncValue progress = new DoubleSyncValue(recipeMapWorkable::getProgressPercent);
+        return new MultiblockUIFactory(this)
+                .setSize(198, 236)
+                .setScreenHeight(138)
+                .disableDisplayText()
+                .addScreenChildren((parent, syncManager) -> {
+                    MultiblockUIBuilder status = MultiblockUIFactory.builder();
+                    status.setAction(b -> b.structureFormed(true)
+                            .setWorkingStatus(recipeMapWorkable.isWorkingEnabled(), recipeMapWorkable.isActive())
+                            .addWorkingStatusLine());
+                    status.sync("status", syncManager);
+                    parent.child(new Column()
+                            .padding(4)
+                            .expanded()
+                            .child(title.asWidget()
+                                    .marginBottom(8)
+                                    .size(69, 12))
+                            .child(new ProgressWidget()
+                                    .size(77, 77)
+                                    .tooltipAutoUpdate(true)
+                                    .tooltipBuilder(status::build)
+                                    .background(GTGuiTextures.FUSION_DIAGRAM.asIcon()
+                                            .size(89, 101)
+                                            .marginTop(11))
+                                    .direction(ProgressWidget.Direction.CIRCULAR_CW)
+                                    .value(progress)
+                                    .texture(null, GTGuiTextures.FUSION_PROGRESS, 77))
+                            .child(GTGuiTextures.FUSION_LEGEND.asWidget()
+                                    .left(4)
+                                    .bottom(4)
+                                    .size(108, 41)));
+                });
     }
 
     private void addEnergyBarHoverText(List<ITextComponent> hoverList) {
@@ -456,14 +509,14 @@ public class MetaTileEntityFusionReactor extends RecipeMapMultiblockController
     private static class FusionProgressSupplier {
 
         private final AtomicDouble tracker = new AtomicDouble(0.0);
-        private final ProgressWidget.TimedProgressSupplier bottomLeft;
+        private final gregtech.api.gui.widgets.ProgressWidget.TimedProgressSupplier bottomLeft;
         private final DoubleSupplier topLeft;
         private final DoubleSupplier topRight;
         private final DoubleSupplier bottomRight;
 
         public FusionProgressSupplier() {
             // Bottom Left, fill on [0, 0.25)
-            bottomLeft = new ProgressWidget.TimedProgressSupplier(200, 164, false) {
+            bottomLeft = new gregtech.api.gui.widgets.ProgressWidget.TimedProgressSupplier(200, 164, false) {
 
                 @Override
                 public double getAsDouble() {
@@ -533,25 +586,30 @@ public class MetaTileEntityFusionReactor extends RecipeMapMultiblockController
 
             BOTTOM_LEFT(
                     61, 66, 35, 41,
-                    GuiTextures.PROGRESS_BAR_FUSION_REACTOR_DIAGRAM_BL, ProgressWidget.MoveType.VERTICAL),
+                    GuiTextures.PROGRESS_BAR_FUSION_REACTOR_DIAGRAM_BL,
+                    gregtech.api.gui.widgets.ProgressWidget.MoveType.VERTICAL),
             TOP_LEFT(
                     61, 30, 41, 35,
-                    GuiTextures.PROGRESS_BAR_FUSION_REACTOR_DIAGRAM_TL, ProgressWidget.MoveType.HORIZONTAL),
+                    GuiTextures.PROGRESS_BAR_FUSION_REACTOR_DIAGRAM_TL,
+                    gregtech.api.gui.widgets.ProgressWidget.MoveType.HORIZONTAL),
             TOP_RIGHT(
                     103, 30, 35, 41,
-                    GuiTextures.PROGRESS_BAR_FUSION_REACTOR_DIAGRAM_TR, ProgressWidget.MoveType.VERTICAL_DOWNWARDS),
+                    GuiTextures.PROGRESS_BAR_FUSION_REACTOR_DIAGRAM_TR,
+                    gregtech.api.gui.widgets.ProgressWidget.MoveType.VERTICAL_DOWNWARDS),
             BOTTOM_RIGHT(
                     97, 72, 41, 35,
-                    GuiTextures.PROGRESS_BAR_FUSION_REACTOR_DIAGRAM_BR, ProgressWidget.MoveType.HORIZONTAL_BACKWARDS);
+                    GuiTextures.PROGRESS_BAR_FUSION_REACTOR_DIAGRAM_BR,
+                    gregtech.api.gui.widgets.ProgressWidget.MoveType.HORIZONTAL_BACKWARDS);
 
             private final int x;
             private final int y;
             private final int width;
             private final int height;
             private final TextureArea texture;
-            private final ProgressWidget.MoveType moveType;
+            private final gregtech.api.gui.widgets.ProgressWidget.MoveType moveType;
 
-            Type(int x, int y, int width, int height, TextureArea texture, ProgressWidget.MoveType moveType) {
+            Type(int x, int y, int width, int height, TextureArea texture,
+                 gregtech.api.gui.widgets.ProgressWidget.MoveType moveType) {
                 this.x = x;
                 this.y = y;
                 this.width = width;
@@ -560,8 +618,8 @@ public class MetaTileEntityFusionReactor extends RecipeMapMultiblockController
                 this.moveType = moveType;
             }
 
-            public ProgressWidget getWidget(MetaTileEntityFusionReactor instance) {
-                return new ProgressWidget(
+            public gregtech.api.gui.widgets.ProgressWidget getWidget(MetaTileEntityFusionReactor instance) {
+                return new gregtech.api.gui.widgets.ProgressWidget(
                         () -> instance.recipeMapWorkable.isActive() ?
                                 instance.progressBarSupplier.getSupplier(this).getAsDouble() : 0,
                         x, y, width, height, texture, moveType)

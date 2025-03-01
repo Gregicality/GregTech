@@ -43,7 +43,9 @@ public class GTFluidSyncHandler extends SyncHandler {
     private boolean canDrainSlot = true;
     private boolean canFillSlot = true;
     private boolean phantom;
-    private BooleanSupplier showAmount = () -> true;
+    private BooleanSupplier showAmountInTooltip = () -> true;
+    private BooleanSupplier showAmountOnSlot = () -> true;
+    private BooleanSupplier drawAlwaysFull = () -> true;
 
     public GTFluidSyncHandler(IFluidTank tank) {
         this.tank = tank;
@@ -142,20 +144,50 @@ public class GTFluidSyncHandler extends SyncHandler {
         return phantom;
     }
 
-    public GTFluidSyncHandler showAmount(boolean showAmount) {
-        this.showAmount = () -> showAmount;
+    public GTFluidSyncHandler showAmountInTooltip(boolean showAmount) {
+        this.showAmountInTooltip = () -> showAmount;
         return this;
     }
 
-    public GTFluidSyncHandler showAmount(BooleanSupplier showAmount) {
-        this.showAmount = showAmount;
+    public GTFluidSyncHandler showAmountInTooltip(BooleanSupplier showAmount) {
+        this.showAmountInTooltip = showAmount;
         return this;
     }
 
-    public boolean showAmount() {
+    public boolean showAmountInTooltip() {
         if (!isPhantom() && phantomFluid != null)
             return false;
-        return this.showAmount.getAsBoolean();
+        return this.showAmountInTooltip.getAsBoolean();
+    }
+
+    public GTFluidSyncHandler showAmountOnSlot(boolean showAmount) {
+        this.showAmountOnSlot = () -> showAmount;
+        return this;
+    }
+
+    public GTFluidSyncHandler showAmountOnSlot(BooleanSupplier showAmount) {
+        this.showAmountOnSlot = showAmount;
+        return this;
+    }
+
+    public boolean showAmountOnSlot() {
+        if (!isPhantom() && phantomFluid != null)
+            return false;
+        return this.showAmountOnSlot.getAsBoolean();
+    }
+
+    public GTFluidSyncHandler drawAlwaysFull(boolean drawAsFull) {
+        this.drawAlwaysFull = () -> drawAsFull;
+        return this;
+    }
+
+    public GTFluidSyncHandler drawAlwaysFull(BooleanSupplier drawAsFull) {
+        this.drawAlwaysFull = drawAsFull;
+        return this;
+    }
+
+    public boolean drawAlwaysFull() {
+        return this.drawAlwaysFull.getAsBoolean();
     }
 
     public @NotNull String getFormattedFluidAmount() {
@@ -231,9 +263,9 @@ public class GTFluidSyncHandler extends SyncHandler {
                     }
                 } else {
                     FluidStack cellFluid = fluidHandlerItem.drain(Integer.MAX_VALUE, false);
-                    if ((this.showAmount.getAsBoolean() || currentFluid == null) && cellFluid != null) {
+                    if ((this.showAmountOnSlot.getAsBoolean() || currentFluid == null) && cellFluid != null) {
                         if (this.canFillSlot()) {
-                            if (!this.showAmount.getAsBoolean()) {
+                            if (!this.showAmountOnSlot.getAsBoolean()) {
                                 cellFluid.amount = 1;
                             }
                             if (this.tank.fill(cellFluid, true) > 0) {
@@ -250,14 +282,14 @@ public class GTFluidSyncHandler extends SyncHandler {
             case 1 -> {
                 if (this.canFillSlot()) {
                     if (currentFluid != null) {
-                        if (this.showAmount.getAsBoolean()) {
+                        if (this.showAmountOnSlot.getAsBoolean()) {
                             FluidStack toFill = currentFluid.copy();
                             toFill.amount = 1000;
                             this.tank.fill(toFill, true);
                         }
                     } else if (this.phantomFluid != null) {
                         FluidStack toFill = this.phantomFluid.copy();
-                        toFill.amount = this.showAmount.getAsBoolean() ? 1 : toFill.amount;
+                        toFill.amount = this.showAmountOnSlot.getAsBoolean() ? 1 : toFill.amount;
                         this.tank.fill(toFill, true);
                     }
                 }
@@ -272,7 +304,7 @@ public class GTFluidSyncHandler extends SyncHandler {
     public void tryScrollPhantom(MouseData mouseData) {
         FluidStack currentFluid = this.tank.getFluid();
         int amount = mouseData.mouseButton;
-        if (!this.showAmount()) {
+        if (!this.showAmountOnSlot()) {
             int newAmt = amount == 1 ? 1 : 0;
             if (newAmt == 0) {
                 setFluid(null);
@@ -293,7 +325,7 @@ public class GTFluidSyncHandler extends SyncHandler {
         if (currentFluid == null) {
             if (amount > 0 && this.phantomFluid != null) {
                 FluidStack toFill = this.phantomFluid.copy();
-                toFill.amount = this.showAmount() ? amount : 1;
+                toFill.amount = this.showAmountOnSlot() ? amount : 1;
                 this.tank.fill(toFill, true);
             }
             return;

@@ -7,8 +7,6 @@ import gregtech.api.capability.impl.EnergyContainerList;
 import gregtech.api.cover.Cover;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
-import gregtech.api.gui.Widget;
-import gregtech.api.gui.widgets.AdvancedTextWidget;
 import gregtech.api.gui.widgets.WidgetGroup;
 import gregtech.api.metatileentity.IFastRenderMetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
@@ -16,12 +14,15 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIFactory;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.PatternMatchContext;
 import gregtech.api.pipenet.tile.IPipeTile;
 import gregtech.api.pipenet.tile.TileEntityPipeBase;
 import gregtech.api.util.FacingPos;
+import gregtech.api.util.KeyUtil;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.utils.RenderUtil;
@@ -49,9 +50,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
@@ -60,6 +59,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.value.sync.IntSyncValue;
+import com.cleanroommc.modularui.widgets.ButtonWidget;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
@@ -70,7 +72,7 @@ import static gregtech.api.util.RelativeDirection.*;
 
 public class MetaTileEntityCentralMonitor extends MultiblockWithDisplayBase implements IFastRenderMetaTileEntity {
 
-    private final static long ENERGY_COST = -ConfigHolder.machines.centralMonitorEuCost;
+    private final static long ENERGY_COST = ConfigHolder.machines.centralMonitorEuCost;
     public final static int MAX_HEIGHT = 9;
     public final static int MAX_WIDTH = 14;
     // run-time data
@@ -278,33 +280,56 @@ public class MetaTileEntityCentralMonitor extends MultiblockWithDisplayBase impl
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
-        super.addDisplayText(textList);
-        textList.add(new TextComponentTranslation("gregtech.multiblock.central_monitor.height", this.height));
-        if (!isStructureFormed()) {
-            ITextComponent buttonText = new TextComponentTranslation(
-                    "gregtech.multiblock.central_monitor.height_modify", height);
-            buttonText.appendText(" ");
-            buttonText.appendSibling(AdvancedTextWidget.withButton(new TextComponentString("[-]"), "sub"));
-            buttonText.appendText(" ");
-            buttonText.appendSibling(AdvancedTextWidget.withButton(new TextComponentString("[+]"), "add"));
-            textList.add(buttonText);
-        } else {
-            textList.add(new TextComponentTranslation("gregtech.multiblock.central_monitor.width", this.width));
-            textList.add(new TextComponentTranslation("gregtech.multiblock.central_monitor.low_power"));
-        }
+    protected MultiblockUIFactory createUIFactory() {
+        return super.createUIFactory()
+                .createFlexButton((posGuiData, panelSyncManager) -> {
+                    IntSyncValue intSync = new IntSyncValue(() -> height, this::setHeight);
+                    panelSyncManager.syncValue("height", intSync);
+
+                    // todo make this a popup?
+                    return new ButtonWidget<>()
+                            .addTooltipLine(IKey.lang("gregtech.multiblock.central_monitor.button_tooltip"))
+                            .onMousePressed(mouseData -> {
+                                int currentHeight = intSync.getIntValue();
+
+                                if (mouseData == 0 && currentHeight < MAX_HEIGHT) {
+                                    intSync.setIntValue(currentHeight + 1);
+                                    return true;
+                                } else if (mouseData == 1 && currentHeight > 3) {
+                                    intSync.setIntValue(currentHeight - 1);
+                                    return true;
+                                } else if (mouseData == 2) {
+                                    intSync.setIntValue(3);
+                                }
+
+                                return false;
+                            });
+                });
     }
 
     @Override
-    protected boolean shouldShowVoidingModeButton() {
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        builder.addCustom((list, syncer) -> {
+            list.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.central_monitor.height", this.height));
+
+            if (isStructureFormed()) {
+                list.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.central_monitor.width", this.width));
+            }
+        });
+    }
+
+    @Override
+    protected void configureWarningText(MultiblockUIBuilder builder) {
+        builder.addCustom((list, syncer) -> {
+            if (isStructureFormed() && !drainEnergy(true)) {
+                list.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.central_monitor.low_power"));
+            }
+        });
+    }
+
+    @Override
+    public boolean shouldShowVoidingModeButton() {
         return false;
-    }
-
-    @Override
-    protected void handleDisplayClick(String componentData, Widget.ClickData clickData) {
-        super.handleDisplayClick(componentData, clickData);
-        int modifier = componentData.equals("add") ? 1 : -1;
-        setHeight(this.height + modifier);
     }
 
     @Override
@@ -370,8 +395,7 @@ public class MetaTileEntityCentralMonitor extends MultiblockWithDisplayBase impl
     @Override
     protected void updateFormedValid() {
         if (this.getOffsetTimer() % 20 == 0) {
-            setActive(inputEnergy.changeEnergy(ENERGY_COST * this.getMultiblockParts().size()) ==
-                    ENERGY_COST * this.getMultiblockParts().size());
+            setActive(drainEnergy(false));
             if (checkCovers()) {
                 this.getMultiblockParts().forEach(part -> {
                     Set<FacingPos> covers = getAllCovers();
@@ -382,6 +406,20 @@ public class MetaTileEntityCentralMonitor extends MultiblockWithDisplayBase impl
                 writeCustomData(GregtechDataCodes.UPDATE_COVERS, this::writeCovers);
             }
         }
+    }
+
+    /**
+     * @return if the Central Monitor was able to drain enough energy.
+     */
+    private boolean drainEnergy(boolean simulate) {
+        long energyToDrain = ENERGY_COST * this.getMultiblockParts().size();
+        long resultEnergy = inputEnergy.getEnergyStored() - energyToDrain;
+        if (resultEnergy >= 0L && resultEnergy <= inputEnergy.getEnergyCapacity()) {
+            if (!simulate)
+                inputEnergy.changeEnergy(-energyToDrain);
+            return true;
+        }
+        return false;
     }
 
     public Set<FacingPos> getAllCovers() {
@@ -630,7 +668,7 @@ public class MetaTileEntityCentralMonitor extends MultiblockWithDisplayBase impl
         tooltip.add(I18n.format("gregtech.multiblock.central_monitor.tooltip.1"));
         tooltip.add(I18n.format("gregtech.multiblock.central_monitor.tooltip.2", MAX_WIDTH, MAX_HEIGHT));
         tooltip.add(I18n.format("gregtech.multiblock.central_monitor.tooltip.3"));
-        tooltip.add(I18n.format("gregtech.multiblock.central_monitor.tooltip.4", -ENERGY_COST));
+        tooltip.add(I18n.format("gregtech.multiblock.central_monitor.tooltip.4", ENERGY_COST));
     }
 
     @Override

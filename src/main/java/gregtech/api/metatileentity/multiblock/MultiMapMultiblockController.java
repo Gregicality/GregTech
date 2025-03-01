@@ -3,12 +3,12 @@ package gregtech.api.metatileentity.multiblock;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IMultipleRecipeMaps;
-import gregtech.api.gui.GuiTextures;
-import gregtech.api.gui.Widget;
-import gregtech.api.gui.widgets.ImageCycleButtonWidget;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIFactory;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.pattern.TraceabilityPredicate;
 import gregtech.api.recipes.RecipeMap;
-import gregtech.api.util.LocalizationUtils;
+import gregtech.api.util.GTUtility;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,7 +25,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import codechicken.lib.raytracer.CuboidRayTraceResult;
-import org.jetbrains.annotations.NotNull;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.value.sync.IntSyncValue;
+import com.cleanroommc.modularui.widgets.CycleButtonWidget;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -133,17 +135,38 @@ public abstract class MultiMapMultiblockController extends RecipeMapMultiblockCo
     }
 
     @Override
-    protected @NotNull Widget getFlexButton(int x, int y, int width, int height) {
-        if (getAvailableRecipeMaps() != null && getAvailableRecipeMaps().length > 1) {
-            return new ImageCycleButtonWidget(x, y, width, height, GuiTextures.BUTTON_MULTI_MAP,
-                    getAvailableRecipeMaps().length, this::getRecipeMapIndex, this::setRecipeMapIndex)
-                            .shouldUseBaseBackground().singleTexture()
-                            .setTooltipHoverString(i -> LocalizationUtils
-                                    .format("gregtech.multiblock.multiple_recipemaps.header") + " " +
-                                    LocalizationUtils.format(
-                                            "recipemap." + getAvailableRecipeMaps()[i].getUnlocalizedName() + ".name"));
-        }
-        return super.getFlexButton(x, y, width, height);
+    protected MultiblockUIFactory createUIFactory() {
+        IntSyncValue recipeMapValue = new IntSyncValue(this::getRecipeMapIndex, this::setRecipeMapIndex);
+        return super.createUIFactory()
+                .createFlexButton((guiData, syncManager) -> {
+                    if (getAvailableRecipeMaps() == null || getAvailableRecipeMaps().length <= 1)
+                        return null;
+
+                    return new CycleButtonWidget()
+                            // .textureGetter(i -> GTGuiTextures.BUTTON_MULTI_MAP)
+                            .overlay(GTGuiTextures.BUTTON_MULTI_MAP)
+                            .background(GTGuiTextures.BUTTON)
+                            // TODO find out why this needs to be called
+                            .disableHoverBackground()
+                            .value(recipeMapValue)
+                            .length(getAvailableRecipeMaps().length)
+                            .tooltipAutoUpdate(true)
+                            .tooltipBuilder(t -> t.addLine(IKey.comp(
+                                    IKey.lang("gregtech.multiblock.multiple_recipemaps.value",
+                                            IKey.lang(getAvailableRecipeMaps()[recipeMapValue.getIntValue()]
+                                                    .getTranslationKey())))));
+                });
+    }
+
+    @Override
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        builder.setWorkingStatus(recipeMapWorkable.isWorkingEnabled(), recipeMapWorkable.isActive())
+                .addRecipeMapLine(getCurrentRecipeMap())
+                .addEnergyUsageLine(this.getEnergyContainer())
+                .addEnergyTierLine(GTUtility.getTierByVoltage(recipeMapWorkable.getMaxVoltage()))
+                .addParallelsLine(recipeMapWorkable.getParallelLimit())
+                .addWorkingStatusLine()
+                .addProgressLine(recipeMapWorkable.getProgressPercent());
     }
 
     @Override

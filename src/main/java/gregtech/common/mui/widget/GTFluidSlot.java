@@ -56,10 +56,10 @@ public final class GTFluidSlot extends Widget<GTFluidSlot> implements Interactab
             if (fluid == null) return;
 
             tooltip.addLine(IKey.str(fluid.getLocalizedName()));
-            if (this.syncHandler.showAmount())
+            if (this.syncHandler.showAmountInTooltip())
                 tooltip.addLine(IKey.lang("gregtech.fluid.amount", fluid.amount, this.syncHandler.getCapacity()));
 
-            if (this.syncHandler.isPhantom() && this.syncHandler.showAmount())
+            if (this.syncHandler.isPhantom() && this.syncHandler.showAmountInTooltip())
                 tooltip.addLine(IKey.lang("modularui.fluid.phantom.control"));
 
             // Add various tooltips from the material
@@ -68,7 +68,7 @@ public final class GTFluidSlot extends Widget<GTFluidSlot> implements Interactab
                 tooltip.addLine(IKey.str(s));
             }
 
-            if (this.syncHandler.showAmount())
+            if (this.syncHandler.showAmountInTooltip())
                 addIngotMolFluidTooltip(fluid, tooltip);
         });
     }
@@ -123,9 +123,18 @@ public final class GTFluidSlot extends Widget<GTFluidSlot> implements Interactab
         if (content == null)
             content = this.syncHandler.getLockedFluid();
 
-        GuiDraw.drawFluidTexture(content, 1, 1, getArea().w() - 2, getArea().h() - 2, 0);
+        float height = getArea().h() - 2;
+        int y = 1;
 
-        if (content != null && this.syncHandler.showAmount()) {
+        if (!this.syncHandler.drawAlwaysFull()) {
+            float newHeight = height * ((float) content.amount / this.syncHandler.getCapacity());
+            y += (int) (height - newHeight);
+            height = newHeight;
+        }
+
+        GuiDraw.drawFluidTexture(content, 1, y, getArea().w() - 2, height, 0);
+
+        if (content != null && this.syncHandler.showAmountOnSlot()) {
             String amount = NumberFormat.formatWithMaxDigits(content.amount, 3) + "L";
             this.textRenderer.setAlignment(Alignment.CenterRight, getArea().width - 1f);
             this.textRenderer.setPos(0, 12);

@@ -8,11 +8,11 @@ import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
-import gregtech.api.metatileentity.multiblock.MultiblockDisplayText;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.PatternMatchContext;
-import gregtech.api.util.TextComponentUtil;
+import gregtech.api.util.KeyUtil;
 import gregtech.api.util.TextFormattingUtil;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.Textures;
@@ -23,7 +23,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -145,9 +144,8 @@ public class MetaTileEntityNetworkSwitch extends MetaTileEntityDataBank implemen
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed())
-                .setWorkingStatus(true, isActive() && isWorkingEnabled()) // transform into two-state system for display
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        builder.setWorkingStatus(true, isActive() && isWorkingEnabled()) // transform into two-state system for display
                 .setWorkingStatusKeys(
                         "gregtech.multiblock.idling",
                         "gregtech.multiblock.idling",
@@ -158,13 +156,13 @@ public class MetaTileEntityNetworkSwitch extends MetaTileEntityDataBank implemen
     }
 
     @Override
-    protected void addWarningText(List<ITextComponent> textList) {
-        super.addWarningText(textList);
-        if (isStructureFormed() && computationHandler.hasNonBridgingConnections()) {
-            textList.add(TextComponentUtil.translationWithColor(
-                    TextFormatting.YELLOW,
-                    "gregtech.multiblock.computation.non_bridging.detailed"));
-        }
+    protected void configureWarningText(MultiblockUIBuilder builder) {
+        super.configureWarningText(builder);
+        builder.addCustom((list, syncer) -> {
+            if (isStructureFormed() && syncer.syncBoolean(computationHandler.hasNonBridgingConnections())) {
+                list.add(KeyUtil.lang(TextFormatting.YELLOW, "gregtech.multiblock.computation.non_bridging.detailed"));
+            }
+        });
     }
 
     /** Handles computation load across multiple receivers and to multiple transmitters. */

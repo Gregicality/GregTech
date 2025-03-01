@@ -10,18 +10,18 @@ import gregtech.api.gui.widgets.AdvancedTextWidget;
 import gregtech.api.gui.widgets.IndicatorImageWidget;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.metatileentity.MTETrait;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
+import gregtech.api.mui.GTGuiTheme;
 import gregtech.api.pattern.PatternMatchContext;
 import gregtech.api.pattern.TraceabilityPredicate;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
-import gregtech.api.util.TextComponentUtil;
-import gregtech.api.util.TextFormattingUtil;
+import gregtech.api.util.KeyUtil;
 import gregtech.common.ConfigHolder;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -29,8 +29,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
-
-import java.util.List;
+import com.cleanroommc.modularui.api.drawable.IKey;
 
 public abstract class RecipeMapSteamMultiblockController extends MultiblockWithDisplayBase {
 
@@ -101,24 +100,20 @@ public abstract class RecipeMapSteamMultiblockController extends MultiblockWithD
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed())
-                .setWorkingStatus(recipeMapWorkable.isWorkingEnabled(), recipeMapWorkable.isActive())
-                .addCustom(tl -> {
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        builder.setWorkingStatus(recipeMapWorkable.isWorkingEnabled(), recipeMapWorkable.isActive())
+                .addCustom((keyManager, syncer) -> {
                     // custom steam tank line
                     IFluidTank steamFluidTank = recipeMapWorkable.getSteamFluidTankCombined();
-                    if (steamFluidTank != null && steamFluidTank.getCapacity() > 0) {
-                        String stored = TextFormattingUtil.formatNumbers(steamFluidTank.getFluidAmount());
-                        String capacity = TextFormattingUtil.formatNumbers(steamFluidTank.getCapacity());
-
-                        ITextComponent steamInfo = TextComponentUtil.stringWithColor(
-                                TextFormatting.BLUE,
-                                stored + " / " + capacity + " L");
-
-                        tl.add(TextComponentUtil.translationWithColor(
-                                TextFormatting.GRAY,
-                                "gregtech.multiblock.steam.steam_stored",
-                                steamInfo));
+                    int stored = syncer.syncInt(steamFluidTank.getFluidAmount());
+                    int capacity = syncer.syncInt(steamFluidTank.getCapacity());
+                    if (capacity > 0) {
+                        IKey steamInfo = KeyUtil.string(TextFormatting.BLUE, "%s/%s L",
+                                KeyUtil.number(stored),
+                                KeyUtil.number(capacity));
+                        IKey steamStored = KeyUtil.lang(TextFormatting.GRAY,
+                                "gregtech.multiblock.steam.steam_stored", steamInfo);
+                        keyManager.add(steamStored);
                     }
                 })
                 .addParallelsLine(recipeMapWorkable.getParallelLimit())
@@ -127,16 +122,18 @@ public abstract class RecipeMapSteamMultiblockController extends MultiblockWithD
     }
 
     @Override
-    protected void addWarningText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed(), false)
-                .addCustom(tl -> {
-                    if (isStructureFormed() && recipeMapWorkable.isHasNotEnoughEnergy()) {
-                        tl.add(TextComponentUtil.translationWithColor(
-                                TextFormatting.YELLOW,
-                                "gregtech.multiblock.steam.low_steam"));
-                    }
-                })
-                .addMaintenanceProblemLines(getMaintenanceProblems());
+    protected void configureWarningText(MultiblockUIBuilder builder) {
+        builder.addCustom((list, syncer) -> {
+            boolean noEnergy = syncer.syncBoolean(recipeMapWorkable.isHasNotEnoughEnergy());
+            if (isStructureFormed() && noEnergy) {
+                list.add(KeyUtil.lang(TextFormatting.YELLOW, "gregtech.multiblock.steam.low_steam"));
+            }
+        }).addMaintenanceProblemLines(getMaintenanceProblems());
+    }
+
+    @Override
+    public GTGuiTheme getUITheme() {
+        return GTGuiTheme.BRONZE;
     }
 
     @Override

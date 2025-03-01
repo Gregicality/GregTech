@@ -9,14 +9,13 @@ import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
-import gregtech.api.metatileentity.multiblock.MultiblockDisplayText;
 import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.PatternMatchContext;
 import gregtech.api.pattern.TraceabilityPredicate;
-import gregtech.api.util.TextComponentUtil;
-import gregtech.api.util.TextFormattingUtil;
+import gregtech.api.util.KeyUtil;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.client.utils.TooltipHelper;
@@ -31,7 +30,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -41,6 +39,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -164,51 +163,39 @@ public class MetaTileEntityActiveTransformer extends MultiblockWithDisplayBase i
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed())
-                .setWorkingStatus(true, isActive()) // set to true because we only want a two-state system (running or
-                                                    // not running)
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        builder.setWorkingStatus(true, isActive())
                 .setWorkingStatusKeys(
                         "gregtech.multiblock.idling",
                         "gregtech.multiblock.idling",
                         "gregtech.machine.active_transformer.routing")
-                .addWorkingStatusLine()
-                .addCustom(tl -> {
+                .addCustom((list, syncer) -> {
                     if (isStructureFormed()) {
                         // Max input line
-                        ITextComponent maxInputFormatted = TextComponentUtil.stringWithColor(
-                                TextFormatting.WHITE,
-                                TextFormattingUtil.formatNumbers(
-                                        powerInput.getInputVoltage() * powerInput.getInputAmperage()) + " EU/t");
-                        tl.add(TextComponentUtil.translationWithColor(
-                                TextFormatting.GREEN,
-                                "gregtech.multiblock.active_transformer.max_in",
+                        IKey maxInputFormatted = KeyUtil.number(TextFormatting.WHITE,
+                                syncer.syncLong(powerInput.getInputVoltage() * powerInput.getInputAmperage()), " EU/t");
+                        list.add(KeyUtil.lang(TextFormatting.GREEN, "gregtech.multiblock.active_transformer.max_in",
                                 maxInputFormatted));
 
                         // Max output line
-                        ITextComponent maxOutputFormatted = TextComponentUtil.stringWithColor(
-                                TextFormatting.WHITE,
-                                TextFormattingUtil.formatNumbers(
-                                        powerOutput.getOutputVoltage() * powerOutput.getOutputAmperage()) + " EU/t");
-                        tl.add(TextComponentUtil.translationWithColor(
-                                TextFormatting.RED,
-                                "gregtech.multiblock.active_transformer.max_out",
+                        IKey maxOutputFormatted = KeyUtil.number(TextFormatting.WHITE,
+                                syncer.syncLong(powerOutput.getOutputVoltage() * powerOutput.getOutputAmperage()),
+                                " EU/t");
+                        list.add(KeyUtil.lang(TextFormatting.RED, "gregtech.multiblock.active_transformer.max_out",
                                 maxOutputFormatted));
 
                         // Average I/O line
-                        ITextComponent avgInputFormatted = TextComponentUtil.stringWithColor(
-                                TextFormatting.WHITE,
-                                TextFormattingUtil.formatNumbers(averageIOLastSec) + " EU/t");
-                        tl.add(TextComponentUtil.translationWithColor(
-                                TextFormatting.AQUA,
-                                "gregtech.multiblock.active_transformer.average_io",
-                                avgInputFormatted));
+                        IKey avgIOFormatted = KeyUtil.number(TextFormatting.WHITE, syncer.syncLong(averageIOLastSec),
+                                " EU/t");
+                        list.add(KeyUtil.lang(TextFormatting.AQUA, "gregtech.multiblock.active_transformer.average_io",
+                                avgIOFormatted));
                     }
-                });
+                })
+                .addWorkingStatusLine();
     }
 
     @Override
-    protected boolean shouldShowVoidingModeButton() {
+    public boolean shouldShowVoidingModeButton() {
         return false;
     }
 

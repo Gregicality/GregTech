@@ -5,6 +5,8 @@ import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.impl.EnergyContainerList;
 import gregtech.api.capability.impl.MultiblockFuelRecipeLogic;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
+import gregtech.api.mui.sync.FixedIntArraySyncValue;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.TextComponentUtil;
@@ -16,8 +18,13 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.screen.RichTooltip;
+import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -41,14 +48,19 @@ public abstract class FuelMultiblockController extends RecipeMapMultiblockContro
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
         MultiblockFuelRecipeLogic recipeLogic = (MultiblockFuelRecipeLogic) recipeMapWorkable;
 
-        MultiblockDisplayText.builder(textList, isStructureFormed())
-                .setWorkingStatus(recipeLogic.isWorkingEnabled(), recipeLogic.isActive())
+        builder.setWorkingStatus(recipeLogic.isWorkingEnabled(), recipeLogic.isActive())
                 .addEnergyProductionLine(getMaxVoltage(), recipeLogic.getRecipeEUt())
                 .addFuelNeededLine(recipeLogic.getRecipeFluidInputInfo(), recipeLogic.getPreviousRecipeDuration())
                 .addWorkingStatusLine();
+    }
+
+    @Override
+    protected void configureWarningText(MultiblockUIBuilder builder) {
+        builder.addLowDynamoTierLine(isDynamoTierTooLow())
+                .addMaintenanceProblemLines(getMaintenanceProblems());
     }
 
     protected long getMaxVoltage() {
@@ -58,13 +70,6 @@ public abstract class FuelMultiblockController extends RecipeMapMultiblockContro
         } else {
             return 0L;
         }
-    }
-
-    @Override
-    protected void addWarningText(List<ITextComponent> textList) {
-        MultiblockDisplayText.builder(textList, isStructureFormed(), false)
-                .addLowDynamoTierLine(isDynamoTierTooLow())
-                .addMaintenanceProblemLines(getMaintenanceProblems());
     }
 
     protected boolean isDynamoTierTooLow() {
@@ -138,6 +143,7 @@ public abstract class FuelMultiblockController extends RecipeMapMultiblockContro
         return new int[] { fluidAmount, fluidCapacity };
     }
 
+    @Deprecated
     protected void addFuelText(List<ITextComponent> textList) {
         // Fuel
         int fuelStored = 0;
@@ -168,6 +174,28 @@ public abstract class FuelMultiblockController extends RecipeMapMultiblockContro
                     TextFormatting.GRAY,
                     "gregtech.multiblock.large_combustion_engine.fuel_amount",
                     "0 / 0 L"));
+        }
+    }
+
+    /**
+     * @param tooltip       the tooltip to populate
+     * @param amounts       the sync value containing an array of [fuel stored, fuel capacity]
+     * @param fuelNameValue the name of the fuel
+     */
+    protected void createFuelTooltip(@NotNull RichTooltip tooltip, @NotNull FixedIntArraySyncValue amounts,
+                                     @NotNull StringSyncValue fuelNameValue) {
+        if (isStructureFormed()) {
+            Fluid fluid = fuelNameValue.getStringValue() == null ? null :
+                    FluidRegistry.getFluid(fuelNameValue.getStringValue());
+            if (fluid == null) {
+                tooltip.addLine(IKey.lang("gregtech.multiblock.large_combustion_engine.fuel_none"));
+            } else {
+                tooltip.addLine(
+                        IKey.lang("gregtech.multiblock.large_combustion_engine.fuel_amount", amounts.getValue(0),
+                                amounts.getValue(1), fluid.getLocalizedName(new FluidStack(fluid, 1))));
+            }
+        } else {
+            tooltip.addLine(IKey.lang("gregtech.multiblock.invalid_structure"));
         }
     }
 }

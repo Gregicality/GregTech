@@ -1,6 +1,7 @@
 package gregtech.common.metatileentities.multi.multiblockpart;
 
 import gregtech.api.GTValues;
+import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.IMufflerHatch;
 import gregtech.api.items.itemhandlers.GTItemStackHandler;
 import gregtech.api.metatileentity.ITieredMetaTileEntity;
@@ -21,6 +22,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -49,6 +51,7 @@ import java.util.List;
 public class MetaTileEntityMufflerHatch extends MetaTileEntityMultiblockPart implements
                                         IMultiblockAbilityPart<IMufflerHatch>, ITieredMetaTileEntity, IMufflerHatch {
 
+    private static final int MUFFLER_OBSTRUCTED = GregtechDataCodes.assignId();
     private final int recoveryChance;
     private final GTItemStackHandler inventory;
 
@@ -71,8 +74,13 @@ public class MetaTileEntityMufflerHatch extends MetaTileEntityMultiblockPart imp
         super.update();
 
         if (!getWorld().isRemote) {
-            if (getOffsetTimer() % 10 == 0)
-                this.frontFaceFree = checkFrontFaceFree();
+            if (getOffsetTimer() % 10 == 0) {
+                boolean frontFaceFree = checkFrontFaceFree();
+                if (frontFaceFree != this.frontFaceFree) {
+                    this.frontFaceFree = frontFaceFree;
+                    writeCustomData(MUFFLER_OBSTRUCTED, buffer -> buffer.writeBoolean(this.frontFaceFree));
+                }
+            }
         }
 
         if (getWorld().isRemote && getController() instanceof MultiblockWithDisplayBase controller &&
@@ -118,6 +126,26 @@ public class MetaTileEntityMufflerHatch extends MetaTileEntityMultiblockPart imp
             return blockState.getBlock().isAir(blockState, getWorld(), frontPos);
         }
         return blockState.getBlock().isAir(blockState, getWorld(), frontPos) || GTUtility.isBlockSnow(blockState);
+    }
+
+    @Override
+    public void writeInitialSyncData(PacketBuffer buf) {
+        super.writeInitialSyncData(buf);
+        buf.writeBoolean(this.frontFaceFree);
+    }
+
+    @Override
+    public void receiveInitialSyncData(PacketBuffer buf) {
+        super.receiveInitialSyncData(buf);
+        this.frontFaceFree = buf.readBoolean();
+    }
+
+    @Override
+    public void receiveCustomData(int dataId, PacketBuffer buf) {
+        super.receiveCustomData(dataId, buf);
+        if (dataId == MUFFLER_OBSTRUCTED) {
+            this.frontFaceFree = buf.readBoolean();
+        }
     }
 
     /** @deprecated No longer needed. Multiblock controller sets the particle type. */

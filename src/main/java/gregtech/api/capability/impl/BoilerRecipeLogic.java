@@ -49,8 +49,6 @@ public class BoilerRecipeLogic extends AbstractRecipeLogic implements ICategoryO
 
     public BoilerRecipeLogic(MetaTileEntityLargeBoiler tileEntity) {
         super(tileEntity, null);
-        this.fluidOutputs = Collections.emptyList();
-        this.itemOutputs = Collections.emptyList();
     }
 
     @Override
