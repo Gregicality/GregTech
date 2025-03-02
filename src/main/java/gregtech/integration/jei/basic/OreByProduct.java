@@ -9,6 +9,7 @@ import gregtech.api.unification.material.properties.OreProperty;
 import gregtech.api.unification.material.properties.PropertyKey;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.client.utils.TooltipHelper;
+import gregtech.common.ConfigHolder;
 import gregtech.common.metatileentities.MetaTileEntities;
 
 import net.minecraft.client.resources.I18n;
@@ -169,27 +170,43 @@ public class OreByProduct implements IRecipeWrapper {
 
         // macerate ore -> crushed
         addToOutputs(material, OrePrefix.crushed, 2 * oreMultiplier);
-        if (!OreDictUnifier.get(OrePrefix.gem, byproducts[0]).isEmpty()) {
-            addToOutputs(byproducts[0], OrePrefix.gem, 1);
+        if (ConfigHolder.recipes.deterministicOreProcessing) {
+            addToOutputs(byproducts[0], OrePrefix.dustTiny, 2);
         } else {
-            addToOutputs(byproducts[0], OrePrefix.dust, 1);
+            if (!OreDictUnifier.get(OrePrefix.gem, byproducts[0]).isEmpty()) {
+                addToOutputs(byproducts[0], OrePrefix.gem, 1);
+            } else {
+                addToOutputs(byproducts[0], OrePrefix.dust, 1);
+            }
+            addChance(1400, 850);
         }
-        addChance(1400, 850);
 
         // macerate crushed -> impure
         addToOutputs(material, OrePrefix.dustImpure, 1);
-        addToOutputs(byproducts[0], OrePrefix.dust, byproductMultiplier);
-        addChance(1400, 850);
+        if (ConfigHolder.recipes.deterministicOreProcessing) {
+            addToOutputs(byproducts[0], OrePrefix.dustTiny, 2 * byproductMultiplier);
+        } else {
+            addToOutputs(byproducts[0], OrePrefix.dust, byproductMultiplier);
+            addChance(1400, 850);
+        }
 
         // centrifuge impure -> dust
         addToOutputs(material, OrePrefix.dust, 1);
-        addToOutputs(byproducts[0], OrePrefix.dust, 1);
-        addChance(1111, 0);
+        if (ConfigHolder.recipes.deterministicOreProcessing) {
+            addToOutputs(byproducts[0], OrePrefix.dustTiny, 1);
+        } else {
+            addToOutputs(byproducts[0], OrePrefix.dust, 1);
+            addChance(1111, 0);
+        }
 
         // ore wash crushed -> crushed purified
         addToOutputs(material, OrePrefix.crushedPurified, 1);
-        addToOutputs(byproducts[0], OrePrefix.dust, 1);
-        addChance(3333, 0);
+        if (ConfigHolder.recipes.deterministicOreProcessing) {
+            addToOutputs(byproducts[0], OrePrefix.dustTiny, 3);
+        } else {
+            addToOutputs(byproducts[0], OrePrefix.dust, 1);
+            addChance(3333, 0);
+        }
         List<FluidStack> fluidStacks = new ArrayList<>();
         fluidStacks.add(Materials.Water.getFluid(1000));
         fluidStacks.add(Materials.DistilledWater.getFluid(100));
@@ -197,23 +214,39 @@ public class OreByProduct implements IRecipeWrapper {
 
         // TC crushed/crushed purified -> centrifuged
         addToOutputs(material, OrePrefix.crushedCentrifuged, 1);
-        addToOutputs(byproducts[1], OrePrefix.dust, byproductMultiplier);
-        addChance(3333, 0);
+        if (ConfigHolder.recipes.deterministicOreProcessing) {
+            addToOutputs(byproducts[1], OrePrefix.dustTiny, 3 * byproductMultiplier);
+        } else {
+            addToOutputs(byproducts[1], OrePrefix.dust, byproductMultiplier);
+            addChance(3333, 0);
+        }
 
         // macerate centrifuged -> dust
         addToOutputs(material, OrePrefix.dust, 1);
-        addToOutputs(byproducts[2], OrePrefix.dust, 1);
-        addChance(1400, 850);
+        if (ConfigHolder.recipes.deterministicOreProcessing) {
+            addToOutputs(byproducts[2], OrePrefix.dustTiny, 2);
+        } else {
+            addToOutputs(byproducts[2], OrePrefix.dust, 1);
+            addChance(1400, 850);
+        }
 
         // macerate crushed purified -> purified
         addToOutputs(material, OrePrefix.dustPure, 1);
-        addToOutputs(byproducts[1], OrePrefix.dust, 1);
-        addChance(1400, 850);
+        if (ConfigHolder.recipes.deterministicOreProcessing) {
+            addToOutputs(byproducts[1], OrePrefix.dustTiny, 2);
+        } else {
+            addToOutputs(byproducts[1], OrePrefix.dust, 1);
+            addChance(1400, 850);
+        }
 
         // centrifuge purified -> dust
         addToOutputs(material, OrePrefix.dust, 1);
-        addToOutputs(byproducts[1], OrePrefix.dust, 1);
-        addChance(1111, 0);
+        if (ConfigHolder.recipes.deterministicOreProcessing) {
+            addToOutputs(byproducts[1], OrePrefix.dustTiny, 1);
+        } else {
+            addToOutputs(byproducts[1], OrePrefix.dust, 1);
+            addChance(1111, 0);
+        }
 
         // cauldron/simple washer
         addToOutputs(material, OrePrefix.crushed, 1);
@@ -228,8 +261,12 @@ public class OreByProduct implements IRecipeWrapper {
         // chem bath
         if (hasChemBath) {
             addToOutputs(material, OrePrefix.crushedPurified, 1);
-            addToOutputs(byproducts[3], OrePrefix.dust, byproductMultiplier);
-            addChance(7000, 580);
+            if (ConfigHolder.recipes.deterministicOreProcessing) {
+                addToOutputs(byproducts[3], OrePrefix.dustTiny, 7 * byproductMultiplier);
+            } else {
+                addToOutputs(byproducts[3], OrePrefix.dust, byproductMultiplier);
+                addChance(7000, 580);
+            }
             List<FluidStack> washedFluid = new ArrayList<>();
             washedFluid.add(washedIn.getKey().getFluid(washedIn.getValue()));
             fluidInputs.add(washedFluid);
@@ -248,10 +285,15 @@ public class OreByProduct implements IRecipeWrapper {
                     prefix == OrePrefix.nugget ? 2 : 1);
 
             addToOutputs(material, OrePrefix.dust, 1);
-            addToOutputs(separatedInto.get(0), OrePrefix.dust, 1);
-            addChance(1000, 250);
-            addToOutputs(separatedStack2);
-            addChance(prefix == OrePrefix.dust ? 500 : 2000, prefix == OrePrefix.dust ? 150 : 600);
+            if (ConfigHolder.recipes.deterministicOreProcessing) {
+                addToOutputs(separatedInto.get(0), OrePrefix.dustTiny, 1);
+                addToOutputs(separatedStack2);
+            } else {
+                addToOutputs(separatedInto.get(0), OrePrefix.dust, 1);
+                addChance(1000, 250);
+                addToOutputs(separatedStack2);
+                addChance(prefix == OrePrefix.dust ? 500 : 2000, prefix == OrePrefix.dust ? 150 : 600);
+            }
         } else {
             addEmptyOutputs(3);
         }

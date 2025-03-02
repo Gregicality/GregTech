@@ -281,6 +281,11 @@ public class ConfigHolder {
                 "Whether to nerf the output amounts of the first circuit in a set to 1 (from 2) and SoC to 2 (from 4).",
                 "Default: false" })
         public boolean harderCircuitRecipes = false;
+
+        @Config.Comment({
+                "Whether to change the byproducts in Ore Processing from a chanced output for a full dust into a guaranteed output for tiny dusts. For example a 33% chance of getting a full dust would change into a 100% chance of getting 3 tiny dusts.",
+                "Default: false" })
+        public boolean deterministicOreProcessing = false;
     }
 
     public static class CompatibilityOptions {
