@@ -1,6 +1,7 @@
 package gregtech.common.pipelike.itempipe.net;
 
 import gregtech.api.capability.GregtechTileCapabilities;
+import gregtech.api.capability.impl.ItemHandlerProxy;
 import gregtech.api.cover.Cover;
 import gregtech.api.cover.CoverHolder;
 import gregtech.api.util.FacingPos;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.OptionalInt;
 
 public class ItemNetHandler implements IItemHandler {
 
@@ -37,6 +39,8 @@ public class ItemNetHandler implements IItemHandler {
     private TileEntityItemPipe pipe;
     private final EnumFacing facing;
     private final Object2IntMap<FacingPos> simulatedTransfersGlobalRoundRobin = new Object2IntOpenHashMap<>();
+    // when doing a non-global dry run, this keeps track of the capacity of each route on the network
+    private final Object2IntMap<FacingPos> simulatedRemainingCapacityRoundRobin = new Object2IntOpenHashMap<>();
     private int simulatedTransfers = 0;
     private final ItemStackHandler testHandler = new ItemStackHandler(1);
 
@@ -132,9 +136,14 @@ public class ItemNetHandler implements IItemHandler {
         if (global) {
             stack = insertToHandlersEnhanced(routePathsCopy, stack, routePaths.size(), simulate);
         } else {
-            stack = insertToHandlers(routePathsCopy, stack, simulate);
-            if (!stack.isEmpty() && !routePathsCopy.isEmpty())
-                stack = insertToHandlers(routePathsCopy, stack, simulate);
+            stack = insertEquallyToHandlers(routePathsCopy, stack, simulate);
+            // check if we have any remaining amount that can be inserted,
+            // and that we have routes that have free space available
+            if (!stack.isEmpty() && !routePathsCopy.isEmpty()) {
+                // try to insert the remaining amount
+                stack = insertEquallyToHandlers(routePathsCopy, stack, simulate);
+            }
+            simulatedRemainingCapacityRoundRobin.clear();
         }
 
         return stack;
@@ -144,39 +153,65 @@ public class ItemNetHandler implements IItemHandler {
      * Inserts items equally to all handlers
      * if it couldn't insert all items, the handler will be removed
      *
-     * @param copy     to insert to
-     * @param stack    to insert
-     * @param simulate simulate
+     * @param copy     where to insert to
+     * @param stack    what to insert
+     * @param simulate whether to actually insert or not
      * @return remainder
      */
-    private ItemStack insertToHandlers(List<ItemRoutePath> copy, ItemStack stack, boolean simulate) {
+    private ItemStack insertEquallyToHandlers(List<ItemRoutePath> copy, ItemStack stack, boolean simulate) {
         Iterator<ItemRoutePath> routePathIterator = copy.listIterator();
         int inserted = 0;
         int count = stack.getCount();
-        int c = count / copy.size();
-        int m = c == 0 ? count % copy.size() : 0;
+        int amountToInsertInEach = count / copy.size();
+        int m = amountToInsertInEach == 0 ? count % copy.size() : 0;
         while (routePathIterator.hasNext()) {
             ItemRoutePath routePath = routePathIterator.next();
+            FacingPos routeFacing = routePath.toFacingPos();
 
-            int amount = c;
+            int remainingAmount = amountToInsertInEach;
             if (m > 0) {
-                amount++;
+                remainingAmount++;
                 m--;
             }
-            amount = Math.min(amount, stack.getCount() - inserted);
-            if (amount == 0) break;
-            ItemStack toInsert = stack.copy();
-            toInsert.setCount(amount);
-            int r = insert(routePath, toInsert, simulate).getCount();
-            if (r < amount) {
-                inserted += (amount - r);
+            remainingAmount = Math.min(remainingAmount, stack.getCount() - inserted);
+
+            // if we know the capacity from a previous dry run, subtract that from the amount we can insert in the route
+            Integer capacityLeftAfterPreviousDryRun = simulatedRemainingCapacityRoundRobin.getOrDefault(routeFacing, null);
+            if (capacityLeftAfterPreviousDryRun != null) {
+                remainingAmount = Math.min(remainingAmount, capacityLeftAfterPreviousDryRun);
             }
-            if (r == 1 && c == 0 && amount == 1) {
+
+            if (remainingAmount == 0) break;
+            ItemStack toInsert = stack.copy();
+            toInsert.setCount(remainingAmount);
+            int remainingAfterSubrouteInsert = insert(routePath, toInsert, simulate).getCount();
+            int amountInsertedIntoSubroute = remainingAmount - remainingAfterSubrouteInsert;
+
+            // if we inserted anything into the subroute, add it to the inserted amount tally
+            if (amountInsertedIntoSubroute != 0) {
+                inserted += (remainingAmount - remainingAfterSubrouteInsert);
+            }
+            if (remainingAfterSubrouteInsert == 1 && amountToInsertInEach == 0 && remainingAmount == 1) {
                 m++;
             }
 
-            if (r > 0)
+            // if we can't insert anything more into the sub route, remove it from the iterator
+            if (remainingAfterSubrouteInsert > 0) {
                 routePathIterator.remove();
+            } else {
+                int freeInventoryInSubRoute = 0;
+                int slots = routePath.getHandler().getSlots();
+
+                for (int i = 0; i < slots; i++) {
+                    int slotLimit = routePath.getHandler().getSlotLimit(i);
+                    ItemStack testStackToInsert = stack.copy();
+                    testStackToInsert.setCount(slotLimit);
+                    ItemStack insertedTest = routePath.getHandler().insertItem(i, testStackToInsert, true);
+                    ItemStack stackInSlot = routePath.getHandler().getStackInSlot(i);
+                    freeInventoryInSubRoute += slotLimit - insertedTest.getCount();
+                }
+                simulatedRemainingCapacityRoundRobin.put(routePath.toFacingPos(), Integer.valueOf(freeInventoryInSubRoute - amountInsertedIntoSubroute));
+            }
         }
 
         ItemStack remainder = stack.copy();
