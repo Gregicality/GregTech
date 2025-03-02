@@ -10,6 +10,7 @@ import gregtech.api.recipes.ingredients.GTRecipeOreInput;
 import gregtech.api.unification.stack.UnificationEntry;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.Mods;
+import gregtech.common.pipelike.laser.LaserPipeType;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -20,8 +21,7 @@ import static gregtech.api.recipes.RecipeMaps.ASSEMBLY_LINE_RECIPES;
 import static gregtech.api.unification.material.MarkerMaterials.Tier;
 import static gregtech.api.unification.material.Materials.*;
 import static gregtech.api.unification.ore.OrePrefix.*;
-import static gregtech.common.blocks.MetaBlocks.LD_FLUID_PIPE;
-import static gregtech.common.blocks.MetaBlocks.LD_ITEM_PIPE;
+import static gregtech.common.blocks.MetaBlocks.*;
 import static gregtech.common.items.MetaItems.*;
 import static gregtech.common.metatileentities.MetaTileEntities.*;
 
@@ -1161,6 +1161,15 @@ public class MetaTileEntityMachineRecipeLoader {
 
     // TODO clean this up with a CraftingComponent rework
     private static void registerLaserRecipes() {
+        // Laser Passthrough Hatch
+        ASSEMBLER_RECIPES.recipeBuilder()
+                .input(HULL[IV])
+                .input(LASER_PIPES[LaserPipeType.NORMAL.ordinal()])
+                .input(lens, Diamond)
+                .circuitMeta(4)
+                .output(PASSTHROUGH_HATCH_LASER)
+                .duration(300).EUt(VA[IV]).buildAndRegister();
+
         // 256A Laser Source Hatches
         ASSEMBLER_RECIPES.recipeBuilder()
                 .input(HULL[IV])

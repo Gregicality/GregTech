@@ -89,6 +89,7 @@ import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityObjec
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityOpticalDataHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityPassthroughHatchFluid;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityPassthroughHatchItem;
+import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityPassthroughHatchLaser;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityReservoirHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityRotorHolder;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntitySubstationEnergyHatch;
@@ -252,6 +253,7 @@ public class MetaTileEntities {
     public static MetaTileEntityLaserHatch[] LASER_OUTPUT_HATCH_256 = new MetaTileEntityLaserHatch[10]; // IV+
     public static MetaTileEntityLaserHatch[] LASER_OUTPUT_HATCH_1024 = new MetaTileEntityLaserHatch[10]; // IV+
     public static MetaTileEntityLaserHatch[] LASER_OUTPUT_HATCH_4096 = new MetaTileEntityLaserHatch[10]; // IV+
+    public static MetaTileEntityPassthroughHatchLaser PASSTHROUGH_HATCH_LASER;
     public static MetaTileEntityComputationHatch COMPUTATION_HATCH_RECEIVER;
     public static MetaTileEntityComputationHatch COMPUTATION_HATCH_TRANSMITTER;
     public static MetaTileEntityObjectHolder OBJECT_HOLDER;
@@ -954,7 +956,8 @@ public class MetaTileEntities {
                 new MetaTileEntityHPCABridge(gregtechId("hpca.bridge_component")));
 
         RESERVOIR_HATCH = registerMetaTileEntity(1418, new MetaTileEntityReservoirHatch(gregtechId("reservoir_hatch")));
-        // Free ID 1419
+        PASSTHROUGH_HATCH_LASER = registerMetaTileEntity(1419,
+                new MetaTileEntityPassthroughHatchLaser(gregtechId("passthrough_hatch_laser"), 5));
         endPos = GregTechAPI.isHighTier() ? LASER_INPUT_HATCH_256.length - 1 :
                 Math.min(LASER_INPUT_HATCH_256.length - 1, GTValues.UHV - GTValues.IV);
         for (int i = 0; i < endPos; i++) {
