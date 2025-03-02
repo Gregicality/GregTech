@@ -92,12 +92,13 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
     }
 
     private final MultiblockControllerBase controller;
-    private final MBPattern[] patterns;
+    private MBPattern[] patterns;
     private final Map<GuiButton, Runnable> buttons = new HashMap<>();
     private RecipeLayout recipeLayout;
     private final List<ItemStack> allItemStackInputs = new ArrayList<>();
 
     private int layerIndex = -1;
+    private int tierIndex = 0;
     private int currentRendererPage = 0;
     private int lastMouseX;
     private int lastMouseY;
@@ -109,6 +110,7 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
     private final GuiButton buttonPreviousPattern;
     private final GuiButton buttonNextPattern;
     private final GuiButton nextLayerButton;
+    private final GuiButton nextTierButton;
 
     private IDrawable slot;
     private IDrawable infoIcon;
@@ -133,12 +135,16 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
         this.buttonPreviousPattern = new GuiButton(0, 176 - ((2 * ICON_SIZE) + RIGHT_PADDING + 1), 90, ICON_SIZE,
                 ICON_SIZE, "<");
         this.buttonNextPattern = new GuiButton(0, 176 - (ICON_SIZE + RIGHT_PADDING), 90, ICON_SIZE, ICON_SIZE, ">");
+        this.nextTierButton = new GuiButton(0, 176 - (ICON_SIZE + RIGHT_PADDING), 110, ICON_SIZE, ICON_SIZE, "^");
         this.buttons.put(nextLayerButton, this::toggleNextLayer);
         this.buttons.put(buttonPreviousPattern, () -> switchRenderPage(-1));
         this.buttons.put(buttonNextPattern, () -> switchRenderPage(1));
+        this.buttons.put(nextTierButton, this::toggleNextTier);
         boolean isPagesDisabled = patterns.length == 1;
         this.buttonPreviousPattern.visible = !isPagesDisabled;
         this.buttonNextPattern.visible = !isPagesDisabled;
+        boolean isTieringEnabled = controller.getMaxStructureTier() > 0;
+        this.nextTierButton.visible = isTieringEnabled;
         this.predicates = new ArrayList<>();
     }
 
@@ -208,6 +214,18 @@ public class MultiblockInfoRecipeWrapper implements IRecipeWrapper {
             this.layerIndex = -1;
         }
         setNextLayer(layerIndex);
+    }
+
+    private void toggleNextTier() {
+        if (++this.tierIndex > controller.getMaxStructureTier()) {
+            this.tierIndex = 0;
+        }
+        this.controller.setStructureTier(tierIndex);
+        controller.reinitializeStructurePattern();
+        Set<ItemStack> drops = new ObjectOpenCustomHashSet<>(ItemStackHashStrategy.comparingAllButCount());
+        this.patterns = controller.getMatchingShapes().stream()
+                .map(it -> initializePattern(it, drops))
+                .toArray(MBPattern[]::new);
     }
 
     private void setNextLayer(int newLayer) {

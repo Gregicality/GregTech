@@ -5824,6 +5824,8 @@ gregtech.multiblock.turbine.obstructed=Turbine Face Obstructed!
 gregtech.multiblock.turbine.obstructed.desc=Turbine must have air space in the 3x3 in front of it.
 gregtech.multiblock.turbine.efficiency_tooltip=Each Rotor Holder above %s§7 adds §f10%% efficiency§7.
 
+gregtech.multiblock.structure_tier=Structure Tier:
+
 gregtech.multiblock.large_boiler.efficiency=Efficiency: %s
 gregtech.multiblock.large_boiler.steam_output=Steam Output: %s
 gregtech.multiblock.large_boiler.throttle=Throttle: %s
