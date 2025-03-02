@@ -51,6 +51,13 @@ public final class CleanroomProperty extends RecipeProperty<CleanroomType> {
         minecraft.fontRenderer.drawString(I18n.format("gregtech.recipe.cleanroom", getName(type)), x, y, color);
     }
 
+    @Override
+    public int getInfoHeight(Object value) {
+        CleanroomType type = castValue(value);
+        if (type == null) return 0;
+        return super.getInfoHeight(value);
+    }
+
     @NotNull
     private static String getName(@NotNull CleanroomType value) {
         String name = I18n.format(value.getTranslationKey());
