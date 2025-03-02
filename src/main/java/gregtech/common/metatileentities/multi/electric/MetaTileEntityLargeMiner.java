@@ -467,7 +467,7 @@ public class MetaTileEntityLargeMiner extends MultiblockWithDisplayBase
                     this.minerLogic.setCurrentRadius(currentRadius - CHUNK_LENGTH / 2);
                 }
                 int workingArea = getWorkingArea(minerLogic.getCurrentRadius());
-                playerIn.sendMessage(new TextComponentTranslation("gregtech.universal.tooltip.working_area",
+                playerIn.sendMessage(new TextComponentTranslation("gregtech.machine.miner.working_area",
                         workingArea, workingArea));
             }
             this.minerLogic.resetArea();

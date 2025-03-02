@@ -284,7 +284,8 @@ public class MinerLogic {
         // If the block's drops can fit in the inventory, move the previously mined position to the block
         // replace the ore block with cobblestone instead of breaking it to prevent mob spawning
         // remove the ore block's position from the mining queue
-        if (GTTransferUtils.addItemsToItemHandler(metaTileEntity.getExportItems(), true, blockDrops)) {
+        if (GTTransferUtils.addItemsToItemHandler(metaTileEntity.getExportItems(), true, blockDrops) ||
+                metaTileEntity.getExportItems().getSlotLimit(0) == Integer.MAX_VALUE - 1) { // Check for ME Output
             GTTransferUtils.addItemsToItemHandler(metaTileEntity.getExportItems(), false, blockDrops);
             world.setBlockState(blocksToMine.getFirst(), oreReplacementBlock);
             mineX.set(blocksToMine.getFirst().getX());
