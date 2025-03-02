@@ -59,7 +59,7 @@ public class Jetpack extends ArmorLogicSuite implements IJetpack {
             }
         }
 
-        performFlying(player, hover, stack);
+        performFlying(player, hover, false, stack);
 
         if (toggleTimer > 0) toggleTimer--;
 

@@ -44,7 +44,7 @@ public class AdvancedJetpack extends Jetpack {
             }
         }
 
-        performFlying(player, hoverMode, item);
+        performFlying(player, hoverMode, false, item);
 
         if (toggleTimer > 0) toggleTimer--;
 

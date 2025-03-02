@@ -46,6 +46,7 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
 
         NBTTagCompound data = GTUtility.getOrCreateNbtCompound(item);
         boolean hoverMode = data.hasKey("hover") && data.getBoolean("hover");
+        boolean cancelInertiaMode = data.hasKey("cancelInertia") && data.getBoolean("cancelInertia");
         byte toggleTimer = data.hasKey("toggleTimer") ? data.getByte("toggleTimer") : 0;
         boolean canShare = data.hasKey("canShare") && data.getBoolean("canShare");
 
@@ -58,6 +59,20 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
                     player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.hover.enable"), true);
                 else
                     player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.hover.disable"), true);
+            }
+        }
+
+        if (toggleTimer == 0 && KeyBind.ARMOR_CANCEL_INERTIA.isKeyDown(player)) {
+            cancelInertiaMode = !cancelInertiaMode;
+            toggleTimer = 5;
+            data.setBoolean("cancelInertia", cancelInertiaMode);
+            if (!world.isRemote) {
+                if (cancelInertiaMode)
+                    player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.cancel_inertia.enable"),
+                            true);
+                else
+                    player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.cancel_inertia.disable"),
+                            true);
             }
         }
 
@@ -78,7 +93,7 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
             data.setBoolean("canShare", canShare);
         }
 
-        performFlying(player, hoverMode, item);
+        performFlying(player, hoverMode, cancelInertiaMode, item);
 
         if (player.isBurning())
             player.extinguish();
@@ -130,6 +145,7 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
         if (toggleTimer > 0) toggleTimer--;
 
         data.setBoolean("canShare", canShare);
+        data.setBoolean("cancelInertia", cancelInertiaMode);
         data.setBoolean("hover", hoverMode);
         data.setByte("toggleTimer", toggleTimer);
         player.inventoryContainer.detectAndSendChanges();
@@ -157,6 +173,11 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
                 status = I18n.format("metaarmor.hud.status.enabled");
         }
         lines.add(I18n.format("metaarmor.hud.hover_mode", status));
+        if (data.hasKey("cancelInertia")) {
+            if (data.getBoolean("cancelInertia"))
+                status = I18n.format("metaarmor.hud.status.enabled");
+        }
+        lines.add(I18n.format("metaarmor.hud.cancel_inertia_mode", status));
         super.addInfo(itemStack, lines);
     }
 
@@ -209,6 +230,12 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
                 String status = data.getBoolean("hover") ? "metaarmor.hud.status.enabled" :
                         "metaarmor.hud.status.disabled";
                 this.HUD.newString(I18n.format("metaarmor.hud.hover_mode", I18n.format(status)));
+            }
+
+            if (data.hasKey("cancelInertia")) {
+                String status = data.getBoolean("cancelInertia") ? "metaarmor.hud.status.enabled" :
+                        "metaarmor.hud.status.disabled";
+                this.HUD.newString(I18n.format("metaarmor.hud.cancel_inertia_mode", I18n.format(status)));
             }
         }
         this.HUD.draw();
