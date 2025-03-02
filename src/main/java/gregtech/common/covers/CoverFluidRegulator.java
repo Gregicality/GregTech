@@ -66,11 +66,14 @@ public class CoverFluidRegulator extends CoverPump {
         return switch (transferMode) {
             case TRANSFER_ANY -> GTTransferUtils.transferFluids(sourceHandler, destHandler, transferLimit,
                     fluidFilterContainer::test);
-            case KEEP_EXACT -> doKeepExact(transferLimit, sourceHandler, destHandler,
-                    fluidFilterContainer::test,
-                    this.fluidFilterContainer.getTransferSize());
             case TRANSFER_EXACT -> doTransferExact(transferLimit, sourceHandler, destHandler,
                     fluidFilterContainer::test, this.fluidFilterContainer.getTransferSize());
+            case KEEP_EXACT -> doKeepExact(transferLimit, sourceHandler, destHandler,
+                    fluidFilterContainer::test,
+                    this.fluidFilterContainer.getTransferSize(), true);
+            case RETAIN_EXACT -> doKeepExact(transferLimit, sourceHandler, destHandler,
+                    fluidFilterContainer::test,
+                    this.fluidFilterContainer.getTransferSize(), false);
         };
     }
 
@@ -108,7 +111,7 @@ public class CoverFluidRegulator extends CoverPump {
                               final IFluidHandler sourceHandler,
                               final IFluidHandler destHandler,
                               final Predicate<FluidStack> fluidFilter,
-                              int keepAmount) {
+                              int keepAmount, boolean direction) {
         if (sourceHandler == null || destHandler == null || fluidFilter == null)
             return 0;
 
@@ -128,11 +131,12 @@ public class CoverFluidRegulator extends CoverPump {
 
             // if fluid needs to be moved to meet the Keep Exact value
             int amountInDest;
-            if ((amountInDest = destFluids.getOrDefault(fluidStack, 0)) < keepAmount) {
+            if (direction ? (amountInDest = destFluids.getOrDefault(fluidStack, 0)) < keepAmount :
+                    (amountInDest = sourceFluids.getOrDefault(fluidStack, 0)) > keepAmount) {
 
                 // move the lesser of the remaining transfer limit and the difference in actual vs keep exact amount
                 int amountToMove = Math.min(transferLimit - transferred,
-                        keepAmount - amountInDest);
+                        direction ? (keepAmount - amountInDest) : (amountInDest - keepAmount));
 
                 // Nothing to do here, try the next fluid.
                 if (amountToMove <= 0)
@@ -282,7 +286,7 @@ public class CoverFluidRegulator extends CoverPump {
         return switch (this.transferMode) {
             case TRANSFER_ANY -> 1;
             case TRANSFER_EXACT -> maxFluidTransferRate;
-            case KEEP_EXACT -> Integer.MAX_VALUE;
+            case KEEP_EXACT, RETAIN_EXACT -> Integer.MAX_VALUE;
         };
     }
 

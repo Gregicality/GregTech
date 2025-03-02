@@ -190,11 +190,11 @@ public class GTGuiTextures {
             18, 18 * 2, 18, 18, true);
 
     public static final UITexture[] TRANSFER_MODE_OVERLAY = slice("textures/gui/overlay/transfer_mode_overlay.png",
-            18, 18 * 3, 18, 18, true);
+            18, 18 * 4, 18, 18, true);
 
     public static final UITexture[] FLUID_TRANSFER_MODE_OVERLAY = slice(
             "textures/gui/overlay/fluid_transfer_mode_overlay.png",
-            18, 18 * 3, 18, 18, true);
+            18, 18 * 4, 18, 18, true);
 
     public static final UITexture[] DISTRIBUTION_MODE_OVERLAY = slice(
             "textures/gui/widget/button_distribution_mode.png",

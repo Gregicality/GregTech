@@ -45,7 +45,7 @@ public class CoverFluidRegulatorTest {
                 new FluidTankList(false, new FluidTank(water.copy(), 64000)));
 
         // Tell it to keep exact from a machine with an empty fluid tank and null target fluid tank
-        int amountTransferred = cfr.doKeepExact(1000, source, null, isWater, 1000);
+        int amountTransferred = cfr.doKeepExact(1000, source, null, isWater, 1000, true);
 
         MatcherAssert.assertThat("Unexpectedly moved fluids, nothing is supposed to happen", amountTransferred, is(0));
     }
@@ -66,7 +66,7 @@ public class CoverFluidRegulatorTest {
                 new FluidTankList(false));
 
         // Tell it to keep exact from a machine with an empty fluid tank and no target fluid tank
-        int amountTransferred = cfr.doKeepExact(1000, source, dest, isWater, 1000);
+        int amountTransferred = cfr.doKeepExact(1000, source, dest, isWater, 1000, true);
 
         MatcherAssert.assertThat("Wrong fluid amount moved", amountTransferred, is(1000));
     }
@@ -84,7 +84,7 @@ public class CoverFluidRegulatorTest {
         IFluidHandler dest = new FluidHandlerProxy(new FluidTankList(false, new FluidTank(64000)),
                 new FluidTankList(false));
 
-        int amountTransferred = cfr.doKeepExact(10000, source, dest, isWater, 10000);
+        int amountTransferred = cfr.doKeepExact(10000, source, dest, isWater, 10000, true);
 
         MatcherAssert.assertThat("Wrong fluid amount moved", amountTransferred, is(1234));
     }
@@ -104,7 +104,7 @@ public class CoverFluidRegulatorTest {
                         new FluidTank(new FluidStack(FluidRegistry.WATER, 100), 64000)),
                 new FluidTankList(false));
 
-        int amountTransferred = cfr.doKeepExact(10000, source, dest, isWater, 144);
+        int amountTransferred = cfr.doKeepExact(10000, source, dest, isWater, 144, true);
 
         MatcherAssert.assertThat("Wrong fluid amount moved", amountTransferred, is(44));
     }
@@ -129,7 +129,7 @@ public class CoverFluidRegulatorTest {
                 new FluidTankList(false));
 
         // accept any fluid this time
-        int amountTransferred = cfr.doKeepExact(10000, source, dest, fs -> true, 144);
+        int amountTransferred = cfr.doKeepExact(10000, source, dest, fs -> true, 144, true);
 
         // expect that 44mB of water and 144mB of lava will be moved
         MatcherAssert.assertThat("Wrong fluid amount moved", amountTransferred, is(44 + 144));
@@ -164,7 +164,7 @@ public class CoverFluidRegulatorTest {
                 new FluidTankList(false));
 
         // accept any fluid this time
-        int amountTransferred = cfr.doKeepExact(100, source, dest, fs -> true, 144);
+        int amountTransferred = cfr.doKeepExact(100, source, dest, fs -> true, 144, true);
 
         // expect that at most 100mB of fluids total will be moved this tick, as if possible it would do 144mB
         MatcherAssert.assertThat("Wrong fluid amount moved", amountTransferred, is(100));
@@ -190,7 +190,7 @@ public class CoverFluidRegulatorTest {
                 new FluidTankList(false));
 
         // accept any fluid this time
-        int amountTransferred = cfr.doKeepExact(100, source, dest, fs -> true, 144);
+        int amountTransferred = cfr.doKeepExact(100, source, dest, fs -> true, 144, true);
 
         // expect that at most 100mB of fluids total will be moved this tick, as if possible it would do 188mB
         MatcherAssert.assertThat("Wrong fluid amount moved", amountTransferred, is(100));
@@ -216,7 +216,7 @@ public class CoverFluidRegulatorTest {
                 new FluidTankList(false));
 
         // accept any fluid this time
-        int amountTransferred = cfr.doKeepExact(10000, source, dest, fs -> true, 144);
+        int amountTransferred = cfr.doKeepExact(10000, source, dest, fs -> true, 144, true);
 
         // expect that no fluids are moved because Keep Exact levels are already met
         MatcherAssert.assertThat("Wrong fluid amount moved", amountTransferred, is(0));
@@ -242,7 +242,7 @@ public class CoverFluidRegulatorTest {
                 new FluidTankList(false));
 
         // accept any fluid this time
-        int amountTransferred = cfr.doKeepExact(10000, source, dest, isWater, 144);
+        int amountTransferred = cfr.doKeepExact(10000, source, dest, isWater, 144, true);
 
         // expect that no fluids are moved because already have enough water and lava isn't in the filter
         MatcherAssert.assertThat("Wrong fluid amount moved", amountTransferred, is(0));
