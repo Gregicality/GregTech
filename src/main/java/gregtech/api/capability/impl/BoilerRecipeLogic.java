@@ -121,13 +121,13 @@ public class BoilerRecipeLogic extends AbstractRecipeLogic implements ICategoryO
             for (int i = 0; i < importItems.getSlots(); i++) {
                 ItemStack stack = importItems.getStackInSlot(i);
                 int fuelBurnTime = (int) Math.ceil(TileEntityFurnace.getItemBurnTime(stack));
-                if (fuelBurnTime / 80 > 0) { // try to ensure this fuel can burn for at least 1 tick
+                if (fuelBurnTime / 8 > 0) { // try to ensure this fuel can burn for at least 1 tick
                     if (FluidUtil.getFluidHandler(stack) != null) continue;
-                    this.excessFuel += fuelBurnTime % 80;
-                    int excessProgress = this.excessFuel / 80;
-                    this.excessFuel %= 80;
+                    this.excessFuel += fuelBurnTime % 8;
+                    int excessProgress = this.excessFuel / 8;
+                    this.excessFuel %= 8;
                     setMaxProgress(excessProgress +
-                            adjustBurnTimeForThrottle(boiler.boilerType.runtimeBoost(fuelBurnTime / 80)));
+                            adjustBurnTimeForThrottle(boiler.boilerType.runtimeBoost(fuelBurnTime / 8)));
                     stack.shrink(1);
                     didStartRecipe = true;
                     break;
