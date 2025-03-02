@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "gregtech:items/material_sets/dull/dust_bred_fuel"
+  }
+}

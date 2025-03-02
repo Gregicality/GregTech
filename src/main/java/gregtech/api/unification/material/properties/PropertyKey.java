@@ -3,6 +3,7 @@ package gregtech.api.unification.material.properties;
 public class PropertyKey<T extends IMaterialProperty> {
 
     public static final PropertyKey<BlastProperty> BLAST = new PropertyKey<>("blast", BlastProperty.class);
+    public static final PropertyKey<CoolantProperty> COOLANT = new PropertyKey<>("coolant", CoolantProperty.class);
     public static final PropertyKey<DustProperty> DUST = new PropertyKey<>("dust", DustProperty.class);
     public static final PropertyKey<FluidPipeProperties> FLUID_PIPE = new PropertyKey<>("fluid_pipe",
             FluidPipeProperties.class);
@@ -19,6 +20,10 @@ public class PropertyKey<T extends IMaterialProperty> {
     public static final PropertyKey<RotorProperty> ROTOR = new PropertyKey<>("rotor", RotorProperty.class);
     public static final PropertyKey<WireProperties> WIRE = new PropertyKey<>("wire", WireProperties.class);
     public static final PropertyKey<WoodProperty> WOOD = new PropertyKey<>("wood", WoodProperty.class);
+    public static final PropertyKey<FissionFuelProperty> FISSION_FUEL = new PropertyKey<>("fission_fuel",
+            FissionFuelProperty.class);
+    public static final PropertyKey<RadioactiveProperty> RADIOACTIVE = new PropertyKey<>("radioactive",
+            RadioactiveProperty.class);
 
     // Empty property used to allow property-less Materials without removing base type enforcement
     public static final PropertyKey<EmptyProperty> EMPTY = new PropertyKey<>("empty", EmptyProperty.class);

@@ -18,15 +18,22 @@ import gregtech.api.modules.IGregTechModule;
 import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.mui.GTGuiTheme;
 import gregtech.api.mui.GTGuis;
+import gregtech.api.nuclear.fission.CoolantRegistry;
+import gregtech.api.nuclear.fission.FissionFuelRegistry;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.properties.impl.TemperatureProperty;
 import gregtech.api.unification.OreDictUnifier;
+import gregtech.api.unification.material.Material;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.event.MaterialEvent;
 import gregtech.api.unification.material.event.MaterialRegistryEvent;
 import gregtech.api.unification.material.event.PostMaterialEvent;
+import gregtech.api.unification.material.properties.CoolantProperty;
+import gregtech.api.unification.material.properties.FissionFuelProperty;
+import gregtech.api.unification.material.properties.PropertyKey;
 import gregtech.api.unification.material.registry.MarkerMaterialRegistry;
+import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.util.CapesRegistry;
 import gregtech.api.util.Mods;
 import gregtech.api.util.oreglob.OreGlob;
@@ -188,7 +195,21 @@ public class CoreModule implements IGregTechModule {
 
         // Freeze Material Registry before processing Items, Blocks, and Fluids
         managerInternal.freezeRegistries();
+
         /* End Material Registration */
+
+        // Register material-based fuel rods and coolants now that all materials have been registered
+        for (Material material : GregTechAPI.materialManager.getRegisteredMaterials()) {
+            if (material.hasProperty(PropertyKey.FISSION_FUEL)) {
+                FissionFuelProperty prop = material.getProperty(PropertyKey.FISSION_FUEL);
+                FissionFuelRegistry.registerFuel(OreDictUnifier.get(OrePrefix.fuelRod, material), prop,
+                        OreDictUnifier.get(OrePrefix.fuelRodHotDepleted, material));
+            }
+            if (material.hasProperty(PropertyKey.COOLANT)) {
+                CoolantProperty prop = material.getProperty(PropertyKey.COOLANT);
+                CoolantRegistry.registerCoolant(material.getFluid(prop.getCoolantKey()), prop);
+            }
+        }
 
         // need to do this before MetaBlocks runs, to make sure all addons get their own BlockMachine
         /* Start MTE Registry Addition */
