@@ -15,6 +15,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 @ApiStatus.Internal
@@ -49,5 +51,12 @@ public class RecipeMapFurnace extends RecipeMap<SimpleRecipeBuilder> {
         }
 
         return null;
+    }
+
+    @Override
+    @NotNull
+    public Iterator<Recipe> getRecipeIterator(long voltage, List<ItemStack> inputs, List<FluidStack> fluidInputs,
+                                              boolean exactVoltage) {
+        return Collections.singleton(this.findRecipe(voltage, inputs, fluidInputs, exactVoltage)).iterator();
     }
 }

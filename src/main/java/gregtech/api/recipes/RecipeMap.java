@@ -73,6 +73,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -365,6 +366,10 @@ public class RecipeMap<R extends RecipeBuilder<R>> {
         return smallRecipeMap;
     }
 
+    public Branch getLookup() {
+        return lookup;
+    }
+
     /**
      * Internal usage <strong>only</strong>, use {@link RecipeBuilder#buildAndRegister()}
      *
@@ -624,6 +629,72 @@ public class RecipeMap<R extends RecipeBuilder<R>> {
         return recurseIngredientTreeFindRecipe(list, lookup, canHandle);
     }
 
+    @NotNull
+    public Iterator<Recipe> getRecipeIterator(long voltage, IItemHandlerModifiable inputs,
+                                              IMultipleTankHandler fluidInputs) {
+        return this.getRecipeIterator(voltage, GTUtility.itemHandlerToList(inputs),
+                GTUtility.fluidHandlerToList(fluidInputs));
+    }
+
+    /**
+     * Creates an Iterator of Recipes matching the Fluid and/or ItemStack Inputs.
+     *
+     * @param voltage     Voltage of the Machine or Long.MAX_VALUE if it has no Voltage
+     * @param inputs      the Item Inputs
+     * @param fluidInputs the Fluid Inputs
+     * @return the Recipe Iterator
+     */
+    @NotNull
+    public Iterator<Recipe> getRecipeIterator(long voltage, List<ItemStack> inputs, List<FluidStack> fluidInputs) {
+        return getRecipeIterator(voltage, inputs, fluidInputs, false);
+    }
+
+    /**
+     * Creates an Iterator of Recipes matching the Fluid and/or ItemStack Inputs.
+     *
+     * @param voltage      Voltage of the Machine or Long.MAX_VALUE if it has no Voltage
+     * @param inputs       the Item Inputs
+     * @param fluidInputs  the Fluid Inputs
+     * @param exactVoltage should require exact voltage matching on recipe. used by craftweaker
+     * @return the Recipe Iterator
+     */
+    @NotNull
+    public Iterator<Recipe> getRecipeIterator(long voltage, final List<ItemStack> inputs,
+                                              final List<FluidStack> fluidInputs,
+                                              boolean exactVoltage) {
+        final List<ItemStack> items = inputs.stream().filter(s -> !s.isEmpty()).collect(Collectors.toList());
+        final List<FluidStack> fluids = fluidInputs.stream().filter(f -> f != null && f.amount != 0)
+                .collect(Collectors.toList());
+
+        return getRecipeIterator(items, fluids, recipe -> {
+            if (exactVoltage && recipe.getEUt() != voltage) {
+                // if exact voltage is required, the recipe is not considered valid
+                return false;
+            }
+            if (recipe.getEUt() > voltage) {
+                // there is not enough voltage to consider the recipe valid
+                return false;
+            }
+            return recipe.matches(false, inputs, fluidInputs);
+        });
+    }
+
+    /**
+     * Creates an Iterator of Recipes using Items and Fluids.
+     *
+     * @param items     a collection of items
+     * @param fluids    a collection of fluids
+     * @param canHandle a predicate for determining if a recipe is valid
+     * @return the Recipe Iterator
+     */
+    @NotNull
+    public Iterator<Recipe> getRecipeIterator(@NotNull Collection<ItemStack> items,
+                                              @NotNull Collection<FluidStack> fluids,
+                                              @NotNull Predicate<Recipe> canHandle) {
+        List<List<AbstractMapIngredient>> list = prepareRecipeFind(items, fluids);
+        return new RecipeIterator(this, list, canHandle);
+    }
+
     /**
      * Builds a list of unique ItemStacks from the given Collection of ItemStacks.
      * Used to reduce the number inputs, if for example there is more than one of the same input,
@@ -723,9 +794,9 @@ public class RecipeMap<R extends RecipeBuilder<R>> {
      * @return a recipe
      */
     @Nullable
-    private Recipe recurseIngredientTreeFindRecipe(@NotNull List<List<AbstractMapIngredient>> ingredients,
-                                                   @NotNull Branch branchMap, @NotNull Predicate<Recipe> canHandle,
-                                                   int index, int count, long skip) {
+    protected Recipe recurseIngredientTreeFindRecipe(@NotNull List<List<AbstractMapIngredient>> ingredients,
+                                                     @NotNull Branch branchMap, @NotNull Predicate<Recipe> canHandle,
+                                                     int index, int count, long skip) {
         // exhausted all the ingredients, and didn't find anything
         if (count == ingredients.size()) return null;
 

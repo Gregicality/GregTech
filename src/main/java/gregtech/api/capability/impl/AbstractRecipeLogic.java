@@ -43,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static gregtech.api.GTValues.ULV;
@@ -261,7 +262,7 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
      * @return true if recipes should be searched for
      */
     protected boolean shouldSearchForRecipes() {
-        return canWorkWithInputs() && canFitNewOutputs();
+        return canWorkWithInputs() || canFitNewOutputs();
     }
 
     /**
@@ -398,7 +399,8 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
      */
     protected void trySearchNewRecipe() {
         long maxVoltage = getMaxVoltage();
-        Recipe currentRecipe;
+        Recipe currentRecipe = null;
+        Iterator<Recipe> recipeIterator;
         IItemHandlerModifiable importInventory = getInputInventory();
         IMultipleTankHandler importFluids = getInputTank();
 
@@ -406,19 +408,41 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
         if (checkPreviousRecipe()) {
             currentRecipe = this.previousRecipe;
             // If there is no active recipe, then we need to find one.
-        } else {
-            currentRecipe = findRecipe(maxVoltage, importInventory, importFluids);
         }
-        // If a recipe was found, then inputs were valid. Cache found recipe.
-        if (currentRecipe != null) {
-            this.previousRecipe = currentRecipe;
-        }
-        this.invalidInputsForRecipes = (currentRecipe == null);
 
-        // proceed if we have a usable recipe.
-        if (currentRecipe != null && checkRecipe(currentRecipe)) {
-            prepareRecipe(currentRecipe);
+        // proceed if previous recipe still works.
+        if (currentRecipe != null && checkRecipe(currentRecipe) && prepareRecipe(currentRecipe)) {
+            this.previousRecipe = currentRecipe;
+            return;
         }
+
+        recipeIterator = getRecipeIterator(maxVoltage, importInventory, importFluids);
+
+        boolean invalidOutputs = false;
+        boolean invalidInputs = false;
+
+        // Search for a new recipe if the previous one is no longer valid
+        while (recipeIterator != null && recipeIterator.hasNext()) {
+            Recipe next = recipeIterator.next();
+            if (next == null) continue;
+
+            if (checkRecipe(next) && prepareRecipe(next)) {
+                // If a new recipe was found, cache found recipe.
+                this.previousRecipe = next;
+                return;
+            } else {
+                // store if recipe has bad IO, then reset for next recipe checks
+                invalidOutputs = this.isOutputsFull;
+                invalidInputs = this.invalidInputsForRecipes;
+                this.isOutputsFull = false;
+                this.invalidInputsForRecipes = false;
+            }
+        }
+
+        // if no valid recipes are found mark the inputs and outputs as invalid so any changes
+        // will re-trigger a recipe search
+        this.isOutputsFull = invalidOutputs;
+        this.invalidInputsForRecipes = invalidInputs;
     }
 
     /**
@@ -648,6 +672,25 @@ public abstract class AbstractRecipeLogic extends MTETrait implements IWorkable,
         }
 
         return map.findRecipe(maxVoltage, inputs, fluidInputs);
+    }
+
+    /**
+     * Creates a Recipe Iterator using inputs
+     *
+     * @param maxVoltage  the maximum voltage the recipe can have
+     * @param inputs      the item inputs used to search for the recipe
+     * @param fluidInputs the fluid inputs used to search for the recipe
+     * @return the recipe iterator if this.recipeMap is valid, otherwise null
+     */
+    @Nullable
+    protected Iterator<Recipe> getRecipeIterator(long maxVoltage, IItemHandlerModifiable inputs,
+                                                 IMultipleTankHandler fluidInputs) {
+        RecipeMap<?> map = getRecipeMap();
+        if (map == null || !isRecipeMapValid(map)) {
+            return null;
+        }
+
+        return map.getRecipeIterator(maxVoltage, inputs, fluidInputs);
     }
 
     /**
