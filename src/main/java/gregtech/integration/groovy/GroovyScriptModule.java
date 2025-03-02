@@ -13,11 +13,13 @@ import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.ingredients.GTRecipeOreInput;
 import gregtech.api.unification.Element;
 import gregtech.api.unification.Elements;
+import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Material;
 import gregtech.api.unification.material.event.MaterialEvent;
 import gregtech.api.unification.material.event.PostMaterialEvent;
 import gregtech.api.unification.material.registry.MaterialRegistry;
 import gregtech.api.unification.ore.OrePrefix;
+import gregtech.api.unification.stack.UnificationEntry;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.Mods;
 import gregtech.common.blocks.BlockCompressed;
@@ -46,6 +48,7 @@ import com.cleanroommc.groovyscript.compat.mods.GroovyContainer;
 import com.cleanroommc.groovyscript.compat.mods.GroovyPropertyContainer;
 import com.cleanroommc.groovyscript.event.ScriptRunEvent;
 import com.cleanroommc.groovyscript.helper.EnumHelper;
+import com.cleanroommc.groovyscript.mapper.TextureBinder;
 import com.cleanroommc.groovyscript.sandbox.expand.ExpansionHelper;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -273,6 +276,9 @@ public class GroovyScriptModule extends IntegrationSubmodule implements GroovyPl
         container.objectMapperBuilder("oreprefix", OrePrefix.class)
                 .parser(IObjectParser.wrapStringGetter(OrePrefix::getPrefix))
                 .completerOfNamed(OrePrefix::values, v -> v.name)
+                .textureBinder(TextureBinder.of(i -> OreDictUnifier.getAll(new UnificationEntry(i)),
+                        TextureBinder.ofItem(),
+                        i -> String.format("![](${item('%s')}) %s", i.getItem().getRegistryName(), i.getDisplayName())))
                 .register();
 
         container.objectMapperBuilder("metaitem", ItemStack.class)
@@ -289,6 +295,7 @@ public class GroovyScriptModule extends IntegrationSubmodule implements GroovyPl
                         }
                     }
                 })
+                .textureBinder(TextureBinder.ofItem())
                 .register();
 
         container.objectMapperBuilder("element", Element.class)
