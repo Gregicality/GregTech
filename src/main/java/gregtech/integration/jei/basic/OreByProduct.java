@@ -1,5 +1,7 @@
 package gregtech.integration.jei.basic;
 
+import gregtech.api.GTValues;
+import gregtech.api.GregTechAPI;
 import gregtech.api.recipes.chance.output.impl.ChancedItemOutput;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Material;
@@ -10,12 +12,18 @@ import gregtech.api.unification.material.properties.PropertyKey;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.client.utils.TooltipHelper;
 import gregtech.common.metatileentities.MetaTileEntities;
+import gregtech.integration.jei.utils.JeiInteractableText;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.ImmutableList;
@@ -25,6 +33,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +45,8 @@ public class OreByProduct implements IRecipeWrapper {
     private static final List<OrePrefix> ORES = new ArrayList<>();
 
     private static final int NUM_INPUTS = 21;
+
+    public final List<JeiInteractableText> jeiTexts = new ArrayList<>();
 
     public static void addOreByProductPrefix(OrePrefix orePrefix) {
         if (!ORES.contains(orePrefix)) {
@@ -275,6 +286,33 @@ public class OreByProduct implements IRecipeWrapper {
         } else {
             addEmptyOutputs(6);
         }
+
+        // just here because if highTier is disabled, if a recipe is (incorrectly) registering
+        // UIV+ recipes, this allows it to go up to the recipe tier for that recipe only
+        int maxTier = GregTechAPI.isHighTier() ? GTValues.UIV : GTValues.MAX_TRUE;
+        // scuffed positioning because we can't have good ui(until mui soontm)
+        jeiTexts.add(
+                new JeiInteractableText(0, 160, GTValues.VOCNF[GTValues.LV], 0x111111, GTValues.LV, true)
+                        .setTooltipBuilder((state, tooltip) -> {
+                            tooltip.add(I18n.format("gregtech.jei.overclock_button", GTValues.VOCNF[state]));
+                            tooltip.add(TooltipHelper.BLINKING_CYAN + I18n.format("gregtech.jei.overclock_warn"));
+                        })
+                        .setClickAction((minecraft, text, mouseX, mouseY, mouseButton) -> {
+                            int state = text.getState();
+                            if (mouseButton == 0) {
+                                // increment tier if left click
+                                if (++state > maxTier) state = GTValues.LV;
+                            } else if (mouseButton == 1) {
+                                // decrement tier if right click
+                                if (--state < GTValues.LV) state = maxTier;
+                            } else if (mouseButton == 2) {
+                                // reset tier if middle click
+                                state = GTValues.LV;
+                            } else return false;
+                            text.setCurrentText(GTValues.VOCNF[state]);
+                            text.setState(state);
+                            return true;
+                        }));
     }
 
     @Override
@@ -290,6 +328,18 @@ public class OreByProduct implements IRecipeWrapper {
             double chance = entry.getChance() / 100.0;
             double boost = entry.getChanceBoost() / 100.0;
             tooltip.add(TooltipHelper.BLINKING_CYAN + I18n.format("gregtech.recipe.chance", chance, boost));
+
+            // This kinda assumes that all ore processing recipes are ULV or LV, but I'm not sure how I would
+            // get the original recipe's EU/t here instead of just the map of chances
+
+            // Add the total chance to the tooltip
+            int tier = jeiTexts.get(0).getState();
+            int tierDifference = tier - GTValues.LV;
+
+            // The total chance may or may not max out at 100%.
+            // TODO possibly change in the future.
+            double totalChance = Math.min(chance + boost * tierDifference, 100);
+            tooltip.add(I18n.format("gregtech.recipe.chance_total", GTValues.VOCNF[tier], totalChance));
         }
     }
 
@@ -351,5 +401,34 @@ public class OreByProduct implements IRecipeWrapper {
         } else {
             addChance(baseLow, tierLow);
         }
+    }
+
+    @Override
+    public void drawInfo(@NotNull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+        for (JeiInteractableText text : jeiTexts) {
+            text.render(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
+            if (text.isHovering(mouseX, mouseY)) {
+                List<String> tooltip = new ArrayList<>();
+                text.buildTooltip(tooltip);
+                if (tooltip.isEmpty()) continue;
+                int width = (int) (minecraft.displayWidth / 2f + recipeWidth / 2f);
+                GuiUtils.drawHoveringText(tooltip, mouseX, mouseY, width, minecraft.displayHeight,
+                        Math.min(150, width - mouseX - 5), minecraft.fontRenderer);
+                GlStateManager.disableLighting();
+            }
+        }
+    }
+
+    @Override
+    public boolean handleClick(@NotNull Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+        for (JeiInteractableText text : jeiTexts) {
+            if (text.isHovering(mouseX, mouseY) &&
+                    text.getTextClickAction().click(minecraft, text, mouseX, mouseY, mouseButton)) {
+                Minecraft.getMinecraft().getSoundHandler()
+                        .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
+            }
+        }
+        return false;
     }
 }

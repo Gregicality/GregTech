@@ -99,7 +99,7 @@ public class RecipeMap<R extends RecipeBuilder<R>> {
     public ChanceBoostFunction chanceFunction = DEFAULT_CHANCE_FUNCTION;
 
     public final String unlocalizedName;
-
+    private boolean jeiOverclockButton = true;
     private final R recipeBuilderSample;
     private int maxInputs;
     private int maxOutputs;
@@ -363,6 +363,15 @@ public class RecipeMap<R extends RecipeBuilder<R>> {
 
     public RecipeMap<? extends RecipeBuilder<?>> getSmallRecipeMap() {
         return smallRecipeMap;
+    }
+
+    public RecipeMap<R> disableJeiOverclockButton() {
+        this.jeiOverclockButton = false;
+        return this;
+    }
+
+    public boolean jeiOverclockButtonEnabled() {
+        return this.jeiOverclockButton;
     }
 
     /**
