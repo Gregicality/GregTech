@@ -650,6 +650,68 @@ public class RecipeBuilder<R extends RecipeBuilder<R>> {
         return chancedOutput(item, 1, chance, tierChanceBoost);
     }
 
+    public R chancedOutput(ItemStack stack, String fraction, int tierChanceBoost) {
+        if (stack == null || stack.isEmpty()) {
+            return (R) this;
+        }
+
+        String[] split = fraction.split("/");
+        if (split.length != 2) {
+            GTLog.logger.error("Fraction was not parsed correctly! Expected format is \"1/3\". Actual: \"{}\".",
+                    fraction, new Throwable());
+            recipeStatus = EnumValidationResult.INVALID;
+            return (R) this;
+        }
+
+        int chance;
+        int maxChance;
+        try {
+            chance = Integer.parseInt(split[0]);
+            maxChance = Integer.parseInt(split[1]);
+        } catch (NumberFormatException e) {
+            GTLog.logger.error("Fraction was not parsed correctly! Expected format is \"1/3\". Actual: \"{}\".",
+                    fraction, new Throwable());
+            recipeStatus = EnumValidationResult.INVALID;
+            return (R) this;
+        }
+
+        if (0 >= chance || chance > ChancedOutputLogic.getMaxChancedValue()) {
+            GTLog.logger.error("Chance cannot be less or equal to 0 or more than {}. Actual: {}.",
+                    ChancedOutputLogic.getMaxChancedValue(), chance, new Throwable());
+            recipeStatus = EnumValidationResult.INVALID;
+            return (R) this;
+        }
+        if (chance >= maxChance || maxChance > ChancedOutputLogic.getMaxChancedValue()) {
+            GTLog.logger.error("Max Chance cannot be less or equal to Chance or more than {}. Actual: {}.",
+                    ChancedOutputLogic.getMaxChancedValue(), maxChance, new Throwable());
+            recipeStatus = EnumValidationResult.INVALID;
+            return (R) this;
+        }
+
+        int scalar = Math.floorDiv(ChancedOutputLogic.getMaxChancedValue(), maxChance);
+        chance *= scalar;
+        maxChance *= scalar;
+
+        this.chancedOutputs.add(new ChancedItemOutput(stack.copy(), chance, maxChance, tierChanceBoost));
+        return (R) this;
+    }
+
+    public R chancedOutput(OrePrefix prefix, Material material, int count, String fraction, int tierChanceBoost) {
+        return chancedOutput(OreDictUnifier.get(prefix, material, count), fraction, tierChanceBoost);
+    }
+
+    public R chancedOutput(OrePrefix prefix, Material material, String fraction, int tierChanceBoost) {
+        return chancedOutput(prefix, material, 1, fraction, tierChanceBoost);
+    }
+
+    public R chancedOutput(MetaItem<?>.MetaValueItem item, int count, String fraction, int tierChanceBoost) {
+        return chancedOutput(item.getStackForm(count), fraction, tierChanceBoost);
+    }
+
+    public R chancedOutput(MetaItem<?>.MetaValueItem item, String fraction, int tierChanceBoost) {
+        return chancedOutput(item, 1, fraction, tierChanceBoost);
+    }
+
     public R chancedOutputs(List<ChancedItemOutput> chancedOutputs) {
         for (ChancedItemOutput output : chancedOutputs) {
             this.chancedOutputs.add(output.copy());
@@ -678,6 +740,52 @@ public class RecipeBuilder<R extends RecipeBuilder<R>> {
             return (R) this;
         }
         this.chancedFluidOutputs.add(new ChancedFluidOutput(stack.copy(), chance, tierChanceBoost));
+        return (R) this;
+    }
+
+    public R chancedFluidOutput(FluidStack stack, String fraction, int tierChanceBoost) {
+        if (stack == null || stack.amount == 0) {
+            return (R) this;
+        }
+
+        String[] split = fraction.split("/");
+        if (split.length != 2) {
+            GTLog.logger.error("Fraction was not parsed correctly! Expected format is \"1/3\". Actual: \"{}\".",
+                    fraction, new Throwable());
+            recipeStatus = EnumValidationResult.INVALID;
+            return (R) this;
+        }
+
+        int chance;
+        int maxChance;
+        try {
+            chance = Integer.parseInt(split[0]);
+            maxChance = Integer.parseInt(split[1]);
+        } catch (NumberFormatException e) {
+            GTLog.logger.error("Fraction was not parsed correctly! Expected format is \"1/3\". Actual: \"{}\".",
+                    fraction, new Throwable());
+            recipeStatus = EnumValidationResult.INVALID;
+            return (R) this;
+        }
+
+        if (0 >= chance || chance > ChancedOutputLogic.getMaxChancedValue()) {
+            GTLog.logger.error("Chance cannot be less or equal to 0 or more than {}. Actual: {}.",
+                    ChancedOutputLogic.getMaxChancedValue(), chance, new Throwable());
+            recipeStatus = EnumValidationResult.INVALID;
+            return (R) this;
+        }
+        if (chance >= maxChance || maxChance > ChancedOutputLogic.getMaxChancedValue()) {
+            GTLog.logger.error("Max Chance cannot be less or equal to Chance or more than {}. Actual: {}.",
+                    ChancedOutputLogic.getMaxChancedValue(), maxChance, new Throwable());
+            recipeStatus = EnumValidationResult.INVALID;
+            return (R) this;
+        }
+
+        int scalar = Math.floorDiv(ChancedOutputLogic.getMaxChancedValue(), maxChance);
+        chance *= scalar;
+        maxChance *= scalar;
+
+        this.chancedFluidOutputs.add(new ChancedFluidOutput(stack.copy(), chance, maxChance, tierChanceBoost));
         return (R) this;
     }
 
@@ -749,25 +857,25 @@ public class RecipeBuilder<R extends RecipeBuilder<R>> {
 
     public void chancedOutputsMultiply(Recipe chancedOutputsFrom, int numberOfOperations) {
         for (ChancedItemOutput entry : chancedOutputsFrom.getChancedOutputs().getChancedEntries()) {
-            int chance = entry.getChance();
+            String fraction = String.format("%d/%d", entry.getChance(), entry.getMaxChance());
             int boost = entry.getChanceBoost();
 
             // Add individual chanced outputs per number of parallel operations performed, to mimic regular recipes.
             // This is done instead of simply batching the chanced outputs by the number of parallel operations
             // performed
             for (int i = 0; i < numberOfOperations; i++) {
-                this.chancedOutput(entry.getIngredient().copy(), chance, boost);
+                this.chancedOutput(entry.getIngredient().copy(), fraction, boost);
             }
         }
         for (ChancedFluidOutput entry : chancedOutputsFrom.getChancedFluidOutputs().getChancedEntries()) {
-            int chance = entry.getChance();
+            String fraction = String.format("%d/%d", entry.getChance(), entry.getMaxChance());
             int boost = entry.getChanceBoost();
 
             // Add individual chanced outputs per number of parallel operations performed, to mimic regular recipes.
             // This is done instead of simply batching the chanced outputs by the number of parallel operations
             // performed
             for (int i = 0; i < numberOfOperations; i++) {
-                this.chancedFluidOutput(entry.getIngredient().copy(), chance, boost);
+                this.chancedFluidOutput(entry.getIngredient().copy(), fraction, boost);
             }
         }
     }

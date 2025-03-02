@@ -1,8 +1,7 @@
 package gregtech.api.recipes.chance.output;
 
 import gregtech.api.GTValues;
-import gregtech.api.recipes.chance.boost.BoostableChanceEntry;
-import gregtech.api.recipes.chance.boost.ChanceBoostFunction;
+import gregtech.api.recipes.RecipeContext;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
@@ -23,18 +22,22 @@ public interface ChancedOutputLogic {
     ChancedOutputLogic OR = new ChancedOutputLogic() {
 
         @Override
-        public @Nullable @Unmodifiable <I,
-                T extends ChancedOutput<I>> List<@NotNull T> roll(@NotNull @Unmodifiable List<@NotNull T> chancedEntries,
-                                                                  @NotNull ChanceBoostFunction boostFunction,
-                                                                  int baseTier, int machineTier) {
-            ImmutableList.Builder<T> builder = null;
+        public @Nullable @Unmodifiable <I, T extends ChancedOutput<I>> List<@NotNull CalculatedOutput<I>> roll(
+                                                                                                               @NotNull @Unmodifiable List<@NotNull T> chancedEntries,
+                                                                                                               @NotNull RecipeContext<I> context) {
+            ImmutableList.Builder<CalculatedOutput<I>> builder = ImmutableList.builder();
+            boolean success = false;
+
             for (T entry : chancedEntries) {
-                if (passesChance(getChance(entry, boostFunction, baseTier, machineTier))) {
-                    if (builder == null) builder = ImmutableList.builder();
-                    builder.add(entry);
+                int chance = context.getChance(entry);
+                if (passesChance(chance, entry, context)) {
+                    success = true;
+                    int amount = chance / entry.getMaxChance();
+                    builder.add(new CalculatedOutput<>(entry, amount));
                 }
             }
-            return builder == null ? null : builder.build();
+
+            return success ? builder.build() : null;
         }
 
         @Override
@@ -54,16 +57,20 @@ public interface ChancedOutputLogic {
     ChancedOutputLogic AND = new ChancedOutputLogic() {
 
         @Override
-        public @Nullable @Unmodifiable <I,
-                T extends ChancedOutput<I>> List<@NotNull T> roll(@NotNull @Unmodifiable List<@NotNull T> chancedEntries,
-                                                                  @NotNull ChanceBoostFunction boostFunction,
-                                                                  int baseTier, int machineTier) {
+        public @Nullable @Unmodifiable <I, T extends ChancedOutput<I>> List<@NotNull CalculatedOutput<I>> roll(
+                                                                                                               @NotNull @Unmodifiable List<@NotNull T> chancedEntries,
+                                                                                                               @NotNull RecipeContext<I> context) {
+            ImmutableList.Builder<CalculatedOutput<I>> builder = ImmutableList.builder();
+            boolean failed = false;
             for (T entry : chancedEntries) {
-                if (!passesChance(getChance(entry, boostFunction, baseTier, machineTier))) {
-                    return null;
+                int chance = context.getChance(entry);
+                int amount = chance / entry.getMaxChance();
+                builder.add(new CalculatedOutput<>(entry, amount));
+                if (!passesChance(chance, entry, context)) {
+                    failed = true;
                 }
             }
-            return ImmutableList.copyOf(chancedEntries);
+            return failed ? null : builder.build();
         }
 
         @Override
@@ -83,16 +90,26 @@ public interface ChancedOutputLogic {
     ChancedOutputLogic XOR = new ChancedOutputLogic() {
 
         @Override
-        public @Nullable @Unmodifiable <I,
-                T extends ChancedOutput<I>> List<@NotNull T> roll(@NotNull @Unmodifiable List<@NotNull T> chancedEntries,
-                                                                  @NotNull ChanceBoostFunction boostFunction,
-                                                                  int baseTier, int machineTier) {
+        public @Nullable @Unmodifiable <I, T extends ChancedOutput<I>> List<@NotNull CalculatedOutput<I>> roll(
+                                                                                                               @NotNull @Unmodifiable List<@NotNull T> chancedEntries,
+                                                                                                               @NotNull RecipeContext<I> context) {
+            CalculatedOutput<I> selected = null;
+            int total = 1;
             for (T entry : chancedEntries) {
-                if (passesChance(getChance(entry, boostFunction, baseTier, machineTier))) {
-                    return Collections.singletonList(entry);
-                }
+                total += entry.getMaxChance();
             }
-            return null;
+
+            int roll = GTValues.RNG.nextInt(total);
+            for (T entry : chancedEntries) {
+                int chance = context.getChance(entry);
+                if (chance >= roll && selected == null) {
+                    selected = new CalculatedOutput<>(entry);
+                } else if (selected != null) {
+                    roll -= chance;
+                }
+                context.updateCachedChance(entry, chance);
+            }
+            return selected == null ? null : Collections.singletonList(selected);
         }
 
         @Override
@@ -112,10 +129,9 @@ public interface ChancedOutputLogic {
     ChancedOutputLogic NONE = new ChancedOutputLogic() {
 
         @Override
-        public @Nullable @Unmodifiable <I,
-                T extends ChancedOutput<I>> List<@NotNull T> roll(@NotNull @Unmodifiable List<@NotNull T> chancedEntries,
-                                                                  @NotNull ChanceBoostFunction boostFunction,
-                                                                  int baseTier, int machineTier) {
+        public @Nullable @Unmodifiable <I, T extends ChancedOutput<I>> List<@NotNull CalculatedOutput<I>> roll(
+                                                                                                               @NotNull @Unmodifiable List<@NotNull T> chancedEntries,
+                                                                                                               @NotNull RecipeContext<I> context) {
             return null;
         }
 
@@ -131,26 +147,22 @@ public interface ChancedOutputLogic {
     };
 
     /**
-     * @param entry         the entry to get the complete chance for
-     * @param boostFunction the function boosting the entry's chance
-     * @param baseTier      the base tier of the recipe
-     * @param machineTier   the tier the recipe is run at
-     * @return the total chance for the entry
-     */
-    static int getChance(@NotNull ChancedOutput<?> entry, @NotNull ChanceBoostFunction boostFunction, int baseTier,
-                         int machineTier) {
-        if (entry instanceof BoostableChanceEntry<?>boostableChanceEntry) {
-            return boostFunction.getBoostedChance(boostableChanceEntry, baseTier, machineTier);
-        }
-        return entry.getChance();
-    }
-
-    /**
-     * @param chance the chance to check
+     * @param chance  the boosted chance plus the cached chance to be checked
+     * @param entry   the entry to get the max chance and compare to chance
+     * @param context Context containing machine and recipe tier, the boost function, and the chance cache
      * @return if the roll with the chance is successful
      */
-    static boolean passesChance(int chance) {
-        return chance > 0 && GTValues.RNG.nextInt(getMaxChancedValue()) <= chance;
+    static <I, T extends ChancedOutput<I>> boolean passesChance(int chance, T entry,
+                                                                @NotNull RecipeContext<I> context) {
+        if (context.getCachedChance(entry) == -1) {
+            int initial = GTValues.RNG.nextInt(entry.getMaxChance());
+            context.updateCachedChance(entry, initial);
+            // chance here is the boosted (if possible) entry chance
+            return initial <= chance;
+        }
+
+        context.updateCachedChance(entry, chance);
+        return chance >= entry.getMaxChance();
     }
 
     /**
@@ -160,19 +172,9 @@ public interface ChancedOutputLogic {
         return 10_000;
     }
 
-    /**
-     * Roll the chance and attempt to produce the output
-     *
-     * @param chancedEntries the list of entries to roll
-     * @param boostFunction  the function to boost the entries' chances
-     * @param baseTier       the base tier of the recipe
-     * @param machineTier    the tier the recipe is run at
-     * @return a list of the produced outputs
-     */
-    <I, T extends ChancedOutput<I>> @Nullable @Unmodifiable List<@NotNull T> roll(
-                                                                                  @NotNull @Unmodifiable List<@NotNull T> chancedEntries,
-                                                                                  @NotNull ChanceBoostFunction boostFunction,
-                                                                                  int baseTier, int machineTier);
+    <I, T extends ChancedOutput<I>> @Nullable @Unmodifiable List<@NotNull CalculatedOutput<I>> roll(
+                                                                                                    @NotNull @Unmodifiable List<@NotNull T> chancedEntries,
+                                                                                                    @NotNull RecipeContext<I> context);
 
     @NotNull
     String getTranslationKey();

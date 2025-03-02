@@ -203,14 +203,15 @@ public class GTRecipeWrapper extends AdvancedRecipeWrapper {
                                       @Nullable Object ingredient, @Nullable Object ingredient2) {
         if (ingredient2 instanceof ChancedOutputLogic logic) {
             if (ingredient instanceof BoostableChanceEntry<?>entry) {
-                double chance = entry.getChance() / 100.0;
+                double chance = 100 * (double) entry.getChance() / entry.getMaxChance();
+                String percent = TextFormattingUtil.formatPercent(chance);
                 double boost = entry.getChanceBoost() / 100.0;
                 if (logic != ChancedOutputLogic.NONE && logic != ChancedOutputLogic.OR) {
                     tooltip.add(TooltipHelper.BLINKING_CYAN + I18n.format("gregtech.recipe.chance_logic",
-                            chance, boost, I18n.format(logic.getTranslationKey())));
+                            percent, boost, I18n.format(logic.getTranslationKey())));
                 } else {
                     tooltip.add(TooltipHelper.BLINKING_CYAN + I18n.format("gregtech.recipe.chance",
-                            chance, boost));
+                            percent, boost));
                 }
             }
         } else if (notConsumed) {
