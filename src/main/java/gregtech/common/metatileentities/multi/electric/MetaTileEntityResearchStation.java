@@ -233,7 +233,7 @@ public class MetaTileEntityResearchStation extends RecipeMapMultiblockController
                 .addComputationUsageExactLine(getRecipeMapWorkable().getCurrentDrawnCWUt())
                 .addParallelsLine(recipeMapWorkable.getParallelLimit())
                 .addWorkingStatusLine()
-                .addProgressLine(recipeMapWorkable.getProgressPercent());
+                .addProgressLine(recipeMapWorkable.getProgress(), recipeMapWorkable.getMaxProgress());
     }
 
     @Override

@@ -504,7 +504,7 @@ public class MetaTileEntityCleanroom extends MultiblockWithDisplayBase
                                 cleanState));
                     }
                 })
-                .addProgressLine(getProgressPercent() / 100.0)
+                .addProgressLine(getProgress(), getMaxProgress())
                 .addWorkingStatusLine();
     }
 

@@ -195,7 +195,7 @@ public class MetaTileEntityFluidDrill extends MultiblockWithDisplayBase
                         }
                     }
                 })
-                .addProgressLine(minerLogic.getProgressPercent())
+                .addProgressLine(minerLogic.getProgressTime(), FluidDrillLogic.MAX_PROGRESS)
                 .addWorkingStatusLine();
     }
 

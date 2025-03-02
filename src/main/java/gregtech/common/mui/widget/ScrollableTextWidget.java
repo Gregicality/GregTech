@@ -1,5 +1,8 @@
 package gregtech.common.mui.widget;
 
+import gregtech.api.mui.drawable.GTObjectDrawable;
+import gregtech.mixins.mui2.IconAccessor;
+
 import com.cleanroommc.modularui.api.GuiAxis;
 import com.cleanroommc.modularui.api.drawable.IHoverable;
 import com.cleanroommc.modularui.api.drawable.IRichTextBuilder;
@@ -7,9 +10,11 @@ import com.cleanroommc.modularui.api.layout.IViewport;
 import com.cleanroommc.modularui.api.layout.IViewportStack;
 import com.cleanroommc.modularui.api.widget.IGuiAction;
 import com.cleanroommc.modularui.api.widget.Interactable;
+import com.cleanroommc.modularui.drawable.DelegateIcon;
 import com.cleanroommc.modularui.drawable.Stencil;
 import com.cleanroommc.modularui.drawable.text.RichText;
 import com.cleanroommc.modularui.drawable.text.TextRenderer;
+import com.cleanroommc.modularui.integration.jei.JeiIngredientProvider;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
@@ -24,12 +29,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class ScrollableTextWidget extends Widget<ScrollableTextWidget>
-                                  implements IRichTextBuilder<ScrollableTextWidget>, Interactable, IViewport {
+                                  implements IRichTextBuilder<ScrollableTextWidget>, Interactable, IViewport,
+                                  JeiIngredientProvider {
 
     private final RichText text = new RichText();
     private Consumer<RichText> builder;
     private boolean dirty = false;
     private boolean autoUpdate = false;
+    private Object lastIngredient;
 
     private final ScrollArea scroll = new ScrollArea();
     private final TextRenderer renderer = new TextRenderer();
@@ -65,6 +72,13 @@ public class ScrollableTextWidget extends Widget<ScrollableTextWidget>
             if (tooltip != null) {
                 tooltip.draw(context);
             }
+        }
+        if (getHoveredElement() instanceof DelegateIcon delegateIcon &&
+                delegateIcon.findRootDelegate() instanceof IconAccessor accessor &&
+                accessor.getDrawable() instanceof GTObjectDrawable objectDrawable) {
+            lastIngredient = objectDrawable.getObject();
+        } else {
+            lastIngredient = null;
         }
     }
 
@@ -206,5 +220,10 @@ public class ScrollableTextWidget extends Widget<ScrollableTextWidget>
         this.builder = builder;
         markDirty();
         return this;
+    }
+
+    @Override
+    public @Nullable Object getIngredient() {
+        return this.lastIngredient;
     }
 }

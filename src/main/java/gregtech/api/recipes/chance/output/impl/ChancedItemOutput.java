@@ -4,7 +4,9 @@ import gregtech.api.recipes.chance.output.BoostableChanceOutput;
 import gregtech.api.util.GTStringUtils;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 
+import com.cleanroommc.modularui.network.NetworkUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,5 +30,15 @@ public class ChancedItemOutput extends BoostableChanceOutput<ItemStack> {
                 ", chance=" + getChance() +
                 ", chanceBoost=" + getChanceBoost() +
                 '}';
+    }
+
+    public static ChancedItemOutput fromBuffer(PacketBuffer buffer) {
+        return new ChancedItemOutput(NetworkUtils.readItemStack(buffer), buffer.readVarInt(), buffer.readVarInt());
+    }
+
+    public static void toBuffer(PacketBuffer buffer, ChancedItemOutput value) {
+        NetworkUtils.writeItemStack(buffer, value.getIngredient());
+        buffer.writeVarInt(value.getChance());
+        buffer.writeVarInt(value.getChanceBoost());
     }
 }

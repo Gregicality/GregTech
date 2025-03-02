@@ -91,7 +91,8 @@ public class MetaTileEntityMultiSmelter extends RecipeMapMultiblockController {
                     }
                 })
                 .addWorkingStatusLine()
-                .addProgressLine(recipeMapWorkable.getProgressPercent());
+                .addProgressLine(recipeMapWorkable.getProgress(), recipeMapWorkable.getMaxProgress())
+                .addRecipeOutputLine(recipeMapWorkable);
     }
 
     @Override

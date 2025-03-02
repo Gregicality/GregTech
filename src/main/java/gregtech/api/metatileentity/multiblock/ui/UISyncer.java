@@ -1,10 +1,11 @@
 package gregtech.api.metatileentity.multiblock.ui;
 
+import gregtech.api.mui.GTByteBufAdapters;
+
 import com.cleanroommc.modularui.utils.serialization.ByteBufAdapters;
 import com.cleanroommc.modularui.utils.serialization.IByteBufAdapter;
 import com.cleanroommc.modularui.utils.serialization.IByteBufDeserializer;
 import com.cleanroommc.modularui.utils.serialization.IByteBufSerializer;
-import com.cleanroommc.modularui.utils.serialization.IEquals;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -15,11 +16,6 @@ import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 
 public interface UISyncer {
-
-    IByteBufAdapter<BigInteger> BIG_INT = ByteBufAdapters.makeAdapter(
-            buffer -> new BigInteger(buffer.readByteArray()),
-            (buffer, value) -> buffer.writeByteArray(value.toByteArray()),
-            IEquals.defaultTester());
 
     /**
      * Calls the supplier server side only so there's no potential NPEs for the client
@@ -98,7 +94,7 @@ public interface UISyncer {
     }
 
     default BigInteger syncBigInt(BigInteger initial) {
-        return syncObject(initial, BIG_INT);
+        return syncObject(initial, GTByteBufAdapters.BIG_INT);
     }
 
     <T> T syncObject(T initial, IByteBufSerializer<T> serializer, IByteBufDeserializer<T> deserializer);

@@ -5734,6 +5734,7 @@ gregtech.multiblock.idling=Idling.
 gregtech.multiblock.not_enough_energy=Machine needs more energy!
 gregtech.multiblock.not_enough_energy_output=Energy Dynamo Tier Too Low!
 gregtech.multiblock.progress=Progress: %s%%
+gregtech.multiblock.recipe_progress=Progress: %ss / %ss (%s%%)
 gregtech.multiblock.invalid_structure=§cInvalid structure.
 gregtech.multiblock.invalid_structure.tooltip=This block is a controller of the multiblock structure. For building help, see structure template in JEI.
 gregtech.multiblock.validation_failed=Invalid amount of inputs/outputs.
