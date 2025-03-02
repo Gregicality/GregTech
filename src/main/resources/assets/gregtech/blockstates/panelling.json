@@ -1,0 +1,109 @@
+{
+  "forge_marker" : 1,
+  "defaults": {
+    "model" : "minecraft:cube_all",
+    "textures" : {
+      "all" : "gregtech:blocks/panelling/panelling_white"
+    }
+  },
+  "variants" : {
+    "variant" : {
+      "white" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_white"
+        }
+      },
+      "orange" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_orange"
+        }
+      },
+      "magenta" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_magenta"
+        }
+      },
+      "light_blue" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_light_blue"
+        }
+      },
+      "yellow" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_yellow"
+        }
+      },
+      "lime" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_lime"
+        }
+      },
+      "pink" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_pink"
+        }
+      },
+      "gray" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_gray"
+        }
+      },
+      "light_gray" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_light_gray"
+        }
+      },
+      "cyan" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_cyan"
+        }
+      },
+      "purple" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_purple"
+        }
+      },
+      "blue" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_blue"
+        }
+      },
+      "brown" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_brown"
+        }
+      },
+      "green" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_green"
+        }
+      },
+      "red" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_red"
+        }
+      },
+      "black" : {
+        "model" : "minecraft:cube_all",
+        "textures" : {
+          "all" : "gregtech:blocks/panelling/panelling_black"
+        }
+      }
+    }
+  }
+}
